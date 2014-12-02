@@ -1,0 +1,76 @@
+<% include header.html %>
+
+<span class="">Mong<span class="add" onclick="addData()">O</span>DB</span>
+<br>
+<% data.forEach(function(data){ %>
+	<div class="block block_<%= data._id %>">
+		<span class="delete" onclick="deleteData.call(this,'<%= data._id %>')">X</span>
+		<span class="delete" onclick="addData.call(this,'<%= data._id %>')">E</span>
+		<%
+			for(var i in data){
+				if(i != "_id"){
+					%>
+						<span class="key_<%= data._id %>"><%= i %></span> : 
+						<input type="text" class="val_<%= data._id %>" value="<%= data[i] %>" onchange="update.call(this,'<%= data._id %>', '<%= i %>')"> 
+					<%					
+				}
+			}
+		%>
+	</div>
+<% }) %>
+
+
+<% include footer.html %>
+
+<script>
+	
+	function update(id, key){
+		var _data = {};
+		_data["_id"] = id;
+		_data[key] = $(this).val();
+
+		$.ajax({
+			url : "/mongodb/update",
+			type : "POST",
+			data : _data
+		})
+	}
+
+	function deleteData(id){
+		var _data = {};
+		_data["_id"] = id;
+		$.ajax({
+			url : "/mongodb/delete",
+			type : "POST",
+			data : _data
+		});
+
+		$(this).parent("div").remove();
+	}
+
+	function addData(id){
+		var _val1 = prompt("Input Json : ");
+		if(!_val1) return;
+		
+		try{
+			var _data = eval("("+_val1+")");
+			
+			if(id)
+				_data["_id"] = id;
+
+			$.ajax({
+				url : "/mongodb/add",
+				type : "POST",
+				data : _data,
+				success : function(){
+					location.reload();
+				}
+			});
+		}catch(e){
+			alert("Eval Error!!")
+		}
+
+		
+	}
+	
+</script>

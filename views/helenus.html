@@ -1,0 +1,96 @@
+<% include header.html %>
+
+<span class="">Helenus <span class="add" onclick="addData()">+</span> Cassandra</span>
+<br>
+<% data.forEach(function(data){ %>
+	<div class="block block_<%= data._key %>">
+
+		<% if(data.column.length>1){ %>
+			<span class="delete" onclick="deleteData.call(this,'<%= data._key %>')">X</span>
+			<span><%= data._key %></span>
+			<%
+				data.column.forEach(function(column){
+					if(column.name!="id"){
+						%>
+						<div class="column"> 
+							<span><%= column.name %></span>
+							<input type="text" class="val_<%= data._key %>" value="<%= column.value %>" onchange="update.call(this,'<%= data._key %>','<%= column.name %>')">
+							<span class="hint">
+								<%= column.ts %><br>
+								ttl : <%= column.ttl %>
+							</span>
+						</div>
+						<%					
+					}
+
+				});
+			%>
+
+		<%
+		}else{
+			%><span><%= data._key %></span><span class="tombStone">TombStone</span><%
+		}
+		%>
+
+
+	</div><br>				
+<%}) %>
+
+
+<% include footer.html %>
+
+<script>
+	
+	function update(id,key){
+		var _data = {};
+		_data.id = id;
+		_data.key = key;
+		_data.value = $(this).val();
+
+		_data["id"] = id;
+		$.ajax({
+			url : "/helenus/update",
+			type : "POST",
+			data : _data,
+			success : function(){
+				location.reload();
+			}
+		})
+	}
+
+	function deleteData(id){
+		var _data = {};
+		_data["id"] = id;
+		$.ajax({
+			url : "/helenus/delete",
+			type : "POST",
+			data : _data,
+			success : function(){
+				location.reload();
+			}
+		});
+
+		$(this).parent("div").remove();
+	}
+
+	function addData(){
+		var _val1 = prompt("Input your Value1 : ");
+		var _val2 = prompt("Input your Value2 : ");
+		
+		var _data = {};
+		_data.value1 = _val1;
+		_data.value2 = _val2;
+
+		$.ajax({
+			url : "/helenus/add",
+			type : "POST",
+			data : _data,
+			success : function(){
+				location.reload();
+			}
+		});
+
+		
+	}
+	
+</script>

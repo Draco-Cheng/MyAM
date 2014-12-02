@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="contentApp">
+<head>
+	
+	<meta charset="utf-8">
+	<title>MY Accounting Manager</title>
+
+	<!-- lib -->
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+	<script src="js/lib/angular-ui-router.js"></script>
+	<script src="js/lib/jquery-2.1.1.min.js"></script>
+	<script src="js/lib/jquery.cookie.js"></script>
+	<script src="js/lib/jquery.md5.js"></script>
+
+	<!-- base -->
+	<script src="js/base/config.js"></script>
+	<script src="js/base/base.js"></script>
+	<script src="js/base/angularBase.js"></script>
+
+	<!-- i18n -->
+	<script src="js/i18n/i18n.js"></script>
+
+	<!-- components -->
+	<script src="js/components/01.greetingRoom.js"></script>
+	<script src="js/components/02.initialPanel.js"></script>
+	<script src="js/components/03.createDatabase.js"></script>
+	<script src="js/components/04.uploadOrChoose.js"></script>
+	
+	
+
+</head>
+<body>
+
+	<div class="backgroundDiv"></div>
+	<div ui-view="top" class="top" ></div>
+	<div ui-view="left" class="left" ></div>
+	<div ui-view="content" class="content" ></div>
+	<div ui-view="right" class="right" ></div>
+	<div ui-view="bottom" class="bottom" ></div>
+</body>
+</html>

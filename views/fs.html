@@ -1,0 +1,16 @@
+<% include header.html %>
+
+<span class="">File System</span>
+<br>
+<input type="text" value="<%= data.text %>" onchange="update()">
+
+<% include footer.html %>
+
+<script>
+	function update(){
+		$.ajax({
+			url : "/fs/"+$("input").val(),
+			type : "GET"
+		})
+	}
+</script>

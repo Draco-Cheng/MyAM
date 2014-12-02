@@ -1,0 +1,27 @@
+{
+	"GreetingRoom" : {
+		"Title" : "Greeting!!",
+		"Content" : "This is My Accounting Manager, It is still in design steps, we hope it will be coming soon...",
+		"Btn" : "Sure! Let's get started!"
+	},
+
+	"initialPanel" : {
+		"Create" : "Create New one",
+		"ChoseDatabase" : "I aready have database!"
+	},
+
+	"createDatabase" : {
+		"Title" : "Hi! We need some imformation to create your Database!",
+		"Name" : "What's your name",
+		"NameSuffix" : ".db",
+		"Currency" : "Currency name",
+		"Create" : "Create my data!"
+	},
+
+	"uploadOrChoose" : {
+		"Title" : "Choose your database",
+		"upload" : "Upload database...",
+		"selectOption" : "-- Select --",
+		"ok" : "done!"		
+	}
+}

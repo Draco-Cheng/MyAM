@@ -1,0 +1,65 @@
+<% include header.html %>
+
+<span class="">SQLITE <span class="add" onclick="addData()">3</span> </span>
+<br>
+<% data.forEach(function(data){ %>
+	<div class="block">
+		<span class="delete" onclick="deleteData.call(this,'<%= data.id %>')">X</span>
+		<span><%= data.id %> : </span>
+		<input type="text" class="val<%= data.id %>" value="<%= data.value1 %>" onchange="update('<%= data.id %>')">
+		<input type="text" class="val<%= data.id %>" value="<%= data.value2 %>" onchange="update('<%= data.id %>')">
+	</div>
+<% }) %>
+
+
+<% include footer.html %>
+
+<script>
+	
+	function update(id){
+		var _data = {};
+		_data.id = id;
+		_data.value1 = $(".val"+id+":eq(0)").val();
+		_data.value2 = $(".val"+id+":eq(1)").val();
+
+		_data["id"] = id;
+		$.ajax({
+			url : "/sqlite3/update",
+			type : "POST",
+			data : _data
+		})
+	}
+
+	function deleteData(id){
+		var _data = {};
+		_data["id"] = id;
+		$.ajax({
+			url : "/sqlite3/delete",
+			type : "POST",
+			data : _data
+		});
+
+		$(this).parent("div").remove();
+	}
+
+	function addData(){
+		var _val1 = prompt("Input your Value1 : ");
+		var _val2 = prompt("Input your Value2 : ");
+		
+		var _data = {};
+		_data.value1 = _val1;
+		_data.value2 = _val2;
+
+		$.ajax({
+			url : "/sqlite3/add",
+			type : "POST",
+			data : _data,
+			success : function(){
+				location.reload();
+			}
+		});
+
+		
+	}
+	
+</script>

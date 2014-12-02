@@ -1,0 +1,17 @@
+<div class = "midTable" >
+	<div class="greeting_room midTableTd">
+			<div class="alert-box">
+				<div  class="alert-box-title">{{i18n.createDatabase.Title}}</div>
+				
+				<input type="text" placeholder="{{i18n.createDatabase.Name}}" ng-model="name">
+				{{i18n.createDatabase.NameSuffix}}
+				<br>
+				<input type="text" placeholder="{{i18n.createDatabase.Currency}}" ng-model="currencyName">
+				<br>
+				<div class="renderLogin button" ng-click="submit(4)" >
+					{{i18n.createDatabase.Create}}
+				</div>
+				{{name}}
+			<div>
+	</div>
+</div>
