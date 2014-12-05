@@ -32,10 +32,8 @@ var _checkAndCreate = function(data, callback){
 			callback(null, data);
 		});
 
-	createFile.catch(function(err){
-		logger.debug(err);
-		callback(null, data);
-	})
+	createFile.catch(function(err){ logger.debug(err); callback(null, data); });
+
 }
 exports.checkAndCreate = Promise.denodeify(_checkAndCreate);
 
@@ -45,6 +43,7 @@ var _getCurrencies = function(data, callback){
 		.then(function(data){ return controller.dbController.getCurrencies(data); })
 		.then(function(data){ return controller.dbController.closeDB(data); })
 		.then(function(data){ callback(null ,data); })
+		.catch(function(err){ logger.debug(err); callback(null, data); });
 }
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
 
@@ -52,7 +51,8 @@ var _setCurrencies = function(data, callback){
 	controller.dbController.connectDB(data)
 		.then(function(data){ return controller.dbController.setCurrencies(data); })
 		.then(function(data){ return controller.dbController.closeDB(data); })
-		.then(function(data){ callback(null ,data); });
+		.then(function(data){ callback(null ,data); })
+		.catch(function(err){ logger.debug(err); callback(null, data); });
 }
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
 

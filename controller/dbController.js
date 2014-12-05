@@ -46,22 +46,22 @@ var _runSQL = function(data, sql, value){
 		var _pool = [];
 		var _stamp = Date.now();
 		data.resault = data.resault || [];
-		_dbLogger(data, ("[SQL]["+_stamp+"][run] ").green+sql+"  [val] "+ JSON.stringify(value));
+		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][run] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
 			data.db.run(sql, value,function(err, row){
 				if(_pool.length){
-					_dbLogger(data, (("[SQL]["+_stamp+"]").green).green+JSON.stringify(_pool));
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify(_pool));
 					data.resault.push(_pool);
 				}else{
-					_dbLogger(data, ("[SQL]["+_stamp+"]").green+" successful...");
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 				}
 					
 				resolve(data)
 			});
 
 		}catch(e){
-			_dbLogger(data, ("[SQL]["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -74,22 +74,22 @@ var _allSQL = function(data, sql, value){
 	return new Promise(function(resolve, reject){
 		var _stamp = Date.now();
 		data.resault = data.resault || [];
-		_dbLogger(data, ("[SQL]["+_stamp+"][all] ").green+sql+"  [val] ".green+ JSON.stringify(value));
+		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][all] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
 			data.db.all(sql, value,function(err, row){
 				if(row.length){
-					_dbLogger(data, ("[SQL]["+_stamp+"]").green+JSON.stringify(row));
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify(row));
 					data.resault.push(row);
 				}else{
-					_dbLogger(data, ("[SQL]["+_stamp+"]").green+" successful...");
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 				}
 					
 				resolve(data)
 			});
 
 		}catch(e){
-			_dbLogger(data, ("[SQL]["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -102,22 +102,22 @@ var _getSQL = function(data, sql, value){
 	return new Promise(function(resolve, reject){
 		var _stamp = Date.now();
 		data.resault = data.resault || [];
-		_dbLogger(data, ("[SQL]["+_stamp+"][get] ").green+sql+"  [val] ".green+ JSON.stringify(value));
+		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][get] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
 			data.db.get(sql, value,function(err, row){
 				if(row){
-					_dbLogger(data, ("[SQL]["+_stamp+"]").green+JSON.stringify([row]));
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify([row]));
 					data.resault.push([row]);
 				}else{
-					_dbLogger(data, ("[SQL]["+_stamp+"]").green+" successful...");
+					_dbLogger(data, ("[SQL]".bgMagenta+"["+_stamp+"]").green+" successful...");
 				}
 					
 				resolve(data)
 			});
 
 		}catch(e){
-			_dbLogger(data, ("[SQL]["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -129,11 +129,11 @@ var _prepareSQL = function(data, sql, value){
 
 	return new Promise(function(resolve, reject){
 		var _stamp = Date.now();
-		_dbLogger(data, ("[SQL]["+_stamp+"][prepare] ").green+sql+"  [val] ".green+ JSON.stringify(value));
+		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][prepare] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
 			var stmt = data.db.prepare(sql, function(){
-				_dbLogger(data, ("[SQL]["+_stamp+"]").green+" successful...");
+				_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 				resolve(data);
 			});
 
@@ -159,7 +159,7 @@ var _eachSQL = function(data, sql, value){
 		var _pool = [];
 		var _stamp = Date.now();
 		data.resault = data.resault || [];
-		_dbLogger(data, ("[SQL]["+_stamp+"][each] ").green+sql+"  [val] ".green+ JSON.stringify(value));
+		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][each] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
 			data.db.each(sql,function(err, row) {
@@ -168,10 +168,10 @@ var _eachSQL = function(data, sql, value){
 		  		},
 		  		function(){
 					if(_pool.length){
-						_dbLogger(data, ("[SQL]["+_stamp+"]").green+JSON.stringify(_pool));
+						_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify(_pool));
 						data.resault.push(_pool);
 					}else{
-						_dbLogger(data, ("[SQL]["+_stamp+"]").green+" successful...");
+						_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 					}
 
 					resolve(data);
@@ -179,7 +179,7 @@ var _eachSQL = function(data, sql, value){
 			);
 
 		}catch(e){
-			_dbLogger(data, ("[SQL]["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -194,44 +194,45 @@ var _initialDatabase = function(data, callback){
 	Construction :
 		user.db(SQLite)
 				type	
-						tid
-						name
+						tid			//(timestamp) parent key
+						type_label
 
 				typeMap	
-						id
-						tid
-						relation	//master val(0),hidden val(-1), relation tid
+						tid			//(timestamp) parent key
+						sub_tid		//(timestamp) parent key
+						relation	//master val(0), hidden val(-1), relation tid
 
 				data
-						id
+						id			//(timestamp) parent key
 						tid			//array
-						memo
-						value		
-						cid			//currencies
-						date
+						cid			//currencies 
+						value
+						memo		
+						date		//sort by date (ORDER BY "date" [ASC | DESC])
 
 				currencies
-						cid 		//parent key
-						name
+						cid 		//(timestamp) parent key
+						to_cid 		//(timestamp) parent key (default will be main currencies)
+						main		// 0 or 1
+						type		// TWD, USD
+						memo
 						rate
-						date
-						showup
+						date		//sort by date (ORDER BY "date" [ASC | DESC])
+						showup		
 						--------------------------
 						+ the mian currencies
-						+	cid = 0;
 						+	rate = 1;
 						+	
-						+	(Non Standard) 	if wanna change main currencies rate will change all currencies rate
 						+	(Standard) 		for view can tempraly change rate
 						--------------------------
 	***********************************************************/
 
 
-	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid INT PRIMARY KEY NOT NULL, name TEXT);")
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (id INT PRIMARY KEY NOT NULL, tid INT, relation TEXT)"); })
+	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT);")
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT PRIMARY KEY NOT NULL, sub_tid BIGINT, relation BIGINT)"); })
 		//relation : master val(0),hidden val(-1), relation tid
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id INT PRIMARY KEY NOT NULL, tid INT, memo TEXT, value FLOAT, cid INT, date bigint)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid INT PRIMARY KEY NOT NULL, to_cid INT, name TEXT, rate FLOAT, date bigint, showup bool)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tid BIGINT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT, main bool, type TEXT, memo TEXT, rate FLOAT, date bigint, showup bool)"); })
 		.then(function(data){
 			callback(null ,data);
 		});
@@ -244,7 +245,8 @@ var _getCurrencies = function(data, callback){
 
 	var _sql =  "SELECT * FROM currencies ";
 	if(data.cid !== undefined)
-		_sql += "WHERE cid=$cid";
+		_sql += "WHERE cid=$cid ";
+	_sql = "ORDER BY date DESC";
 
 	_getSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
 
@@ -253,9 +255,8 @@ exports.getCurrencies = Promise.denodeify(_getCurrencies);
 
 var _setCurrencies = function(data, callback){
 
-	var _sql = "INSERT OR REPLACE INTO currencies (cid , to_cid , name , rate , date , showup ) VALUES(?,?,?,?,?,?);";
-	var _val = [[data.cid, data.to_cid, data.name, data.rate, data.date , data.showup]];
-
+	var _sql = "INSERT OR REPLACE INTO currencies (cid , to_cid , main , type  , memo , rate , date , showup ) VALUES(?,?,?,?,?,?,?,?);";
+	var _val = [[data.cid, data.to_cid, data.main, data.type, data.memo, data.rate, data.date , data.showup]];
 
 	_prepareSQL(data, _sql, _val).then(function(data){callback(null ,data);});
 

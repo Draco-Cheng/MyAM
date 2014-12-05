@@ -15,7 +15,9 @@
 		"Name" : "What's your name",
 		"NameSuffix" : ".db",
 		"Currency" : "Currency name",
-		"Create" : "Create my data!"
+		"Create" : "Create my data!",
+		"406" : "the parameters is empty",
+		"409" : "{0} is already exist,\n do you want to use the Database directly?"
 	},
 
 	"uploadOrChoose" : {
@@ -23,5 +25,9 @@
 		"upload" : "Upload database...",
 		"selectOption" : "-- Select --",
 		"ok" : "done!"		
+	},
+
+	"code" : {
+		"200" : "success"
 	}
 }

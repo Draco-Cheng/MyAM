@@ -9,6 +9,18 @@ $.uipage.islogin = false;
 
 localStorage = localStorage || "";
 
+// First, checks if it isn't implemented yet.
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
 
 /* before ready setting */
 (function(){
@@ -121,6 +133,7 @@ localStorage = localStorage || "";
 					success: function(json){
 						var _response = {};
 						_response.successful = true;
+						_response.status = 200;
 						_response.data = json;
 
 						_isAjax = false;
@@ -129,18 +142,16 @@ localStorage = localStorage || "";
 					},
 					error : function(xhr, ajaxOptions, thrownError){
 						_isAjax = false;
-						uipageObj.retryTimes++;
 
 						if(xhr.status == 401 && uipageObj.retryTimes<3){
+							uipageObj.retryTimes++;
 							$.log("warn","Retry ajax:\""+_url+"\" "+uipageObj.retryTimes+" time(s) ...");
 							_ajax(uipageObj);
 						}else{
 							var _response = {};
 							_response.successful = false;
-							_response.data = {
-								responseText : xhr.responseText || thrownError || xhr.statusText,
-								status : xhr.status
-							};
+							_response.message = xhr.responseText || thrownError || xhr.statusText;
+							_response.status = xhr.status;
 
 							_errorCallback(_response);
 						}
@@ -156,29 +167,33 @@ localStorage = localStorage || "";
 					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 				}).
 				success(function(data, status, headers, config) {
-					_isAjax = false;
 					// this callback will be called asynchronously
 					// when the response is available
-					//var _Token;
-					var _Salt;
-					_callback(data);
+					var _response = {};
+					_response.successful = true;
+					_response.status = 200;
+					_response.data = json;
+
+					_isAjax = false;
+					_callback(_response);
 
 				}).	
 				error(function(data, status, headers, config) {
-					_isAjax = false;
 					// called asynchronously if an error occurs
 					// or server returns response with an error status.
-					//var  json = eval("{"+data+"}") || {};
-					//var _Token;
+					_isAjax = false;
 					
 					if(status == 401 && uipageObj.retryTimes<3){
 						uipageObj.retryTimes++;
 						$.log("warn","Retry ajax:\""+_url+"\" "+uipageObj.retryTimes+" time(s) ...");
 						_ajax(uipageObj);
 					}else{
-						var _Salt;
-						_errorCallback({responseText : data,status : status});
+						var _response = {};
+						_response.successful = false;
+						_response.message = data;
+						_response.status = status;
 
+						_errorCallback(_response);
 					}
 
 				});			
@@ -323,6 +338,16 @@ localStorage = localStorage || "";
 
 	};
 	$.uipage.loginAjax = function(uipageObj,$http){_loginAjax(uipageObj,$http);};
+
+	$.uipage.alert = function(str, callback){
+		alert(str);
+		callback && callback();
+	};
+
+	$.uipage.confirm = function(str, callback1, callback2){
+		var _callback = (confirm(str) ? callback1 : callback2);
+		_callback && _callback();
+	};
 
 	$.uipage.encrypt = function(str){
 			str = str.split("");
@@ -477,6 +502,19 @@ localStorage = localStorage || "";
 
 			}
 			return _return;
+	}
+
+	var _blocking = false;
+	$.uipage.blocking = function(){
+		if(_blocking)
+			return false;
+
+		_blocking = true;
+		return true;
+	}
+
+	$.uipage.unblocking = function(){
+		_blocking = false;
 	}
 
 })();

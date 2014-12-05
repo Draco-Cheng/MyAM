@@ -27,8 +27,42 @@ $.uipage.SCOPE = {};
 							$scope.i18n = i18n;
 							
 							$scope.str = $scope.str || {};
+
 							$scope.submit = function(){
-								console.log("!!!!!!!!!!!!!1",$scope.name)
+								if(!$.uipage.blocking()) return;
+
+								var _dbId = $scope.name+i18n["createDatabase"]["NameSuffix"]
+								$.uipage.ajax({
+									url : "db/create",
+									data : {
+										dbId : _dbId,
+										mainCurrenciesType : $scope.currencyType
+									},
+									callback : function(json){
+										$.uipage.unblocking();
+										
+										if(json.successful){
+
+										}else{
+											
+											var _status = json.status;
+											var _message = i18n["createDatabase"][_status] || i18n["code"][_status] || json.message;
+
+											switch(_status){
+												case 409:
+													$.uipage.confirm(_message.format(_dbId), function(){
+														console.log("Next!!");
+													})
+													break;
+												default:
+													$.uipage.alert(_message);
+											}
+										}
+
+										
+									}
+								})
+								
 							}
 
 				        }

@@ -2,6 +2,8 @@
 var express = require('express');
 var router = express.Router();
 var routes = {};
+var i18n = require('../i18n/i18n.js');
+var responseHandler = require('../controller/responseHandler.js');
 
 /*
  * GET home page.
@@ -12,15 +14,13 @@ routes.index = function(req, res, next) {
 	if ('do next'){
 		next();
 	}else{
-		res.status(401);
-		res.json({message: 'stop'})
+		responseHandler(401, req, res);
 	}
 }
 
 
 routes.ping = function(req, res,next) {
-	res.statusCode = 200;
-	res.end('pong');
+	responseHandler(200, req, res);
 }
 
 	

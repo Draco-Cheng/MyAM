@@ -1,1 +1,1 @@
-exports.dbFolder = "./db";
+exports.dbFolder = "./db/";
