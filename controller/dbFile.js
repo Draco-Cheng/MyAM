@@ -1,6 +1,7 @@
 var fs = require("fs");
 var logger = require("./logger.js");
 var Promise =  require("promise");
+var formidable = require("formidable");
 
 var _check = function(data, callback){
 	fs.exists(data.dbFile,function(exists){
@@ -61,3 +62,30 @@ var _readdir = function(data, callback){
     });
 }
 exports.readdir = Promise.denodeify(_readdir);
+
+
+var _upload = function(data, callback){
+    logger.log("Request handler 'upload' was called.");
+    var _request = data.request;
+    var _form = new formidable.IncomingForm();
+    _form.parse(_request, function(error, fields, files) {
+        console.log("files".bgRed,files);
+        var _tempPath = files.upload.path;
+        var _uploadPath = data.renameFolder + files.upload.name;
+        /**********************************************
+        Error: EXDEV, Cross-device link
+        **********************************************/
+        //  fs.renameSync(_tempPath,  _uploadPath);
+        /*********************************************/
+            var is = fs.createReadStream(_tempPath);
+            var os = fs.createWriteStream(_uploadPath);
+            is.pipe(os);
+            is.on('end',function() {
+                fs.unlinkSync(_tempPath);
+            });
+        /*********************************************/
+
+        callback( null, data);
+    });
+}
+exports.upload = Promise.denodeify(_upload);

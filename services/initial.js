@@ -32,7 +32,7 @@ var _checkAndCreate = function(data, callback){
 			callback(null, data);
 		});
 
-	createFile.catch(function(err){ logger.debug(err); callback(null, data); });
+	createFile.catch(function(err){ logger.error(err); callback(null, data); });
 
 }
 exports.checkAndCreate = Promise.denodeify(_checkAndCreate);
@@ -43,7 +43,7 @@ var _getCurrencies = function(data, callback){
 		.then(function(data){ return controller.dbController.getCurrencies(data); })
 		.then(function(data){ return controller.dbController.closeDB(data); })
 		.then(function(data){ callback(null ,data); })
-		.catch(function(err){ logger.debug(err); callback(null, data); });
+		.catch(function(err){ logger.error(err); callback(null, data); });
 }
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
 
@@ -52,20 +52,13 @@ var _setCurrencies = function(data, callback){
 		.then(function(data){ return controller.dbController.setCurrencies(data); })
 		.then(function(data){ return controller.dbController.closeDB(data); })
 		.then(function(data){ callback(null ,data); })
-		.catch(function(err){ logger.debug(err); callback(null, data); });
+		.catch(function(err){ logger.error(err); callback(null, data); });
 }
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
-
-/*exports.checkAndCreate({ dbFile : file }).then(function(){
-	_getCurrencies({dbFile : file, cid : 1},function(X,json){
-		 json.to_cid = 2;
-		 json.name = "TWD";
-		 json.rate = 1;
-		 json.date = Date.now();
-		 json.showup = 1;
-		_setCurrencies(json, function(X,json){
-			console.log("!!!!!!!!!!!",X,json.resault[0])
-		})
-	});
-});*/
+var _uploadDB = function(data, callback){
+	controller.dbFile.upload(data)
+		.then(function(data){ callback(null ,data); })
+		.catch(function(err){ logger.error(err); callback(null, data); });
+}
+exports.uploadDB = Promise.denodeify(_uploadDB);

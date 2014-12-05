@@ -71,5 +71,19 @@ routes.creat = function(req, res, next) {
 }
 router.all('/create'	, routes.creat);
 
+routes.upload = function(req, res, next) {
+	var data = {};
+	data.request = req ;
+	data.renameFolder = config.dbFolder;
+	services.initial.uploadDB(data)
+		.then(function(data){
+			responseHandler(200, req, res);
+		});
+}
+router.all('/upload'	, routes.upload);
+
+
 
 module.exports = router;
+
+
