@@ -14,7 +14,7 @@ var logger = require("../controller/logger.js");
 
 var _dbList = function(data, callback){
 	data = data || {};
-	logger.debug("Check Database Folder"+data.path+" exist or not...");
+	logger.debug(data.reqId,"Check Database Folder"+data.path+" exist or not...");
 
 	controller.dbFile.readdir(data)
 		.then(function(data){

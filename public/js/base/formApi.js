@@ -5,48 +5,44 @@ $(function(){
 
 	formApi.uploadFiles = function(filesJson) {
 		var _file = filesJson.files || "";
+		var _name = filesJson.name || "";
 		var _url = $.uipage.serverURL + ( filesJson.url || "db/upload" );
-		var ObjName = filesJson.ObjName || "";
-		var formData = filesJson.FormData || "";
+		var _formData = filesJson.FormData || "";
+		var _progressCallback =  filesJson.progressCallback || function(){};;
+		var _callback =  filesJson.callback || function(){};
+
+
+		if(!_file || !_name) return false;
 		
-		if(ObjName){
-			if(FileList[ObjName]){
-				_file=FileList[ObjName];
-				delete FileList[ObjName];
-			}else
-				return;
+		
+		if(!_formData){
+			_formData = new FormData();
+			_formData.append(_name, _file);
 		}
-		
-		
-		if(!formData){
-			formData = new FormData();
-			formData.append("theupload[]", _file);
-		}		
 
 		var xhr = new XMLHttpRequest();
+
+		xhr.upload.addEventListener("progress", function (evt) {
+			if (evt.lengthComputable) {
+				_progressCallback(evt.loaded / evt.total)
+			}
+			else {
+				// No data to calculate on
+			}
+		}, false);
 		
-		if(ObjName){
-			xhr.upload.addEventListener("progress", function (evt) {
-				if (evt.lengthComputable) {
-					console.log(ObjName, evt.loaded / evt.total)
-				}
-				else {
-					// No data to calculate on
-				}
-			}, false);
-			
-			xhr.addEventListener("load", function () {
-				console.log(ObjName, "finished");
-			}, false);
-		}
+		xhr.addEventListener("load", function () {
+			_callback("finished");
+		}, false);
+
 		xhr.open('POST', _url, true);
 		xhr.onload = function(e) { 
 			console.warn("xhr.onload",e)
 		};
-		xhr.send(formData);  // multipart/form-data
+		xhr.send(_formData);  // multipart/form-data
 
 
-		return formData;
+		return _formData;
 	}
 
 	formApi.formPost = function(filesJson) {

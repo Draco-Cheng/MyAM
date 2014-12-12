@@ -1,29 +1,57 @@
 var colors = require('colors');
 
-exports.log = function(log){
-	console.log("[LOG] "+log);
+exports.log = function(){
+	if(arguments.length===1)
+		console.log("[LOG]\t"+arguments[0]);
+	else
+		console.log("[LOG]\t"+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.info = function(log){
-	console.log("[INFO] ".grey+log);
+exports.info = function(){
+	if(arguments.length===1)
+		console.log("[INFO]\t".grey+arguments[0]);
+	else
+		console.log("[INFO]\t".grey+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.error = function(error){
-	console.log("[ERROR] ".red+error);
+exports.warn = function(){
+	if(arguments.length===1)
+		console.log("[WARN]\t".cyan+arguments[0]);
+	else
+		console.log("[WARN]\t".cyan+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.debug = function(error){
-	console.log("[DEBUG] ".magenta+error);
+exports.error = function(){
+	if(arguments.length===1)
+		console.log("[ERROR]\t".red+arguments[0]);
+	else
+		console.log("[ERROR]\t".red+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.dbLog = function(sql){
-	console.log("[DB] ".yellow+sql);
+exports.debug = function(){
+	if(arguments.length===1)
+		console.log("[DEBUG]\t".magenta+arguments[0]);
+	else
+		console.log("[DEBUG]\t".magenta+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.request = function(str){
-	console.log("[request] ".green+str);
+exports.dbLog = function(){
+	if(arguments.length===1)
+		console.log("[DB]\t".yellow+arguments[0]);
+	else
+		console.log("[DB]\t".yellow+("["+arguments[0]+"] ").grey+arguments[1]);
 }
 
-exports.response = function(str){
-	console.log("[response] ".green+str);
+exports.request = function(){
+	if(arguments.length===1)
+		console.log("[req]\t".green+arguments[0]);
+	else
+		console.log("[req]\t".green+("["+arguments[0]+"] ").grey+arguments[1]);
+}
+
+exports.response = function(){
+	if(arguments.length===1)
+		console.log("[res]\t".green+arguments[0]);
+	else
+		console.log("[res]\t".green+("["+arguments[0]+"] ").grey+arguments[1]);
 }

@@ -25,24 +25,40 @@ $.uipage.SCOPE = {};
 							$.uipage.angular[_temp.name].http = $http;
 							$scope.data = $scope.data || {};
 							$scope.i18n = i18n;
-							
 							$scope.str = $scope.str || {};
 							
 							$.uipage.ajax({
 								url : "db/dbList",
 								type : "get",
-
 								callback : function(json){
 									if(json.successful)
 										$scope.databases = json.data;
 								}
 							});
 
+							var _fileNameChanged = function(){
+								console.log($("#uploadDBfile").val());
+								$.uipage.formApi.uploadFiles({
+									name : "fileUpload",
+									files : $("#uploadDBfile")[0].files[0],
+									progressCallback : function(percentage){
+										console.log(percentage)
+									},
+									callback : function(){
+										console.log("finished")
+									}
+								})
+							};
+
 							$scope.selectOption = function(database){
-								console.log(database)
+								if(database==="__upload__"){
+									$scope.selectDatabase = "";
+									$("#uploadDBfile")[0].onchange = _fileNameChanged;
+									$("#uploadDBfile").click();
+								}
 							}
 
-				        }
+		}
 	};
 
 

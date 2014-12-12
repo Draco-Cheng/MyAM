@@ -2,6 +2,7 @@ var logger = require("./logger.js");
 var Promise =  require("promise");
 var colors = require('colors');
 var sqlite3 = require('sqlite3').verbose();
+var dbFile = require('./dbFile.js');
 
 /*
 	if(!exists) {
@@ -20,11 +21,11 @@ var sqlite3 = require('sqlite3').verbose();
 	stmt.finalize();
 */
 var _dbLogger = function(data, str){
-	logger.dbLog(("["+data.db.filename + " ,"+data.db.mode+"] ").grey+str);
+	logger.dbLog(data.reqId, ("["+data.db.filename + " ,"+data.db.mode+"] ").grey+str);
 }
 
 var _connectDB = function(data, callback){
-	logger.debug("connect Database file : "+data.dbFile);
+	logger.debug(data.reqId, "connect Database file : "+data.dbFile);
 	data.db = new sqlite3.Database(data.dbFile);
 	data.db.serialize(function() {
 		_dbLogger(data, "open database...");
@@ -36,7 +37,9 @@ exports.connectDB = _connectDB = Promise.denodeify(_connectDB);
 var _closeDB = function(data, callback){
 	_dbLogger(data, "close Database....");
 	data.db.close();
-	callback(null ,data);
+	setTimeout(function(){
+		callback(null ,data);	
+	})
 }
 exports.closeDB = _closeDB =Promise.denodeify(_closeDB);
 
@@ -50,6 +53,10 @@ var _runSQL = function(data, sql, value){
 
 		try{
 			data.db.run(sql, value,function(err, row){
+				if(err){
+					_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
+					return reject(err)
+				};
 				if(_pool.length){
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify(_pool));
 					data.resault.push(_pool);
@@ -61,7 +68,7 @@ var _runSQL = function(data, sql, value){
 			});
 
 		}catch(e){
-			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -78,6 +85,10 @@ var _allSQL = function(data, sql, value){
 
 		try{
 			data.db.all(sql, value,function(err, row){
+				if(err){
+					_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
+					return reject(err)
+				};
 				if(row.length){
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify(row));
 					data.resault.push(row);
@@ -89,7 +100,7 @@ var _allSQL = function(data, sql, value){
 			});
 
 		}catch(e){
-			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -106,18 +117,22 @@ var _getSQL = function(data, sql, value){
 
 		try{
 			data.db.get(sql, value,function(err, row){
+				if(err){
+					_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
+					return reject(err)
+				};
 				if(row){
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify([row]));
 					data.resault.push([row]);
 				}else{
-					_dbLogger(data, ("[SQL]".bgMagenta+"["+_stamp+"]").green+" successful...");
+					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 				}
 					
 				resolve(data)
 			});
 
 		}catch(e){
-			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -132,7 +147,12 @@ var _prepareSQL = function(data, sql, value){
 		_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"][prepare] ").green+sql+" "+"[val]".bgMagenta+" "+ JSON.stringify(value));
 
 		try{
-			var stmt = data.db.prepare(sql, function(){
+			var stmt = data.db.prepare(sql, function(err){
+				if(err){
+					_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
+					return reject(err)
+				};
+
 				_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
 				resolve(data);
 			});
@@ -145,7 +165,7 @@ var _prepareSQL = function(data, sql, value){
 			
 
 		}catch(e){
-			_dbLogger(data, ("[SQL]["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -163,6 +183,10 @@ var _eachSQL = function(data, sql, value){
 
 		try{
 			data.db.each(sql,function(err, row) {
+					if(err){
+						_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
+						return reject(err)
+					};
 			    	console.log(row.id + ": " + row.value1 + ":"+ row.value2);
 			    	_pool.push(row);
 		  		},
@@ -179,7 +203,7 @@ var _eachSQL = function(data, sql, value){
 			);
 
 		}catch(e){
-			_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").red+e);
+			_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"]").red+e);
 			reject(e)
 		}
 
@@ -263,4 +287,47 @@ var _setCurrencies = function(data, callback){
 };
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
+
+var _checkDBisCorrect = function(data, callback){
+
+	var _sql = "SELECT * FROM type, typeMap, data, currencies LIMIT 1";
+	var _popDBList = data.DBList.pop();
+	data.dbFile = _popDBList.path;
+
+	data.dbInfo = data.dbInfo || [];
+	var _dbInfo = {};
+	data.dbInfo.push(_dbInfo);
+	_dbInfo.name = _popDBList;
+
+	var _checkFinish = function(){
+		if(data.DBList.length)
+			_checkDBisCorrect(data, callback);
+		else
+			callback(null ,data);		
+	};
+
+	logger.debug(data.reqId, "Check Database "+data.dbFile+" is correct or not...");
+
+	_connectDB(data)
+		.then(function(data){return _getSQL(data, _sql,[]); })
+		.nodeify(function(err){
+			if(err){
+				_dbInfo.isCorrect = false;
+				_dbInfo.message = err;
+			}else{
+				_dbInfo.isCorrect = true;
+				_dbInfo.message = "OK";
+			}
+
+			_closeDB(data).then(function(){
+				if(!_dbInfo.isCorrect){
+					data.deleteFile = _popDBList.path;
+					dbFile.unlink(data)
+				}
+					
+				_checkFinish();				
+			});
+		})
+};
+exports.checkDBisCorrect = Promise.denodeify(_checkDBisCorrect);
 

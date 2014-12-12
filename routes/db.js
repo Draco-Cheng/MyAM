@@ -20,6 +20,7 @@ var routes = {};
 
 routes.dbList = function(req, res, next) {
 	var data = {};
+	data.reqId = req.reqId;
 	data.path = config.dbFolder;
 
 	services.dbService.dbList(data)
@@ -45,11 +46,12 @@ routes.creat = function(req, res, next) {
 	}
 
 	var data = {};
+	data.reqId = req.reqId;
 	data.dbFile = config.dbFolder + req.body.dbId;
 
 	services.initial.checkAndCreate(data)
 		.then(function(data){
-			if(data.dbFileExists){
+			if(data.fileExists){
 				throw responseHandler(409, req, res);
 			}else{
 				data.cid = Date.now();
@@ -73,11 +75,13 @@ router.all('/create'	, routes.creat);
 
 routes.upload = function(req, res, next) {
 	var data = {};
+	data.reqId = req.reqId;
 	data.request = req ;
 	data.renameFolder = config.dbFolder;
+	data.fileConflict = "backup";
 	services.initial.uploadDB(data)
 		.then(function(data){
-			responseHandler(200, req, res);
+			responseHandler(200,data.dbInfo , req, res);
 		});
 }
 router.all('/upload'	, routes.upload);

@@ -21,18 +21,21 @@ module.exports = function(){
 		_res = arguments[3];
 	}
 	
-	var _requestLog = ("["+_req.method+"]").bgGreen+" "+_req.url;
+	/*var _requestLog = ("["+_req.method+"]").bgGreen+" "+_req.url;
 	//_requestLog += " "+"query:".bgGreen+JSON.stringify(_req.query);
 	if(_req.query) _requestLog += " "+"body:".bgGreen+JSON.stringify(_req.body);
-	logger.request(_requestLog);
+	logger.request(_requestLog);*/
 
+	
 
 	if(_code===200)
-		var _responseLog = _code.toString().bgGreen;
+		var _responseLog = ("["+_req.method+"]").bgGreen +" "+_code.toString().bgGreen;
 	else
-		var _responseLog = _code.toString().bgRed;
-	_responseLog += " "+JSON.stringify(_response);
-	logger.response(_responseLog);
+		var _responseLog = ("["+_req.method+"]").bgRed +" "+_code.toString().bgRed;
+
+	
+	_responseLog += " "+_req.originalUrl+"\n\t\t\t"+"[Response] ".grey+JSON.stringify(_response);
+	logger.response(_req.reqId, _responseLog);
 
 	_res.status(_code);
 	_res.json( _response);
