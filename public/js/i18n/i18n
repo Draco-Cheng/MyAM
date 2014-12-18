@@ -24,10 +24,13 @@
 		"Title" : "Choose your database",
 		"upload" : "Upload database...",
 		"selectOption" : "-- Select --",
-		"ok" : "done!"		
+		"ok" : "done!",
+		"porting" : "porting...",
+		"uploadFinish" : "Done!"
 	},
 
 	"code" : {
-		"200" : "success"
+		"200" : "success",
+		"SQLITE_NOTADB" : "DB Error"
 	}
 }

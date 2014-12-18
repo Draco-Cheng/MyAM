@@ -1,3 +1,43 @@
 .hidden{
 	display : none;
 }
+
+#uploadOrChoose .progress-bar{
+	display: inline-block;
+	width: 0%;
+	background-color: rgb(61, 139, 232);
+	transition-duration: 0.25s;
+	-webkit-transition-duration: 0.25s; /* Safari */
+
+}
+
+#uploadOrChoose .progress-bar.done{
+	background-color: green;
+}
+
+#uploadOrChoose .progress-bar.error{
+	background-color: red;
+}
+
+#uploadOrChoose .progress-bar, #uploadOrChoose .progress-block{
+	height: 20px;
+}
+
+#uploadOrChoose .progress-block {
+	display: inline-block;
+	border: solid 1px #C2C2C2;
+	width: 200px;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+#uploadOrChoose .progress-msg {
+	line-height: 20px;
+	display: block;
+	text-align: center;
+	height: 0px;
+	z-index: 99999;
+	transform: translate3d(0px, 0px , 100px);
+	color: rgb(209, 209, 209);
+	white-space: nowrap;
+}

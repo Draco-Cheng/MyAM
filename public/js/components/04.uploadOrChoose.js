@@ -20,39 +20,77 @@ $.uipage.SCOPE = {};
 		templateUrl : 	$.uipage.templateURL+'04.uploadOrChoose.html',
 		controller	: 	function($scope,$http,i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
-							$.uipage.angular[_temp.name] = $.uipage.angular[_temp.name] || {};
-							$.uipage.angular[_temp.name].scope = $scope;
-							$.uipage.angular[_temp.name].http = $http;
+							var _controller = $.uipage.angular.controller[_temp.name] = {};
+							_controller.scope = $scope;
+							_controller.http = $http;
+
 							$scope.data = $scope.data || {};
 							$scope.i18n = i18n;
 							$scope.str = $scope.str || {};
-							
-							$.uipage.ajax({
-								url : "db/dbList",
-								type : "get",
-								callback : function(json){
-									if(json.successful)
-										$scope.databases = json.data;
-								}
-							});
+
+							var _getdbList = function(callback){
+								$.uipage.ajax({
+									url : "db/dbList",
+									type : "get",
+									callback : function(json){
+										if(json.successful){
+											$scope.databases = json.data;
+											callback && callback();
+										}
+											
+									}
+								});								
+							}
+							_getdbList();
+
 
 							var _fileNameChanged = function(){
-								console.log($("#uploadDBfile").val());
+								var _uploadDBfile = $("#uploadOrChoose #uploadDBfile");
+								console.log(_uploadDBfile.val());
+								var _progressBlock = $("<div>").addClass("progress-block");
+								var _progressMsg = $("<div>").addClass("progress-msg");
+								var _progressBar = $("<div>").addClass("progress-bar");
+								var _file = _uploadDBfile[0].files[0];
+								_uploadDBfile.val("");
+
+								_progressBlock.append(_progressMsg).append(_progressBar).appendTo("#progress-panel");
+
 								$.uipage.formApi.uploadFiles({
 									name : "fileUpload",
-									files : $("#uploadDBfile")[0].files[0],
+									files : _file,
 									progressCallback : function(percentage){
-										console.log(percentage)
+										var _percentage  = (percentage*100).toFixed(2) + "%";
+
+										if(_percentage==="100.00%")
+											_progressMsg.html(i18n.uploadOrChoose["porting"]+" - "+_file.name)
+										else
+											_progressMsg.html(_percentage+" - "+_file.name);
+
+										_progressBar.width(_percentage);										
 									},
-									callback : function(){
-										console.log("finished")
+									callback : function(json){
+										console.log("finished",json);
+										var _response = json[0];
+										$scope.selectDatabase = "";
+
+										if(_response.isCorrect){
+											_getdbList(function(){
+												_progressBar.addClass("done");
+												_progressMsg.html(i18n.uploadOrChoose["uploadFinish"]+" - "+_file.name);
+												$("#uploadOrChoose select").val(_file.name);
+											});
+										}else{
+											var _error = i18n.code[_response.message.code] || "";
+											_progressMsg.html( _error+"-"+_file.name)
+											_progressBar.addClass("error");											
+										}
+										$.uipage.forceRerender();										
 									}
 								})
 							};
 
 							$scope.selectOption = function(database){
 								if(database==="__upload__"){
-									$scope.selectDatabase = "";
 									$("#uploadDBfile")[0].onchange = _fileNameChanged;
 									$("#uploadDBfile").click();
 								}

@@ -1,7 +1,17 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var config = require('./config.js');
 var app = express();
-
+if(	config.uploadTempDir && 
+	config.uploadTempDir.indexOf(" ")!==0 && 
+	config.uploadTempDir.indexOf("..")==-1 && 
+	config.uploadTempDir.indexOf("/")!==0 && 
+	config.uploadTempDir.indexOf("\\")!==0){
+		require("rimraf").sync(config.uploadTempDir);
+		setTimeout(function(){
+			require('fs').mkdirSync(config.uploadTempDir);
+		})
+}
 
 
 app.set('views', __dirname + '/views');
@@ -12,7 +22,6 @@ app.use("/", express.static(__dirname + '/public'));
 app.use("/", require("./routes/index") );
 
 
-app.listen(8000);
-//app.set('port', 8000);
+app.listen(config.port);
 
-console.log('Express app started on port %d', 8000);
+console.log('Express app started on port %d', config.port);

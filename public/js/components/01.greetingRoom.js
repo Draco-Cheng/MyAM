@@ -20,9 +20,9 @@ $.uipage.SCOPE = {};
 		templateUrl : 	$.uipage.templateURL+'01.greetingRoom.html',
 		controller	: 	function($scope,$http,i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
-							$.uipage.angular[_temp.name] = $.uipage.angular[_temp.name] || {};
-							$.uipage.angular[_temp.name].scope = $scope;
-							$.uipage.angular[_temp.name].http = $http;
+							var _controller = $.uipage.angular.controller[_temp.name] = {};
+							_controller.scope = $scope;
+							_controller.http = $http;
 							$scope.data = $scope.data || {};
 							$scope.i18n = i18n;
 							

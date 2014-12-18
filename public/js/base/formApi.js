@@ -32,7 +32,7 @@ $(function(){
 		}, false);
 		
 		xhr.addEventListener("load", function () {
-			_callback("finished");
+			_callback(JSON.parse(xhr.responseText));
 		}, false);
 
 		xhr.open('POST', _url, true);

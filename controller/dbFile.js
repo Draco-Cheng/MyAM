@@ -2,6 +2,8 @@ var fs = require("fs");
 var logger = require("./logger.js");
 var Promise =  require("promise");
 var formidable = require("formidable");
+var dateFormat = require('dateformat');
+var config = require("../config.js");
 
 var _check = function(data, callback){
 	fs.exists(data.checkFile,function(exists){
@@ -68,37 +70,66 @@ var _upload = function(data, callback){
     logger.log(data.reqId, "Upload files...");
     var _request = data.request;
     var _form = new formidable.IncomingForm();
+    _form.uploadDir = config.uploadTempDir || require('os').tmpdir();
+
     data.DBList = [];
     var _numFlag = 0;
     _form.parse(_request, function(error, fields, files) {
+
+        if(error){
+            logger.log(data.reqId, "[Files]".bgRed+(" upload file error "+error).red);
+
+            return callback();
+        }
+
         for(var fileFormName in files){
+
             var _file = files[fileFormName];
             var _tempPath = _file.path;
             var _uploadPath = data.renameFolder + _file.name;
+
             _numFlag++;
 
-            /**********************************************
-            Error: EXDEV, Cross-device link
-            **********************************************/
-            //  fs.renameSync(_tempPath,  _uploadPath);
-            /*********************************************/
-                var is = fs.createReadStream(_tempPath);
-                var os = fs.createWriteStream(_uploadPath);
-                is.pipe(os);
-                is.on('end',function() {
-                    logger.log(data.reqId, "[Files]".bgWhite.black+" "+"Form Name:".bgMagenta+" "+fileFormName+"\t"+"File Name:".bgMagenta+" "+_file.name);
+            _check({ checkFile :  _uploadPath},function(err, json){
+                if(json.fileExists)
+                    switch(data.fileConflict){
+                        case "backup":
+                            fs.renameSync(_uploadPath,  data.renameFolder + "bk-"+ dateFormat(Date.now(),"yyyymd-HMM-")+_file.name);
+                            break;
+                    }
+                
+
+                var _finishRename = function(){
+                    logger.log(data.reqId, "[Files]".bgWhite.black+" "+"Form Name:".bgMagenta+" "+fileFormName+"\t"+"File Name:".bgMagenta+" "+_file.name+"\t"+"tempPath:".bgMagenta+" "+_tempPath);
                     data.DBList.push({
                         path : _uploadPath,
                         name : _file.name
                     });
-                    fs.unlinkSync(_tempPath);
+
                     setTimeout(function(){
                         if(data.DBList.length >= _numFlag)
                             callback( null, data);                        
                     });
+                }
 
-                });
-            /*********************************************/            
+                try{
+                    fs.renameSync(_tempPath,  _uploadPath); 
+                    _finishRename();
+                }catch(e){
+                    /**********************************************
+                    Error: EXDEV, Cross-device link
+                    **********************************************/
+                        var is = fs.createReadStream(_tempPath);
+                        var os = fs.createWriteStream(_uploadPath);
+                        is.pipe(os);
+                        is.on('end',function() {
+                            fs.unlinkSync(_tempPath);
+                            _finishRename();
+                        });
+                    /*********************************************/   
+                }
+
+            });         
         }        
     });
 }

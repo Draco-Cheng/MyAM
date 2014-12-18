@@ -380,7 +380,7 @@ if (!String.prototype.format) {
 
 	$.uipage.forceRerender = function(){
 		// force trigger view ready "$scope.$on('$viewContentLoaded', function(){});"
-		$.uipage.angular[$.uipage.angular.rootScope.$state.$current.name].scope.$emit("$viewContentLoaded");
+		$.uipage.angular.controller[$.uipage.angular.rootScope.$state.$current.name].scope.$emit("$viewContentLoaded");
 		
 		// force trigger view rendering.....
 		$.uipage.angular.rootScope.$apply();

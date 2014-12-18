@@ -1,6 +1,7 @@
 $.uipage = $.uipage || {};
 $.uipage.angular = $.uipage.angular || {};
 $.uipage.angular.MVC_Template = $.uipage.angular.MVC_Template || [];
+$.uipage.angular.controller = $.uipage.angular.controller || {};
 
 
 
