@@ -36,8 +36,7 @@ $(function(){
 		}, false);
 
 		xhr.open('POST', _url, true);
-		xhr.onload = function(e) { 
-			console.warn("xhr.onload",e)
+		xhr.onload = function(e) {
 		};
 		xhr.send(_formData);  // multipart/form-data
 

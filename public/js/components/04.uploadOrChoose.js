@@ -18,7 +18,7 @@ $.uipage.SCOPE = {};
 	
 	_views['initialPanel'] = {
 		templateUrl : 	$.uipage.templateURL+'04.uploadOrChoose.html',
-		controller	: 	function($scope,$http,i18n) {
+		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
 							_controller.scope = $scope;
@@ -46,7 +46,6 @@ $.uipage.SCOPE = {};
 
 							var _fileNameChanged = function(){
 								var _uploadDBfile = $("#uploadOrChoose #uploadDBfile");
-								console.log(_uploadDBfile.val());
 								var _progressBlock = $("<div>").addClass("progress-block");
 								var _progressMsg = $("<div>").addClass("progress-msg");
 								var _progressBar = $("<div>").addClass("progress-bar");
@@ -69,7 +68,6 @@ $.uipage.SCOPE = {};
 										_progressBar.width(_percentage);										
 									},
 									callback : function(json){
-										console.log("finished",json);
 										var _response = json[0];
 										$scope.selectDatabase = "";
 
@@ -78,6 +76,7 @@ $.uipage.SCOPE = {};
 												_progressBar.addClass("done");
 												_progressMsg.html(i18n.uploadOrChoose["uploadFinish"]+" - "+_file.name);
 												$("#uploadOrChoose select").val(_file.name);
+												$.uipage.storage("MyAM_userDB", _file.name);
 											});
 										}else{
 											var _error = i18n.code[_response.message.code] || "";
@@ -93,10 +92,18 @@ $.uipage.SCOPE = {};
 								if(database==="__upload__"){
 									$("#uploadDBfile")[0].onchange = _fileNameChanged;
 									$("#uploadDBfile").click();
+									$("#uploadOrChoose select").val("");
+									$.uipage.storage("MyAM_userDB", "");
+								}else{
+									$.uipage.storage("MyAM_userDB", database);
 								}
 							}
 
-		}
+							$scope.done = function(){
+								if($.uipage.storage("MyAM_userDB"))
+									$.uipage.redirect("lobby");
+							}
+		}]
 	};
 
 

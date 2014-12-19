@@ -380,14 +380,27 @@ if (!String.prototype.format) {
 
 	$.uipage.forceRerender = function(){
 		// force trigger view ready "$scope.$on('$viewContentLoaded', function(){});"
-		$.uipage.angular.controller[$.uipage.angular.rootScope.$state.$current.name].scope.$emit("$viewContentLoaded");
-		
+		var _controller = $.uipage.angular.controller;
+		var _phase = _controller["$rootScope"].$root.$$phase;
+
+		_controller[_controller["$rootScope"].$state.$current.name].scope.$emit("$viewContentLoaded");
 		// force trigger view rendering.....
-		$.uipage.angular.rootScope.$apply();
+		
+		if(_phase !== '$apply' && _phase !== '$digest')
+			_controller["$rootScope"].$apply();	
+		
 		///// also can use /////
 		//	$scope.$digest()  //
 		//	$scope.$apply()   //
 		////////////////////////
+	}
+
+	$.uipage.redirect = function(path, param){
+		$.uipage.angular.controller.$rootlocation.url(path,param);
+
+		//setTimeout(function(){
+			$.uipage.forceRerender();
+		//})
 	}
 
 	////////////////
@@ -516,6 +529,30 @@ if (!String.prototype.format) {
 	$.uipage.unblocking = function(){
 		_blocking = false;
 	}
+
+	$.uipage.storage = function(key, val){
+		if(window.localStorage){
+			if(val === undefined)
+				return localStorage.getItem(key);
+			if(val === "")
+				return localStorage.removeItem(key);
+
+			return localStorage.setItem(key, val);
+		}else{
+			if(val === undefined)
+				return $.cookie(key);
+			if(val === "")
+				return $.removeCookie(key);
+
+			var now = new Date();
+            var time = now.getTime();
+            time += 60 * 60 * 24 * 365 * 1000;
+            now.setTime(time);
+			var _option = { "expires" : now };
+
+			return $.cookie(key, val, _option);
+		}
+	}	
 
 })();
 

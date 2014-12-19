@@ -18,7 +18,7 @@ $.uipage.SCOPE = {};
 	
 	_views['initialPanel'] = {
 		templateUrl : 	$.uipage.templateURL+'03.createDatabase.html',
-		controller	: 	function($scope,$http,i18n) {
+		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
 							_controller.scope = $scope;
@@ -42,7 +42,7 @@ $.uipage.SCOPE = {};
 										$.uipage.unblocking();
 										
 										if(json.successful){
-
+											$.uipage.storage("MyAM_userDB", _dbId);
 										}else{
 											
 											var _status = json.status;
@@ -51,7 +51,9 @@ $.uipage.SCOPE = {};
 											switch(_status){
 												case 409:
 													$.uipage.confirm(_message.format(_dbId), function(){
-														console.log("Next!!");
+														console.log("Next!!", _dbId);
+														$.uipage.storage("MyAM_userDB", _dbId);
+														$.uipage.redirect("lobby");
 													})
 													break;
 												default:
@@ -65,7 +67,7 @@ $.uipage.SCOPE = {};
 								
 							}
 
-				        }
+				        }]
 	};
 
 	

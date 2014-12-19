@@ -220,6 +220,9 @@ var _initialDatabase = function(data, callback){
 				type	
 						tid			//(timestamp) parent key
 						type_label
+						quickSelect	// true or false
+						cashType	// cost val(-1), both cost and earn val(0), earn val(1)
+
 
 				typeMap	
 						tid			//(timestamp) parent key

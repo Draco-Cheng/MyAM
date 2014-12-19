@@ -9,13 +9,14 @@ $.uipage.angular.controller = $.uipage.angular.controller || {};
 	
 	var contentApp = angular.module('contentApp', ['ui.router'])
     .run(
-      [        '$rootScope', '$state', '$stateParams', '$route',
-      function ($rootScope,   $state,   $stateParams ,$route) {
+      [        '$rootScope', '$state', '$stateParams', '$route', '$location',
+      function ($rootScope,   $state,   $stateParams ,$route, $location) {
         $rootScope.$state = $state;
         $rootScope.$route = $route;
         $rootScope.$stateParams = $stateParams;
 
-        $.uipage.angular.rootScope = $rootScope;
+        $.uipage.angular.controller.$rootScope = $rootScope;
+        $.uipage.angular.controller.$rootlocation = $location;
       }])
 
     // A RESTful factory for retreiving contacts from 'contacts.json'
@@ -34,7 +35,9 @@ $.uipage.angular.controller = $.uipage.angular.controller || {};
 		contentApp.config(
 	    [          '$stateProvider', '$urlRouterProvider',
 	      function ($stateProvider,   $urlRouterProvider) {
-	      	$.log("Initial contentApp ...")
+	      	$.log("Initial contentApp ...");
+	      	$.uipage.angular.controller.$stateProvider = $stateProvider;
+	      	$.uipage.angular.controller.$urlRouterProvider = $urlRouterProvider;
 	        /////////////////////////////
 	        // Redirects and Otherwise //
 	        /////////////////////////////
