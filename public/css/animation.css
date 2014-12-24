@@ -1,0 +1,32 @@
+
+#lobby-menu .menu-tools:hover{
+    -webkit-animation-name: -webkit-menu-tools;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 0s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-play-state: running;
+    /* Standard syntax */
+    animation-name: menu-tools;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+    animation-play-state: running;
+
+	transition-duration: 2s;
+	-webkit-transition-duration: 2s;
+
+}
+
+@keyframes menu-tools {
+    0%   {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+@-webkit-keyframes -webkit-menu-tools {
+    0%   {-webkit-transform: rotate(0deg);}
+    100% {-webkit-transform: rotate(360deg);}
+}

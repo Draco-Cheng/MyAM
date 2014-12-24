@@ -255,7 +255,7 @@ var _initialDatabase = function(data, callback){
 	***********************************************************/
 
 
-	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT);")
+	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, quickSelect bool, relation INT);")
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT PRIMARY KEY NOT NULL, sub_tid BIGINT, relation BIGINT)"); })
 		//relation : master val(0),hidden val(-1), relation tid
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tid BIGINT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })

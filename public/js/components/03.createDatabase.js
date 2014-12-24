@@ -43,12 +43,13 @@ $.uipage.SCOPE = {};
 										
 										if(json.successful){
 											$.uipage.storage("MyAM_userDB", _dbId);
+											$.uipage.redirect("lobby");
 										}else{
 											
-											var _status = json.status;
-											var _message = i18n["createDatabase"][_status] || i18n["code"][_status] || json.message;
+											var _code = json.code;
+											var _message = i18n["createDatabase"][_code] || i18n["code"][_code] || json.message;
 
-											switch(_status){
+											switch(_code){
 												case 409:
 													$.uipage.confirm(_message.format(_dbId), function(){
 														console.log("Next!!", _dbId);

@@ -4,8 +4,8 @@ $.uipage.aniSetting = $.uipage.aniSetting || {};
 $.uipage.aniSetting.inProgress = $.uipage.aniSetting.inProgress || [];
 $.uipage.aniSetting.fadeOutDefaultDuration = $.uipage.aniSetting.fadeOutDefaultDuration ||  250;
 $.uipage.aniSetting.fadeInDefaultDuration = $.uipage.aniSetting.fadeInDefaultDuration  || 250;
-$.uipage.inprogress = false;
-$.uipage.islogin = false;
+//$.uipage.inprogress = false;
+//$.uipage.islogin = false;
 
 localStorage = localStorage || "";
 
@@ -28,7 +28,7 @@ if (!String.prototype.format) {
 	////////////////
 	////  Load  ////
 	////////////////
-	$.uipage.load = function(uipageObj){_load(uipageObj);};
+	/*$.uipage.load = function(uipageObj){_load(uipageObj);};
 	var  _load= function(uipageObj){
 		var _DOM = uipageObj.DOM || false;
 		var _url = uipageObj.url || false;
@@ -75,7 +75,7 @@ if (!String.prototype.format) {
 	var _translation = function(_DOM){
 		$(_DOM).html($(_DOM).html().replace(/{t{/g,""));
 		$(_DOM).html($(_DOM).html().replace(/}t}/g,""));
-	}
+	}*/
 
 
 	////////////////
@@ -96,7 +96,7 @@ if (!String.prototype.format) {
 			}
 
 
-			if(uipageObj.requireLogin && !$.uipage.islogin){
+			if(uipageObj.requireLogin /*&& !$.uipage.islogin*/){
 				$.log("warn",uipageObj.url + " require login... try again later...");
 				setTimeout(function(){_ajax(uipageObj)},100);
 				return;
@@ -133,7 +133,7 @@ if (!String.prototype.format) {
 					success: function(json){
 						var _response = {};
 						_response.successful = true;
-						_response.status = 200;
+						_response.code = 200;
 						_response.data = json;
 
 						_isAjax = false;
@@ -151,7 +151,7 @@ if (!String.prototype.format) {
 							var _response = {};
 							_response.successful = false;
 							_response.message = xhr.responseText || thrownError || xhr.statusText;
-							_response.status = xhr.status;
+							_response.code = xhr.status;
 
 							_errorCallback(_response);
 						}
@@ -188,10 +188,11 @@ if (!String.prototype.format) {
 						$.log("warn","Retry ajax:\""+_url+"\" "+uipageObj.retryTimes+" time(s) ...");
 						_ajax(uipageObj);
 					}else{
+						console.log(data, status, headers, config)
 						var _response = {};
 						_response.successful = false;
 						_response.message = data;
-						_response.status = status;
+						_response.code = status;
 
 						_errorCallback(_response);
 					}
@@ -203,7 +204,7 @@ if (!String.prototype.format) {
 	$.uipage.ajax = function(uipageObj){_ajax(uipageObj);};
 	
 	
-	var _loginAjax = function(uipageObj,$http){
+	/*var _loginAjax = function(uipageObj,$http){
 			$.log("login...")
 			var _callback=uipageObj.callback || function(){};
 			var _Salt = new Date().getTime();
@@ -337,10 +338,10 @@ if (!String.prototype.format) {
 
 
 	};
-	$.uipage.loginAjax = function(uipageObj,$http){_loginAjax(uipageObj,$http);};
+	$.uipage.loginAjax = function(uipageObj,$http){_loginAjax(uipageObj,$http);};*/
 
 	$.uipage.alert = function(str, callback){
-		alert(str);
+		str && alert(str);
 		callback && callback();
 	};
 
@@ -358,7 +359,7 @@ if (!String.prototype.format) {
 	};
 
 
-	$.uipage.checkLogin = function(_req){
+	/*$.uipage.checkLogin = function(_req){
 		if(!!$.uipage.islogin == _req) return;
 		else{
 			if(_req)
@@ -374,9 +375,7 @@ if (!String.prototype.format) {
 					}
 				)
 		}
-
-
-	}
+	}*/
 
 	$.uipage.forceRerender = function(){
 		// force trigger view ready "$scope.$on('$viewContentLoaded', function(){});"
@@ -423,99 +422,14 @@ if (!String.prototype.format) {
 	//////////////////////
 	///// auto login /////
 	//////////////////////
-	if(localStorage.getItem("id") && localStorage.getItem("rememberme"))
+	/*if(localStorage.getItem("id") && localStorage.getItem("rememberme"))
 		_loginAjax({id : localStorage.getItem("id"), loginToken : localStorage.getItem("rememberme")})
 	else{
 		if($.cookie("id") && $.cookie("rememberme")){
 			_loginAjax({id : $.cookie("id"), loginToken : $.cookie("rememberme")})
 		}		
-	}
+	}*/
 
-
-	$.uipage.code2string = function(o){
-		var _type = o.type;
-		var _code = o.code;
-		var _scope = o.scope;
-		var _callback = o.callback;
-
-		if(!_type || !_code)
-			return $.log("warn","Code2String : There is no type or code!!");
-
-		$.uipage.code2string[_type] =  $.uipage.code2string[_type] || {};
-
-		if($.uipage.code2string[_type][_code]){
-			return $.uipage.code2string[_type][_code];
-		}else{
-			
-			var _getData = {};
-			_getData.url = "?code2string";
-			_getData.data = {
-				type : _type,
-				code : _code
-			};
-			_getData.callback = function(str){
-				$.uipage.code2string[_type][_code] = str;
-				_callback();
-			}
-
-			_getData.errorCallback = function(){
-
-			}
-
-			$.uipage.ajax(_getData);
-
-			return $.uipage.code2string[_type][_code] = "loading...";
-		}
-
-
-	}
-
-	$.uipage.sortOutPermission = function(permission){
-			var _permission = {};
-			_permission["permission"] = null;
-
-			permission.forEach(function(ele){
-				if(ele.type == "permission")
-					_permission["permission"] = ele.value;
-				else{
-					if(!_permission[ele.type])
-						_permission[ele.type] = [];
-
-					if(_permission[ele.type].indexOf(ele.id) == -1){
-						_permission[ele.type].push(ele.id)
-					}
-				}
-
-			});
-
-			var _return = [];
-			for(var i in _permission){
-				switch(i){
-					case "permission": 
-						if(_permission[i])
-							_return.push({
-								type : i,
-								value :  _permission[i]
-							});	
-						break;
-					case "group": 
-						_return.push({
-							type : i,
-							id : _permission[i],
-							label :  _permission[i].length + " " +$.uipage.i18n["unit.group"]
-						});	
-						break;
-					default:
-						_return.push({
-							type : i,
-							id : _permission[i],
-							label :  _permission[i].length + " " +$.uipage.i18n["unit.user"]
-						});					
-				}
-
-			}
-			return _return;
-	}
 
 	var _blocking = false;
 	$.uipage.blocking = function(){
@@ -553,6 +467,22 @@ if (!String.prototype.format) {
 			return $.cookie(key, val, _option);
 		}
 	}	
+
+	$.uipage.errHandler = function(obj){
+		//declare the fatal error here and if return false will interrupt the flow;
+		switch(obj.code){
+			case 412:
+				var _msg = $.uipage.i18n.code[obj.code].format($.uipage.storage("MyAM_userDB")) || obj.message;
+				$.uipage.alert(_msg, function(){
+					$.uipage.storage("MyAM_userDB", "");
+					$.uipage.redirect("/");
+				});
+				return true;
+				break;
+			default:
+				return false;
+		}
+	}
 
 })();
 

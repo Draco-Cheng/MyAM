@@ -42,6 +42,17 @@ $.uipage.SCOPE = {};
 							$scope.i18n = i18n;
 							
 							$scope.str = $scope.str || {};
+
+							var _db = $.uipage.storage("MyAM_userDB");
+
+							$.uipage.ajax({
+								url : "db/check",
+								type : "post",
+								data : { checkFile : _db},
+								callback : function(response){
+									if($.uipage.errHandler(response)) return;
+								}
+							})
 				        }]
 	};
 

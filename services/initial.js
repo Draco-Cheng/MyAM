@@ -10,23 +10,37 @@ var controller = {
 var logger = require("../controller/logger.js");
 
 
-//var file = "./db/sqlite3.db";
+var _check = function(data){
+	return new Promise(function(resolve, reject){
+		logger.debug(data.reqId, "Check Database "+data.checkFile+" exist or not...");
+
+		controller.dbFile.check(data).then(function(data){
+			if(!data.fileExists){
+				var _msg = "Database "+data.checkFile+" not exist...";
+				logger.warn(data.reqId, _msg);
+				data.message = _msg;
+				data.code = 412;
+				reject(data)
+			}else{
+				var _msg = "Database "+data.checkFile+" exist...";
+				logger.warn(data.reqId, _msg);
+				data.message = _msg;
+				data.createFile = data.dbFile;
+				resolve(data);
+			}
+		});
+	});
+}
+exports.check = _check;
 
 var _checkAndCreate = function(data, callback){
 	data.checkFile = data.dbFile;
-	logger.debug(data.reqId, "Check Database "+data.checkFile+" exist or not...");
+	var _checkDB=_check(data);
 
-	var createFile=controller.dbFile.check(data)
-			.then(function createFile(data){
-				if(data.fileExists){
-					throw "Database "+data.checkFile+" exist...";
-				}else{
-					data.createFile = data.dbFile;
-					return controller.dbFile.createFile(data);
-				}					
-			});
-
-	createFile.then(function(data){return controller.dbController.connectDB(data)})
+	_checkDB.catch(function(data){
+			delete data.code;
+			return controller.dbController.connectDB(data)
+		})
 		.then(function(data){return controller.dbController.initialDatabase(data);})
 		.then(function(data){ return controller.dbController.closeDB(data); })
 		.then(function(data){
@@ -34,7 +48,10 @@ var _checkAndCreate = function(data, callback){
 			callback(null, data);
 		});
 
-	createFile.catch(function(err){ logger.warn(data.reqId, err); callback(null, data); });
+	_checkDB.then(function(data){
+		data.code = 409; 
+		callback(null, data);
+	});
 
 }
 exports.checkAndCreate = Promise.denodeify(_checkAndCreate);

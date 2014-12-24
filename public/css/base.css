@@ -8,6 +8,7 @@ body{
 	display : none;
 }
 
+/**** #uploadOrChoose ***/
 #uploadOrChoose .progress-bar{
 	display: inline-block;
 	width: 0%;
@@ -48,6 +49,7 @@ body{
 	white-space: nowrap;
 }
 
+/**** #lobby-menu ***/
 #lobby-menu{
 	color: white;
 	background-color: black;
@@ -73,8 +75,21 @@ body{
 	background-color: rgba(117, 117, 117, 0.3);
 }
 
+#lobby-menu .menu-tools{
+	float: right;
+	margin-right: 10px;
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	margin-top: 5px;
+	background-size: cover;
+	background-image: url(/img/hacking-tools.png);
+	cursor: pointer;
+}
+
 #lobby-menu .menu-user{
 	display : inline-block;
 	float: right;
 	margin-right: 25px;
 }
+
