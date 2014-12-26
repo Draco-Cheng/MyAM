@@ -1,5 +1,4 @@
 var Promise =  require("promise");
-var sqlite3 = require('sqlite3').verbose();
 
 var controller = {
 	dbFile : require('../controller/dbFile.js'),
@@ -9,34 +8,13 @@ var controller = {
 // logger is special function so its not in the controller object
 var logger = require("../controller/logger.js");
 
-
-var _check = function(data){
-	return new Promise(function(resolve, reject){
-		logger.debug(data.reqId, "Check Database "+data.checkFile+" exist or not...");
-
-		controller.dbFile.check(data).then(function(data){
-			if(!data.fileExists){
-				var _msg = "Database "+data.checkFile+" not exist...";
-				logger.warn(data.reqId, _msg);
-				data.message = _msg;
-				data.code = 412;
-				reject(data)
-			}else{
-				var _msg = "Database "+data.checkFile+" exist...";
-				logger.warn(data.reqId, _msg);
-				data.message = _msg;
-				data.createFile = data.dbFile;
-				resolve(data);
-			}
-		});
-	});
+var _checkDB = function(data){
+	return controller.dbFile.checkDB(data);
 }
-exports.check = _check;
+exports.checkDB = _checkDB;
 
 var _checkAndCreate = function(data, callback){
-	data.checkFile = data.dbFile;
-	var _checkDB=_check(data);
-
+	var _checkDB = controller.dbFile.checkDB(data);
 	_checkDB.catch(function(data){
 			delete data.code;
 			return controller.dbController.connectDB(data)
@@ -55,25 +33,6 @@ var _checkAndCreate = function(data, callback){
 
 }
 exports.checkAndCreate = Promise.denodeify(_checkAndCreate);
-
-
-var _getCurrencies = function(data, callback){
-	controller.dbController.connectDB(data)
-		.then(function(data){ return controller.dbController.getCurrencies(data); })
-		.then(function(data){ return controller.dbController.closeDB(data); })
-		.then(function(data){ callback(null ,data); })
-		.catch(function(err){ logger.error(data.reqId, err); callback(null, data); });
-}
-exports.getCurrencies = Promise.denodeify(_getCurrencies);
-
-var _setCurrencies = function(data, callback){
-	controller.dbController.connectDB(data)
-		.then(function(data){ return controller.dbController.setCurrencies(data); })
-		.then(function(data){ return controller.dbController.closeDB(data); })
-		.then(function(data){ callback(null ,data); })
-		.catch(function(err){ logger.error(data.reqId, err); callback(null, data); });
-}
-exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
 var _uploadDB = function(data, callback){
 	controller.dbFile.upload(data)

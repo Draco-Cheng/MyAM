@@ -5,19 +5,43 @@ var formidable = require("formidable");
 var dateFormat = require('dateformat');
 var config = require("../config.js");
 
-var _check = function(data, callback){
+var _checkFile = function(data, callback){
 	fs.exists(data.checkFile,function(exists){
 	  // handle result
 	  data.fileExists = exists;
 	  callback( null, data );
 	});
 };
-exports.check = Promise.denodeify(_check);
+exports.checkFile = Promise.denodeify(_checkFile);
 //exports.check = _check;
 
+var _checkDB = function(data){
+    return new Promise(function(resolve, reject){
+        data.checkFile = data.dbFile;
+        logger.debug(data.reqId, "Check Database "+data.checkFile+" exist or not...");
+
+        exports.checkFile(data).then(function(data){
+            
+            if(!data.fileExists){
+                var _msg = "Database "+data.checkFile+" not exist...";
+                logger.warn(data.reqId, _msg);
+                data.message = _msg;
+                data.code = 412;
+                reject(data)
+            }else{
+                var _msg = "Database "+data.checkFile+" exist...";
+                logger.warn(data.reqId, _msg);
+                data.message = _msg;
+                resolve(data);
+            }
+
+            delete data.checkFile;
+        });
+    });
+}
+exports.checkDB = _checkDB;
 
 var _createFile = function(data, callback){
-
 	fs.writeFile(data.createFile, '', function (err) {
         if (err) logger.error(err);
         else	logger.info(data.reqId, 'create file '+data.createFile);
@@ -45,7 +69,7 @@ var _isDirectory =  function(data, callback){
 
     _list.forEach(function(dir){
         fs.stat( _path + dir, function(err, stats){
-            _pool.push({ name : dir, isDir : stats.isDirectory()});
+            _pool.push({ name : dir, isDir : stats.isDirectory(), stats : stats});
             if(_list.length == _pool.length){
                 data.fileList = _pool;
                 callback( null, data)
@@ -59,6 +83,7 @@ var _readdir = function(data, callback){
     logger.debug(data.reqId, "readdir : "+ data.path);
     fs.readdir(data.path,function(err, dir){
         // handle result
+
         data.fileList = dir;
         _isDirectory(data, callback);
     });
@@ -99,7 +124,7 @@ var _upload = function(data, callback){
             _numFlag++;
 
             logger.log(data.reqId, "[Files]".bgWhite.black+" "+"File Name:".bgMagenta+" "+_file.name+"\t"+"FileReneme:".bgMagenta+" "+_tempPath+" -> "+_uploadPath);
-            _check({ checkFile :  _uploadPath},function(err, json){
+            _checkFile({ checkFile :  _uploadPath},function(err, json){
                 if(json.fileExists)
                     switch(data.fileConflict){
                         case "backup":

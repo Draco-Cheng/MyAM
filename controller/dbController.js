@@ -220,7 +220,7 @@ var _initialDatabase = function(data, callback){
 				type	
 						tid			//(timestamp) parent key
 						type_label
-						quickSelect	// true or false
+						quickSelect	// -1 = hidden, 0~n = sorting
 						cashType	// cost val(-1), both cost and earn val(0), earn val(1)
 
 
@@ -255,7 +255,7 @@ var _initialDatabase = function(data, callback){
 	***********************************************************/
 
 
-	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, quickSelect bool, relation INT);")
+	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, quickSelect INT, relation INT);")
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT PRIMARY KEY NOT NULL, sub_tid BIGINT, relation BIGINT)"); })
 		//relation : master val(0),hidden val(-1), relation tid
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tid BIGINT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
@@ -266,30 +266,6 @@ var _initialDatabase = function(data, callback){
 
 }
 exports.initialDatabase = Promise.denodeify(_initialDatabase);
-
-
-var _getCurrencies = function(data, callback){
-
-	var _sql =  "SELECT * FROM currencies ";
-	if(data.cid !== undefined)
-		_sql += "WHERE cid=$cid ";
-	_sql = "ORDER BY date DESC";
-
-	_getSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
-
-};
-exports.getCurrencies = Promise.denodeify(_getCurrencies);
-
-var _setCurrencies = function(data, callback){
-
-	var _sql = "INSERT OR REPLACE INTO currencies (cid , to_cid , main , type  , memo , rate , date , showup ) VALUES(?,?,?,?,?,?,?,?);";
-	var _val = [[data.cid, data.to_cid, data.main, data.type, data.memo, data.rate, data.date , data.showup]];
-
-	_prepareSQL(data, _sql, _val).then(function(data){callback(null ,data);});
-
-};
-exports.setCurrencies = Promise.denodeify(_setCurrencies);
-
 
 var _checkDBisCorrect = function(data, callback){
 
@@ -334,3 +310,47 @@ var _checkDBisCorrect = function(data, callback){
 };
 exports.checkDBisCorrect = Promise.denodeify(_checkDBisCorrect);
 
+//********************************************
+// Currencies ********************************
+
+var _getCurrencies = function(data, callback){
+	var _sql =  "SELECT * FROM currencies ";
+	if(data.cid !== undefined)
+		_sql += "WHERE cid=$cid ";
+	_sql += "ORDER BY date DESC";
+
+	_getSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
+
+};
+exports.getCurrencies = Promise.denodeify(_getCurrencies);
+
+var _setCurrencies = function(data, callback){
+
+	var _sql = "INSERT OR REPLACE INTO currencies (cid , to_cid , main , type  , memo , rate , date , showup ) VALUES(?,?,?,?,?,?,?,?);";
+	var _val = [[data.cid, data.to_cid, data.main, data.type, data.memo, data.rate, data.date , data.showup]];
+
+	_prepareSQL(data, _sql, _val).then(function(data){callback(null ,data);});
+
+};
+exports.setCurrencies = Promise.denodeify(_setCurrencies);
+
+
+//********************************************
+// Types *************************************
+
+var _getTypes = function(data, callback){
+	var _sql =  "SELECT * FROM type ";
+	if(data.tid !== undefined)
+		_sql += "WHERE tid=$tid ";
+
+	_getSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
+};
+
+var _getTypeMaps = function(data, callback){
+	var _sql =  "SELECT * FROM typeMap ";
+	if(data.tid !== undefined)
+		_sql += "WHERE tid=$tid OR sub_tid=$tid OR relation=$tid";
+
+	_getSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
+};
+exports.getTypes = Promise.denodeify(_getTypes);

@@ -17,7 +17,7 @@ $.uipage.SCOPE = {};
 
 
 	_views['lobby-view'] = {
-		templateUrl : 	$.uipage.templateURL+'06.addrecord.html',
+		templateUrl : 	$.uipage.templateURL+'06.addRecord.html',
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};

@@ -1,16 +1,10 @@
 var Promise =  require("promise");
-var sqlite3 = require('sqlite3').verbose();
-
 var controller = {
-	dbFile : require('../controller/dbFile.js'),
-	dbController : require('../controller/dbController.js')	
+	dbFile : require('../controller/dbFile.js')
 };
 
 // logger is special function so its not in the controller object
 var logger = require("../controller/logger.js");
-
-
-//var file = "./db/sqlite3.db";
 
 var _dbList = function(data, callback){
 	data = data || {};

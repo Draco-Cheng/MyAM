@@ -34,7 +34,7 @@ $.uipage.SCOPE = {};
 								if($.uipage.storage("MyAM_userDB"))
 									$.uipage.redirect("lobby");
 								else
-									$.uipage.redirect("initial/uploadOrChoose");
+									$.uipage.redirect("initial/manageDB");
 							}
 				        }]
 	};

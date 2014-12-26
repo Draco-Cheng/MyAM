@@ -45,14 +45,21 @@ $.uipage.SCOPE = {};
 
 							var _db = $.uipage.storage("MyAM_userDB");
 
-							$.uipage.ajax({
-								url : "db/check",
-								type : "post",
-								data : { checkFile : _db},
-								callback : function(response){
-									if($.uipage.errHandler(response)) return;
-								}
-							})
+							if(_db)
+								$.uipage.ajax({
+									url : "db/check",
+									type : "post",
+									data : { "db" : _db},
+									callback : function(response){
+										if($.uipage.errHandler(response)) return;
+									}
+								})
+							else
+								setTimeout(function(){
+									$.uipage.alert(i18n.lobby["NOT_SET_DB"], function(){
+										$.uipage.redirect("initial/manageDB");
+									})									
+								})
 				        }]
 	};
 

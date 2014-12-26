@@ -1,32 +1,75 @@
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#lobby-menu .menu-block{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#lobby-menu .menu-block:hover{
+    background-color: rgba(117, 117, 117, 0.45);
+}
+
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#lobby-menu .menu-tools{
+    transition-duration: 1.5s;
+    -webkit-transition-duration: 1.5s;
+
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
 
 #lobby-menu .menu-tools:hover{
-    -webkit-animation-name: -webkit-menu-tools;
-    -webkit-animation-duration: 1s;
-    -webkit-animation-timing-function: linear;
-    -webkit-animation-delay: 0s;
-    -webkit-animation-iteration-count: 1;
-    -webkit-animation-direction: alternate;
-    -webkit-animation-play-state: running;
-    /* Standard syntax */
-    animation-name: menu-tools;
-    animation-duration: 1s;
-    animation-timing-function: linear;
-    animation-delay: 0s;
-    animation-iteration-count: 1;
-    animation-direction: alternate;
-    animation-play-state: running;
-
-	transition-duration: 2s;
-	-webkit-transition-duration: 2s;
-
+    transform: rotate(450deg);
+    -webkit-transform: rotate(450deg);
 }
 
-@keyframes menu-tools {
-    0%   {transform: rotate(0deg);}
-    100% {transform: rotate(360deg);}
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#setting .setting-menu-wrap{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
 }
 
-@-webkit-keyframes -webkit-menu-tools {
-    0%   {-webkit-transform: rotate(0deg);}
-    100% {-webkit-transform: rotate(360deg);}
+#setting .setting-menu-wrap:hover{
+    background-color: rgba(140, 140, 140, 0.45);
+    color: gray;
 }
+
+/**********************************************/
+/******************  sample  ******************/
+/**********************************************
+    #sample{
+        transition-duration: 2s;
+        -webkit-transition-duration: 2s;
+
+        -webkit-animation-name: -webkit-sample;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-timing-function: linear;
+        -webkit-animation-delay: 0s;
+        -webkit-animation-iteration-count: 1;
+        -webkit-animation-direction: alternate;
+        -webkit-animation-play-state: running;
+        
+        animation-name: sample;
+        animation-duration: 1s;
+        animation-timing-function: linear;
+        animation-delay: 0s;
+        animation-iteration-count: 1;
+        animation-direction: alternate;
+        animation-play-state: running;
+
+    }
+
+    @keyframes sample {
+        0%   {transform: rotate(0deg);}
+        100% {transform: rotate(360deg);}
+    }
+
+    @-webkit-keyframes -webkit-sample {
+        0%   {-webkit-transform: rotate(0deg);}
+        100% {-webkit-transform: rotate(360deg);}
+    }

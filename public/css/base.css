@@ -8,8 +8,8 @@ body{
 	display : none;
 }
 
-/**** #uploadOrChoose ***/
-#uploadOrChoose .progress-bar{
+/**** #manageDB ***/
+#manageDB .progress-bar{
 	display: inline-block;
 	width: 0%;
 	background-color: rgb(61, 139, 232);
@@ -18,19 +18,19 @@ body{
 
 }
 
-#uploadOrChoose .progress-bar.done{
+#manageDB .progress-bar.done{
 	background-color: green;
 }
 
-#uploadOrChoose .progress-bar.error{
+#manageDB .progress-bar.error{
 	background-color: red;
 }
 
-#uploadOrChoose .progress-bar, #uploadOrChoose .progress-block{
+#manageDB .progress-bar, #manageDB .progress-block{
 	height: 20px;
 }
 
-#uploadOrChoose .progress-block {
+#manageDB .progress-block {
 	display: inline-block;
 	border: solid 1px #C2C2C2;
 	width: 200px;
@@ -38,7 +38,7 @@ body{
 	overflow: hidden;
 }
 
-#uploadOrChoose .progress-msg {
+#manageDB .progress-msg {
 	line-height: 20px;
 	display: block;
 	text-align: center;
@@ -60,6 +60,7 @@ body{
 	display : inline-block;
 	width: 100px;
 	text-align: center;
+	cursor: pointer;
 }
 
 #lobby-menu .menu-block{
@@ -69,10 +70,6 @@ body{
 	padding: 0px 10px;
 	text-align: center;
 	cursor: pointer;
-}
-
-#lobby-menu .menu-block:hover{
-	background-color: rgba(117, 117, 117, 0.3);
 }
 
 #lobby-menu .menu-tools{
@@ -93,3 +90,28 @@ body{
 	margin-right: 25px;
 }
 
+/**** #setting ***/
+#setting .setting-menu-block{
+	display: inline-table;
+	width: 100%;
+	text-align: center;
+	table-layout: fixed;
+}
+
+#setting .setting-menu-wrap {
+	display: table-cell;
+	background-color: grey;
+	color: white;
+	cursor: pointer;
+	line-height: 36px;
+	border-style: solid;
+	border-width: 1px;
+}
+
+/**** #showCurrency ***/
+#showCurrency .cell {
+	padding: 0px 15px;
+	border-style: solid;
+	border-width: 0px 0px 0px 1px;
+	border-color: rgb(163, 163, 163);
+}

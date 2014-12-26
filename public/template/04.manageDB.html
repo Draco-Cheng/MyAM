@@ -1,0 +1,19 @@
+<div id="manageDB" class = "midTable" >
+	<div class="midTableTd">
+			<div class="alert-box">
+				<div  class="alert-box-title">{{i18n.manageDB.Title}}</div>
+					<select ng-model="selectDatabase" ng-change="selectOption(selectDatabase)">
+						<option value="" selected disabled>{{i18n.manageDB.selectOption}}</option>
+						<option ng-repeat="database in databases" value="{{database}}">{{database.name}}</option>
+						<option value="__upload__">{{i18n.manageDB.upload}}</option>
+					</select>
+					<div  id="progress-panel"></div>
+					
+				<br>
+				<a class="renderLogin button" ng-click="done()" >
+					{{i18n.manageDB.ok}}
+				</a>
+				<input id="uploadDBfile" class="hidden" type="file" multiple="multiple"/>
+			<div>
+	</div>
+</div>

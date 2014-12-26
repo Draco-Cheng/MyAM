@@ -1,0 +1,16 @@
+<div id="showCurrency">
+	{{i18n.setting.Currency}}
+	<div ng-repeat="currency in currencies">
+		<span class="cell">{{currency.cid}}</span>
+		<span class="cell">{{currency.to_cid || i18n.showCurrency.no_to_cid}}</span>
+		<span class="cell">{{currency.type}}</span>
+		<span class="cell">{{str.main(currency.main)}}</span>
+		<span class="cell">{{str.memo(currency.memo)}}</span>
+		<span class="cell">{{currency.rate}}</span>
+		<span class="cell">
+			<input type="checkbox" ng-checked="currency.showup">
+			<span class="hint">{{i18n.showCurrency.showup}}</span>
+		</span>
+		<input class="cell" type="date" placeholder="yyyy-mm-dd" value="{{str.date(currency.date)}}" />
+	</div>
+</div>

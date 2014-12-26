@@ -6,9 +6,9 @@ $.uipage.SCOPE = {};
 
 	var _views = {};
 	var _temp = {
-		name : "lobby.editrecord",
+		name : "lobby.showrecord",
 		state : {
-			url : "/editrecord/:param1",
+			url : "/showrecord/:param1",
 			resolve : {},
 			views : _views,
 			//abstract : true
@@ -17,10 +17,10 @@ $.uipage.SCOPE = {};
 
 
 	_views['lobby-view'] = {
-		templateUrl : 	$.uipage.templateURL+'06.editrecord.html',
+		templateUrl : 	$.uipage.templateURL+'07.showRecord.html',
 		controller	: 	['$scope', '$http','$stateParams', 'i18n', function($scope, $http, $stateParams ,i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
-							console.log($stateParams.param1)
+							console.log("param1", $stateParams.param1)
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
 							_controller.scope = $scope;
 							_controller.http = $http;

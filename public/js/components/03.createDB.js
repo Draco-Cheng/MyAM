@@ -6,9 +6,9 @@ $.uipage.SCOPE = {};
 
 	var _views = {};
 	var _temp = {
-		name : "initialPanel.createDatabase",
+		name : "initialPanel.createDB",
 		state : {
-			url : "/createDatabase",
+			url : "/createDB",
 			resolve : {},
 			views : _views,
 			//abstract : true
@@ -17,7 +17,7 @@ $.uipage.SCOPE = {};
 
 	
 	_views['initialPanel'] = {
-		templateUrl : 	$.uipage.templateURL+'03.createDatabase.html',
+		templateUrl : 	$.uipage.templateURL+'03.createDB.html',
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
@@ -31,11 +31,11 @@ $.uipage.SCOPE = {};
 							$scope.submit = function(){
 								if(!$.uipage.blocking()) return;
 
-								var _dbId = $scope.name+i18n["createDatabase"]["NameSuffix"]
+								var _dbId = $scope.name+i18n["createDB"]["NameSuffix"]
 								$.uipage.ajax({
 									url : "db/create",
 									data : {
-										dbId : _dbId,
+										db : _dbId,
 										mainCurrenciesType : $scope.currencyType
 									},
 									callback : function(json){
@@ -47,7 +47,7 @@ $.uipage.SCOPE = {};
 										}else{
 											
 											var _code = json.code;
-											var _message = i18n["createDatabase"][_code] || i18n["code"][_code] || json.message;
+											var _message = i18n["createDB"][_code] || i18n["code"][_code] || json.message;
 
 											switch(_code){
 												case 409:

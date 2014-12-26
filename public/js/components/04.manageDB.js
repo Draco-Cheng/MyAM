@@ -6,9 +6,9 @@ $.uipage.SCOPE = {};
 
 	var _views = {};
 	var _temp = {
-		name : "initialPanel.uploadOrChoose",
+		name : "initialPanel.manageDB",
 		state : {
-			url : "/uploadOrChoose",
+			url : "/manageDB",
 			resolve : {},
 			views : _views,
 			//abstract : true
@@ -17,7 +17,7 @@ $.uipage.SCOPE = {};
 
 	
 	_views['initialPanel'] = {
-		templateUrl : 	$.uipage.templateURL+'04.uploadOrChoose.html',
+		templateUrl : 	$.uipage.templateURL+'04.manageDB.html',
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
@@ -45,7 +45,7 @@ $.uipage.SCOPE = {};
 
 
 							var _fileNameChanged = function(){
-								var _uploadDBfile = $("#uploadOrChoose #uploadDBfile");
+								var _uploadDBfile = $("#manageDB #uploadDBfile");
 								var _progressBlock = $("<div>").addClass("progress-block");
 								var _progressMsg = $("<div>").addClass("progress-msg");
 								var _progressBar = $("<div>").addClass("progress-bar");
@@ -61,7 +61,7 @@ $.uipage.SCOPE = {};
 										var _percentage  = (percentage*100).toFixed(2) + "%";
 
 										if(_percentage==="100.00%")
-											_progressMsg.html(i18n.uploadOrChoose["porting"]+" - "+_file.name)
+											_progressMsg.html(i18n.manageDB["porting"]+" - "+_file.name)
 										else
 											_progressMsg.html(_percentage+" - "+_file.name);
 
@@ -74,8 +74,8 @@ $.uipage.SCOPE = {};
 										if(_response.isCorrect){
 											_getdbList(function(){
 												_progressBar.addClass("done");
-												_progressMsg.html(i18n.uploadOrChoose["uploadFinish"]+" - "+_file.name);
-												$("#uploadOrChoose select").val(_file.name);
+												_progressMsg.html(i18n.manageDB["uploadFinish"]+" - "+_file.name);
+												$("#manageDB select").val(_file.name);
 												$.uipage.storage("MyAM_userDB", _file.name);
 											});
 										}else{
@@ -92,10 +92,12 @@ $.uipage.SCOPE = {};
 								if(database==="__upload__"){
 									$("#uploadDBfile")[0].onchange = _fileNameChanged;
 									$("#uploadDBfile").click();
-									$("#uploadOrChoose select").val("");
+									$("#manageDB select").val("");
 									$.uipage.storage("MyAM_userDB", "");
 								}else{
-									$.uipage.storage("MyAM_userDB", database);
+									var _data = JSON.parse(database);
+									console.log(_data)
+									$.uipage.storage("MyAM_userDB", _data.name);
 								}
 							}
 

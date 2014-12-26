@@ -7,10 +7,10 @@
 
 	"initialPanel" : {
 		"Create" : "Create New one",
-		"ChoseDatabase" : "I aready have database!"
+		"manageDB" : "Manage Database"
 	},
 
-	"createDatabase" : {
+	"createDB" : {
 		"Title" : "Hi! We need some imformation to create your Database!",
 		"Name" : "What's your name",
 		"NameSuffix" : ".db",
@@ -20,13 +20,31 @@
 		"409" : "{0} is already exist,\n do you want to use the Database directly?"
 	},
 
-	"uploadOrChoose" : {
+	"manageDB" : {
 		"Title" : "Choose your database",
 		"upload" : "Upload database...",
 		"selectOption" : "-- Select --",
 		"ok" : "done!",
 		"porting" : "porting...",
 		"uploadFinish" : "Done!"
+	},
+
+	"lobby" : {
+		"NOT_SET_DB" : "Please select a database"
+	},
+
+	"setting" : {
+		"Currency"  : "Currency",
+		"Type" : "Type",
+		"manageDB" : "Manage Database"
+	},
+
+	"showCurrency" : {
+		"main"  : "Main",
+		"sub"  : "Sub",
+		"initial_currence" : "set up when initialize",
+		"showup" : "(Show in list)",
+		"no_to_cid" : "empty"
 	},
 
 	"code" : {
