@@ -24,13 +24,18 @@ var _getTypes = function(data, callback){
 }
 exports.getTypes = Promise.denodeify(_getTypes);
 
-/*var _setCurrencies = function(data, callback){
-	controller.dbController.connectDB(data)
-		.then(function(data){ return controller.dbController.setCurrencies(data); })
-		.then(function(data){ return controller.dbController.closeDB(data); })
-		.nodeify(function(err, data){
-			if(err)	logger.error(data.reqId, err);
-			callback(null, err || data);
-		});
+var _setTypes = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.setTypes(data); })
+			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data)
+	});
 }
-exports.setCurrencies = Promise.denodeify(_setCurrencies);*/
+exports.setTypes = Promise.denodeify(_setTypes);

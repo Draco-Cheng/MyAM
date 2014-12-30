@@ -32,8 +32,6 @@ $.uipage.SCOPE = {};
 
 							var _data = { db : $.uipage.storage("MyAM_userDB")};
 							$.uipage.func.getCurrency(_data, function(response){
-								if($.uipage.errHandler(response)) return;
-								
 								$scope.currencies = response;
 							});
 

@@ -26,6 +26,8 @@ $.uipage.func = $.uipage.func || {};
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.currency;
+				if($.uipage.errHandler(response)) return;
+
 				response.data.sort(function(a,b){
 					// new -> old
 					if(a.date == b.date) return a.cid - b.cid;
@@ -43,6 +45,8 @@ $.uipage.func = $.uipage.func || {};
 
 		var _parse = function(response){
 			delete _cache.currencyType;
+			if($.uipage.errHandler(response)) return;
+
 			_cache.currencyType={};
 
 			response.forEach(function(i){
@@ -61,6 +65,8 @@ $.uipage.func = $.uipage.func || {};
 
 		var _parse = function(response){
 			delete _cache.currencyId;
+			if($.uipage.errHandler(response)) return;
+
 			_cache.currencyId={};
 			
 			response.forEach(function(i){
@@ -85,14 +91,49 @@ $.uipage.func = $.uipage.func || {};
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.type;
-				response.data.sort(function(a,b){
-					// new -> old
-					if(a.date == b.date) return a.cid - b.cid;
-					else return a.date - b.date;
+				if($.uipage.errHandler(response)) return;
+
+				if(!response.data) return callback(response.data);
+
+				response.data.forEach(function(e){
+					e.master = e.master ? true : false;
+					e.quickSelect = e.quickSelect ? true : false;
+					e.showInMap = e.showInMap ? true : false;
 				});
 
 				_cache.type = response.data;
-				callback(_cache.type);	
+				callback && callback(_cache.type);	
+			}
+		});
+	}
+
+	_func.getTypeMaps = function(data, callback, forceUpdate){
+		if(!forceUpdate && _cache.typeMaps) return callback(_cache.typeMaps);
+
+		if(!_cache.type) _func.getType(data);
+
+		$.uipage.ajax({
+			"url" : "type/get",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				delete _cache.typeMaps;
+				if($.uipage.errHandler(response)) return;
+
+				_cache.typeMaps = response.data;
+				callback && callback(_cache.typeMaps);	
+			}
+		});		
+	}
+
+	_func.setType = function(data, callback){
+		$.uipage.ajax({
+			"url" : "type/set",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
 			}
 		});
 	}

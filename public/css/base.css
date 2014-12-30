@@ -115,3 +115,64 @@ body{
 	border-width: 0px 0px 0px 1px;
 	border-color: rgb(163, 163, 163);
 }
+
+/**** #showType ***/
+#showType .table{
+	display: inline-table;
+}
+
+#showType .td{
+	display: table-cell;
+	border: solid 1px #B7B7B7;
+	text-align: left;
+	vertical-align: middle;
+}
+
+#showType input, #showType select{
+	border:0;
+}
+
+#showType #type_label{
+	line-height: 36px;
+	vertical-align: top;
+	padding: 0px 10px;
+}
+
+#showType .addType {
+	text-align: center;
+}
+
+#showType #cashType, #showType #parent_tid {
+	height: 36px;
+	vertical-align: top;
+}
+
+#showType .wrapper {
+	display: inline-block;
+	min-width: 120px;
+	margin-left: 10px;
+}
+
+#showType .td-add{
+	border-color: transparent;
+}
+
+#showType .btn-add {
+	border-radius: 15px;
+	margin-right: 10px;
+	margin-top: 5px;
+	overflow: hidden;
+	display: inline-block;
+}
+
+#showType .btn-add-word {
+	display: inline-block;
+	background-color: rgb(76, 171, 255);
+	padding: 5px 10px;
+	color: aliceblue;
+	cursor: pointer;
+}
+
+#showType #type_label.error{
+	background-color: rgb(78, 78, 78);
+}

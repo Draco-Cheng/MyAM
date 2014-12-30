@@ -59,10 +59,9 @@ routes.dbList = function(req, res, next) {
 router.all('/dbList'	, routes.dbList);
 
 routes.creat = function(req, res, next) {
-	if(!req.body.db || !req.body.mainCurrenciesType)
-		return responseHandler(406, req, res);
-
 	var data = tools.createData(req);
+	if(!data.dbFile || !req.body.mainCurrenciesType)
+		return responseHandler(406, req, res);
 
 	services.initial.checkAndCreate(data)
 		.then(function(data){
@@ -70,14 +69,12 @@ routes.creat = function(req, res, next) {
 				throw responseHandler(data.code, req, res);
 			}else{
 				logger.info(data.reqId, "set currencies...");
-				data.cid = Date.now();
-				data.to_cid = null;
-				data.main = 1;
+				data.main = true;
 				data.type = req.body.mainCurrenciesType.toUpperCase();
 				data.memo = "initial_currence";
 				data.rate = 1;
-				data.date = data.cid;
-				data.showup = 1;
+				data.date = Date.now();
+				data.showup = true;
 				return services.currency.setCurrencies(data);				
 			}
 		})

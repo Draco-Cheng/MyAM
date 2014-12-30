@@ -1,1 +1,50 @@
-{{i18n.setting.Type}}
+<div id="showType">
+	<div ng-if="types===ubdefiend">loading...</div>
+	<div ng-if="types.length===0">null</div>
+	<div ng-if="types">
+		<div ng-repeat="type in types">
+			<span>{{type.tid}}</span>
+			<input value="{{type.type_label}}" />
+			<select id="cashType" ng-model="type.cashType">
+				<option value="0">{{i18n.showType.cost_earn}}</option>
+				<option value="-1">{{i18n.showType.cost}}</option>
+				<option value="1">{{i18n.showType.earn}}</option>
+			</select>
+			<div class="wrapper"><input ng-model="type.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
+			<div class="wrapper"><input ng-model="type.master" type="checkbox" />{{i18n.showType.master}}</div>
+			<div class="wrapper"><input ng-model="type.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
+		</div>
+	</div>
+
+	<div class="addType">
+		<div class="table">
+			<div class="td td-add">
+				<div class="btn-add" ng-click="addType()">
+					<div class="btn-add-word">{{i18n.showType.add}}</div>
+				</div>
+			</div>
+			<div class="td">
+				<input id="type_label" ng-model="addData.type_label" ng-click="removeErrorClass()" type="text" placeholder="{{i18n.showType.label}}" />
+			</div>
+			<div class="td">
+				<select id="cashType" ng-model="addData.cashType">
+					<option value="0">{{i18n.showType.cost_earn}}</option>
+					<option value="-1">{{i18n.showType.cost}}</option>
+					<option value="1">{{i18n.showType.earn}}</option>
+				</select>
+
+			</div>			
+			<div class="td">
+				<div class="wrapper"><input id="quickSelect" ng-model="addData.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
+				<div class="wrapper"><input id="master" ng-model="addData.master" type="checkbox" />{{i18n.showType.master}}</div>
+				<br>
+				<div class="wrapper"><input id="showInMap" ng-model="addData.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
+			</div>
+			<div class="td">
+				<select id="parent_tid" ng-model="addData.parent_tid">
+					<option value="" disabled>{{i18n.showType.parent}}</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>

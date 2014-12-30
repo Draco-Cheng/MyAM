@@ -20,6 +20,13 @@ var dbFile = require('./dbFile.js');
 	  
 	stmt.finalize();
 */
+var _valHandler = function(val){
+	if(val === "true") return true;
+	if(val === "false") return false;
+
+	return val;
+}
+
 var _dbLogger = function(data, str){
 	logger.dbLog(data.reqId, ("["+data.db.filename + " ,"+data.db.mode+"] ").grey+str);
 }
@@ -62,6 +69,7 @@ var _runSQL = function(data, sql, value){
 					data.resault.push(_pool);
 				}else{
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
+					data.resault.push([]);
 				}
 					
 				resolve(data)
@@ -94,6 +102,7 @@ var _allSQL = function(data, sql, value){
 					data.resault.push(row);
 				}else{
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
+					data.resault.push([]);
 				}
 					
 				resolve(data)
@@ -121,11 +130,13 @@ var _getSQL = function(data, sql, value){
 					_dbLogger(data, "[SQL]".bgRed+("["+_stamp+"] ").red+err);
 					return reject(err)
 				};
+
 				if(row){
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+JSON.stringify([row]));
 					data.resault.push([row]);
 				}else{
 					_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
+					data.resault.push([]);
 				}
 					
 				resolve(data)
@@ -196,6 +207,7 @@ var _eachSQL = function(data, sql, value){
 						data.resault.push(_pool);
 					}else{
 						_dbLogger(data, "[SQL]".bgMagenta+("["+_stamp+"]").green+" successful...");
+						data.resault.push([]);
 					}
 
 					resolve(data);
@@ -220,18 +232,19 @@ var _initialDatabase = function(data, callback){
 				type	
 						tid			//(timestamp) parent key
 						type_label
-						quickSelect	// -1 = hidden, 0~n = sorting
 						cashType	// cost val(-1), both cost and earn val(0), earn val(1)
-
+						master		// bool
+						showInMap	// bool
+						quickSelect	// bool
 
 				typeMap	
 						tid			//(timestamp) parent key
-						sub_tid		//(timestamp) parent key
-						relation	//master val(0), hidden val(-1), relation tid
+						sub_tid		//(timestamp) sub key
+						sequence	//int
 
 				data
 						id			//(timestamp) parent key
-						tid			//array
+						tids		// timestamp array -> JSON.stringify
 						cid			//currencies 
 						value
 						memo		
@@ -240,8 +253,8 @@ var _initialDatabase = function(data, callback){
 				currencies
 						cid 		//(timestamp) parent key
 						to_cid 		//(timestamp) parent key (default will be main currencies)
-						main		// 0 or 1
-						type		// TWD, USD
+						main		// bool
+						type		// TWD, USD, etc...
 						memo
 						rate
 						date		//sort by date (ORDER BY "date" [ASC | DESC])
@@ -254,11 +267,9 @@ var _initialDatabase = function(data, callback){
 						--------------------------
 	***********************************************************/
 
-
-	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, quickSelect INT, relation INT);")
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT PRIMARY KEY NOT NULL, sub_tid BIGINT, relation BIGINT)"); })
-		//relation : master val(0),hidden val(-1), relation tid
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tid BIGINT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
+	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, cashType INT, master bool, showInMap bool, quickSelect bool);")
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tids TEXT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT, main bool, type TEXT, memo TEXT, rate FLOAT, date bigint, showup bool)"); })
 		.then(function(data){
 			callback(null ,data);
@@ -325,12 +336,26 @@ var _getCurrencies = function(data, callback){
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
 
 var _setCurrencies = function(data, callback){
+	var _param = [];
+	var _val = [];
 
-	var _sql = "INSERT OR REPLACE INTO currencies (cid , to_cid , main , type  , memo , rate , date , showup ) VALUES(?,?,?,?,?,?,?,?);";
-	var _val = [[data.cid, data.to_cid, data.main, data.type, data.memo, data.rate, data.date , data.showup]];
+	["to_cid", "main", "type", "memo", "rate", "date", "showup"].forEach(function(each){
+		if(data[each] !== undefined){
+			_param.push(each);
+			_val.push( _valHandler(data[each]) );
+		}
+	});
 
-	_prepareSQL(data, _sql, _val).then(function(data){callback(null ,data);});
+	if(data.tid){
+		_val.push(data.cid);
+		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
+	}else{
+		_param.unshift("cid");
+		_val.unshift(Date.now());
+		var _sql = "INSERT INTO currencies ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
+	}
 
+	_prepareSQL(data, _sql, [_val]).then(function(data){callback(null ,data);});
 };
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
@@ -343,14 +368,44 @@ var _getTypes = function(data, callback){
 	if(data.tid !== undefined)
 		_sql += "WHERE tid=$tid ";
 
-	_getSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
+	_allSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
 };
 
 var _getTypeMaps = function(data, callback){
 	var _sql =  "SELECT * FROM typeMap ";
 	if(data.tid !== undefined)
-		_sql += "WHERE tid=$tid OR sub_tid=$tid OR relation=$tid";
+		_sql += "WHERE tid=$tid OR sub_tid=$tid";
 
 	_getSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
 };
 exports.getTypes = Promise.denodeify(_getTypes);
+
+var _setTypes = function(data, callback){
+	var _param = [];
+	var _val = [];
+	data.resault = [];
+	
+	["type_label", "cashType", "master", "showInMap", "quickSelect"].forEach(function(each){
+		if(data[each] !== undefined){
+			_param.push(each);
+			_val.push( _valHandler(data[each]) );
+		}
+	});
+
+	if(data.tid){
+		_val.push(data.tid);
+		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE tid = ?;";
+	}else{
+		data.tid = Date.now();
+		_param.unshift("tid");
+		_val.unshift(data.tid);
+		var _sql = "INSERT INTO type ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
+	}
+
+	_prepareSQL(data, _sql, [_val]).then(function(data){
+		data.resault.push([{ tid : data.tid }]);
+		callback(null ,data);
+	});
+
+};
+exports.setTypes = Promise.denodeify(_setTypes);

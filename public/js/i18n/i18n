@@ -47,6 +47,18 @@
 		"no_to_cid" : "empty"
 	},
 
+	"showType" : {
+		"label" : "input type label",
+		"cost" : "Cost",
+		"earn" : "Earn",
+		"cost_earn" : "Cost & Earn",
+		"quickSelect" : "quickSelect",
+		"master" : "master",
+		"showInMap" : "showInMap",
+		"parent" : "--Select Parent Node--",
+		"add" : "+"
+	},
+
 	"code" : {
 		"200" : "success",
 		"412" : "database \"{0}\" is not exists!",

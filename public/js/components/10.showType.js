@@ -27,14 +27,38 @@ $.uipage.SCOPE = {};
 							$scope.data = $scope.data || {};
 							$scope.i18n = i18n;
 							$scope.str = $scope.str || {};
+							$scope.addData = {};
+							$scope.addData.cashType = 0;
 
-							var _data = { db : $.uipage.storage("MyAM_userDB")};
-							$.uipage.func.getType(_data, function(response){
-								if($.uipage.errHandler(response)) return;
-								
+							$.uipage.func.pa
+							$.uipage.func.getTypeMaps({
+								db : $.uipage.storage("MyAM_userDB")
+							}, function(response){
+								console.log(response);
+
 								$scope.types = response;
 							});
 
+							$scope.removeErrorClass = function(){
+								$("#type_label").removeClass("error");
+							};
+
+							$scope.addType = function(){
+								var _addData = $scope.addData;
+								if(!_addData.type_label)
+									return $("#type_label").addClass("error");
+
+								$.uipage.func.setType({
+									"db"			: $.uipage.storage("MyAM_userDB"),
+									"type_label" 	: _addData.type_label,
+									"cashType" 		: _addData.cashType,
+									"master" 		: _addData.master,
+									"showInMap" 	: _addData.showInMap,
+									"quickSelect" 	: _addData.quickSelect
+								}, function(json){
+									console.log(json);
+								})
+							}
 				        }]
 	};
 
