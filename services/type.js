@@ -39,3 +39,39 @@ var _setTypes = function(data, callback){
 	});
 }
 exports.setTypes = Promise.denodeify(_setTypes);
+
+var _getTypeMaps = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.getTypeMaps(data); })
+			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data)
+	});
+}
+exports.getTypeMaps = Promise.denodeify(_getTypeMaps);
+
+var _setTypeMaps = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.getTypeMaps(data); })
+			.then(function(data){ 
+				if(data.resault[0].length === 0)
+					return controller.dbController.setTypeMaps(data);
+			})
+			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data)
+	});
+}
+exports.setTypeMaps = Promise.denodeify(_setTypeMaps);

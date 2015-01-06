@@ -244,11 +244,14 @@ var _initialDatabase = function(data, callback){
 
 				data
 						id			//(timestamp) parent key
-						tids		// timestamp array -> JSON.stringify
 						cid			//currencies 
 						value
 						memo		
 						date		//sort by date (ORDER BY "date" [ASC | DESC])
+
+				dataTypes
+						id			//(timestamp) data id
+						tid			//(timestamp)
 
 				currencies
 						cid 		//(timestamp) parent key
@@ -269,7 +272,8 @@ var _initialDatabase = function(data, callback){
 
 	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, cashType INT, master bool, showInMap bool, quickSelect bool);")
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, tids TEXT, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS dataTypes (id BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT, main bool, type TEXT, memo TEXT, rate FLOAT, date bigint, showup bool)"); })
 		.then(function(data){
 			callback(null ,data);
@@ -280,7 +284,7 @@ exports.initialDatabase = Promise.denodeify(_initialDatabase);
 
 var _checkDBisCorrect = function(data, callback){
 
-	var _sql = "SELECT * FROM type, typeMap, data, currencies LIMIT 1";
+	var _sql = "SELECT * FROM type, typeMap, data, dataTypes, currencies LIMIT 1";
 	var _popDBList = data.DBList.pop();
 	data.dbFile = _popDBList.path;
 
@@ -370,14 +374,6 @@ var _getTypes = function(data, callback){
 
 	_allSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
 };
-
-var _getTypeMaps = function(data, callback){
-	var _sql =  "SELECT * FROM typeMap ";
-	if(data.tid !== undefined)
-		_sql += "WHERE tid=$tid OR sub_tid=$tid";
-
-	_getSQL(data, _sql, {$tid : data.tid}).then(function(data){callback(null ,data);})
-};
 exports.getTypes = Promise.denodeify(_getTypes);
 
 var _setTypes = function(data, callback){
@@ -409,3 +405,39 @@ var _setTypes = function(data, callback){
 
 };
 exports.setTypes = Promise.denodeify(_setTypes);
+
+var _getTypeMaps = function(data, callback){
+	var _sql =  "SELECT * FROM typeMap ";
+	
+	if(data.tid !== undefined)
+		if(data.sub_tid !== undefined)
+			_sql += "WHERE tid=$tid AND sub_tid=$sub_tid ";
+		else
+			_sql += "WHERE tid=$tid OR sub_tid=$tid ";
+
+	_sql += "ORDER BY sequence ASC";
+
+	_allSQL(data, _sql, {$tid : data.tid, $sub_tid : data.sub_tid}).then(function(data){callback(null ,data);})
+};
+exports.getTypeMaps =  Promise.denodeify(_getTypeMaps);
+
+var _setTypeMaps = function(data, callback){
+	var _param = [];
+	var _val = [];
+	
+	["tid", "sub_tid"].forEach(function(each){
+		if(data[each] !== undefined){
+			_param.push(each);
+			_val.push( data[each] );
+		}
+	});
+
+	var _sql = "INSERT INTO typeMap ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
+
+	_prepareSQL(data, _sql, [_val]).then(function(data){
+		console.log("!!!!!!!!",data)
+		callback(null ,data);
+	});
+
+};
+exports.setTypeMaps = Promise.denodeify(_setTypeMaps);

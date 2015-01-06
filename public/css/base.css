@@ -176,3 +176,11 @@ body{
 #showType #type_label.error{
 	background-color: rgb(78, 78, 78);
 }
+
+#showType .typeMaps-Wrapper{
+	list-style-type: none;
+}
+
+#showType .typeMaps-unclassified_typeMaps{
+	background-color: rgba(78, 78, 78, 0.3);
+}

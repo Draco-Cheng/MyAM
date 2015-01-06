@@ -55,7 +55,7 @@
 		"quickSelect" : "quickSelect",
 		"master" : "master",
 		"showInMap" : "showInMap",
-		"parent" : "--Select Parent Node--",
+		"parent" : "--Add Parent Node--",
 		"add" : "+"
 	},
 

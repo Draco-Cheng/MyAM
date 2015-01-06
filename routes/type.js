@@ -56,4 +56,60 @@ routes.set = function(req, res, next) {
 }
 router.all('/set'	, routes.set);
 
+
+routes.getMaps = function(req, res, next) {
+	var data = tools.createData(req);
+	if(!data.dbFile) return responseHandler(406, req, res);
+	data.tid = req.body.tid;
+
+	services.type.getTypeMaps(data)
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, data.resault[0] , req, res);
+			}
+		});
+}
+router.all('/getMaps'	, routes.getMaps);
+
+routes.setMaps = function(req, res, next) {
+	var data = tools.createData(req);
+	data.tid = req.body.tid;
+	data.sub_tid = req.body.sub_tid;
+
+	if(!data.dbFile || !data.tid || !data.sub_tid)
+		return responseHandler(406, req, res);
+
+	services.type.setTypeMaps(data)
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, data.resault[0] , req, res);
+			}
+		});
+}
+router.all('/setMaps'	, routes.setMaps);
+
+routes.setMapSequence = function(req, res, next) {
+	var data = tools.createData(req);
+	data.tid = req.body.tid;
+	data.sub_tid = req.body.sub_tid;
+	data.sequence = req.body.sequence;
+
+	if(!data.dbFile || !data.tid || !data.sub_tid || !data.sequence )
+		return responseHandler(406, req, res);
+
+	services.type.setTypeMaps(data)
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, data.resault[0] , req, res);
+			}
+		});
+}
+router.all('/setMapSequence'	, routes.setMapSequence);
+
 module.exports = router;

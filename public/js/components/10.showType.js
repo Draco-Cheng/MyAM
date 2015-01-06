@@ -30,14 +30,22 @@ $.uipage.SCOPE = {};
 							$scope.addData = {};
 							$scope.addData.cashType = 0;
 
-							$.uipage.func.pa
-							$.uipage.func.getTypeMaps({
+
+							$.uipage.func.buildTypeMaps({
+								db : $.uipage.storage("MyAM_userDB")
+							}, function(maps, unclassified){
+								console.log(maps, unclassified);
+								$scope.typeMaps = maps;
+								$scope.unclassified_typeMaps = unclassified;
+							});
+
+							$.uipage.func.getType({
 								db : $.uipage.storage("MyAM_userDB")
 							}, function(response){
 								console.log(response);
-
 								$scope.types = response;
 							});
+							
 
 							$scope.removeErrorClass = function(){
 								$("#type_label").removeClass("error");
@@ -56,7 +64,13 @@ $.uipage.SCOPE = {};
 									"showInMap" 	: _addData.showInMap,
 									"quickSelect" 	: _addData.quickSelect
 								}, function(json){
-									console.log(json);
+									_addData.parent_tid && $.uipage.func.setTypeMaps({
+										"db"		: $.uipage.storage("MyAM_userDB"),
+										"tid"		: _addData.parent_tid,
+										"sub_tid"	: json.data[0].tid
+									}, function(json){
+										console.log(json)
+									})
 								})
 							}
 				        }]
