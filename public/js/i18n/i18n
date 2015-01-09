@@ -40,11 +40,14 @@
 	},
 
 	"showCurrency" : {
-		"main"  : "Main",
+		"mainCurrency"  : "Main Currency",
 		"sub"  : "Sub",
-		"initial_currence" : "set up when initialize",
-		"showup" : "(Show in list)",
-		"no_to_cid" : "empty"
+		"initial_currence" : "Initialize",
+		"showup" : "Show in list",
+		"no_to_cid" : "empty",
+		"inputrate" : "input your rate here",
+		"type_placeholder" : "TWD, ENG....",
+		"momo_placeholder" : "Enter momo here..."
 	},
 
 	"showType" : {
@@ -56,7 +59,8 @@
 		"master" : "master",
 		"showInMap" : "showInMap",
 		"parent" : "--Add Parent Node--",
-		"add" : "+"
+		"add" : "+",
+		"unclassified_typeMaps" : "------------------------------Unclassified types------------------------------"
 	},
 
 	"code" : {

@@ -7,7 +7,7 @@ var responseHandler = require('../controller/responseHandler.js');
 var tools = require('../controller/tools.js');
 
 var services  = {};
-	services.currency = require('../services/currency.js');
+	services.record = require('../services/record.js');
 
 var routes = {};
 

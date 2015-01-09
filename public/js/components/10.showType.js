@@ -30,21 +30,26 @@ $.uipage.SCOPE = {};
 							$scope.addData = {};
 							$scope.addData.cashType = 0;
 
+							var _getTypesData = function(forceUpdate){
+								$.uipage.func.getType({
+									db : $.uipage.storage("MyAM_userDB")
+								}, function(response){
+									console.log(response);
+									$scope.types = response;
+								},forceUpdate);	
 
-							$.uipage.func.buildTypeMaps({
-								db : $.uipage.storage("MyAM_userDB")
-							}, function(maps, unclassified){
-								console.log(maps, unclassified);
-								$scope.typeMaps = maps;
-								$scope.unclassified_typeMaps = unclassified;
-							});
+								$.uipage.func.buildTypeMaps({
+									db : $.uipage.storage("MyAM_userDB")
+								}, function(maps, unclassified){
+									console.log(maps, unclassified);
+									$scope.typeMaps = maps;
+									$scope.unclassified_typeMaps = unclassified;
 
-							$.uipage.func.getType({
-								db : $.uipage.storage("MyAM_userDB")
-							}, function(response){
-								console.log(response);
-								$scope.types = response;
-							});
+									console.log(maps)
+								},forceUpdate);							
+							};
+							_getTypesData();
+
 							
 
 							$scope.removeErrorClass = function(){
@@ -54,7 +59,7 @@ $.uipage.SCOPE = {};
 							$scope.addType = function(){
 								var _addData = $scope.addData;
 								if(!_addData.type_label)
-									return $("#type_label").addClass("error");
+									return $(".addType #type_label").addClass("error");
 
 								$.uipage.func.setType({
 									"db"			: $.uipage.storage("MyAM_userDB"),
@@ -64,13 +69,16 @@ $.uipage.SCOPE = {};
 									"showInMap" 	: _addData.showInMap,
 									"quickSelect" 	: _addData.quickSelect
 								}, function(json){
-									_addData.parent_tid && $.uipage.func.setTypeMaps({
-										"db"		: $.uipage.storage("MyAM_userDB"),
-										"tid"		: _addData.parent_tid,
-										"sub_tid"	: json.data[0].tid
-									}, function(json){
-										console.log(json)
-									})
+									if(_addData.parent_tid){
+										$.uipage.func.setTypeMaps({
+											"db"		: $.uipage.storage("MyAM_userDB"),
+											"tid"		: _addData.parent_tid,
+											"sub_tid"	: json.data[0].tid
+										}, function(json){
+											_getTypesData(true);
+										});										
+									}else
+										_getTypesData(true);
 								})
 							}
 				        }]

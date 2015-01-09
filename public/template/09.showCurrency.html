@@ -1,16 +1,79 @@
 <div id="showCurrency">
-	{{i18n.setting.Currency}}
-	<div ng-repeat="currency in currencies">
-		<span class="cell">{{currency.cid}}</span>
-		<span class="cell">{{currency.to_cid || i18n.showCurrency.no_to_cid}}</span>
-		<span class="cell">{{currency.type}}</span>
-		<span class="cell">{{str.main(currency.main)}}</span>
-		<span class="cell">{{str.memo(currency.memo)}}</span>
-		<span class="cell">{{currency.rate}}</span>
-		<span class="cell">
-			<input type="checkbox" ng-checked="currency.showup">
-			<span class="hint">{{i18n.showCurrency.showup}}</span>
-		</span>
-		<input class="cell" type="date" placeholder="yyyy-mm-dd" value="{{str.date(currency.date)}}" />
+	<ul class="currency-Wrapper" id="currency-Maps"><li ng-repeat="currency in currencyMaps" ng-include="'currencyTree'"></li></ul>
+
+	<div class="addCurrency">
+		<div class="table">
+			<div class="td td-add">
+				<div class="btn-add" ng-click="addCurrency()">
+					<div class="btn-add-word">{{i18n.showType.add}}</div>
+				</div>
+			</div>
+			<div class="td">
+				<input ng-model="addData.type" ng-change="emptyAddDateRate()" placeholder="{{i18n.showCurrency.type_placeholder}}">
+			</div>
+			<div class="td">
+				<select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate()" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+					<option value>{{i18n.showCurrency.mainCurrency}}</option>
+				</select>
+			</div>
+			<div class="td td-addrate">
+				<input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder()}}">
+			</div>
+			<div class="td">
+				<input ng-model="addData.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
+			</div>
+			<div class="td">
+				<div class="checkbox-panel">
+					<input type="checkbox" ng-checked="addData.showup">
+					<span class="hint">{{i18n.showCurrency.showup}}</span>
+				</div>
+			</div>
+			<div class="td">
+				<input class="cell" type="date" placeholder="yyyy-mm-dd" ng-model="addData.date" />
+			</div>
+		</div>
 	</div>
 </div>
+
+
+
+<script type="text/ng-template" id="currencyTree">
+	<div class="table">
+		<div class="td td-cid">
+			<span>{{currency.data.cid}}</span>
+		</div>
+		<div class="td">
+			<input ng-model="currency.data.type" placeholder="{{i18n.showCurrency.type_placeholder}}">
+		</div>
+		<div class="td">
+			<select id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+				<option value>{{i18n.showCurrency.mainCurrency}}</option>
+			</select>
+		</div>
+		<div class="td td-rate">
+			<span ng-if="currency.data.to_cid">
+				<input ng-model="currency.data.rate">
+			</span>
+
+			<span ng-if="!currency.data.to_cid">
+				{{currency.data.rate}}
+			</span>	
+		</div>	
+		<div class="td">
+			<input ng-model="currency.data.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
+		</div>	
+		<div class="td">
+			<div class="checkbox-panel">
+				<input type="checkbox" ng-checked="currency.data.showup">
+				<span class="hint">{{i18n.showCurrency.showup}}</span>
+			</div>
+		</div>
+
+		<div class="td">
+			<input class="cell" type="date" placeholder="yyyy-mm-dd" ng-model="currency.data.date" />
+		</div>
+	</div>
+	<ul class="currency-Wrapper"  ng-if="currency.sub">
+		<li ng-repeat="currency in currency.sub" ng-include="'currencyTree'"></li>
+	</ul>
+</script>

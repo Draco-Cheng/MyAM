@@ -128,7 +128,7 @@ var _upload = function(data, callback){
                 if(json.fileExists)
                     switch(data.fileConflict){
                         case "backup":
-                            var _name = data.renameFolder + "bk-"+ dateFormat(Date.now(),"yyyymd-HMM-")+_file.name;
+                            var _name = data.renameFolder + "bk-"+ dateFormat(Date.now(),"yyyymmdd-HHMM-")+_file.name;
                             fs.renameSync(_uploadPath,  _name);
                             logger.log(data.reqId, "[Files]".bgWhite.black+" "+"File Name:".bgMagenta+" "+_file.name+"\tFile already exists rename old one to "+_name);
                             break;

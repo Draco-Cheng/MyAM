@@ -26,7 +26,6 @@ $.uipage.func = $.uipage.func || {};
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.currency;
-				if($.uipage.errHandler(response)) return;
 
 				response.data.sort(function(a,b){
 					// new -> old
@@ -34,8 +33,28 @@ $.uipage.func = $.uipage.func || {};
 					else return a.date - b.date;
 				});
 
+				response.data.forEach(function(record){
+					if(!record.to_cid)
+						$.uipage.storage("MyAM_mainCurrency", record.cid);
+					
+					record.main = record.main ? true : false;
+					record.showup = record.showup ? true : false;
+				});				
+
 				_cache.currency = response.data;
 				callback(_cache.currency);	
+			}
+		});
+	}
+
+	_func.setCurrency = function(data, callback){
+		$.uipage.ajax({
+			"url" : "currency/set",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
 			}
 		});
 	}
@@ -57,7 +76,7 @@ $.uipage.func = $.uipage.func || {};
 		}
 
 		_func.getCurrency(data, _parse, forceUpdate);
-	
+
 	}
 
 	_func.getCurrencyId = function(data, callback, forceUpdate){
@@ -79,6 +98,51 @@ $.uipage.func = $.uipage.func || {};
 		_func.getCurrency(data, _parse, forceUpdate);
 	}
 
+
+	_func.getCurrencyMaps = function(data, callback, forceUpdate){
+		if(!forceUpdate && _cache.currencyMaps) return callback(_cache.currencyMaps, _cache.currencyMapsById);
+
+		var _parse = function(response){
+			delete _cache.currencyMaps;
+			delete _cache.currencyMapsById;
+			if($.uipage.errHandler(response)) return;
+
+			_cache.currencyMaps=[];
+			var _temp = {};
+			var _tempSeries = {};
+
+
+			response.forEach(function(i){
+				if(!_tempSeries[i.cid]){
+					_tempSeries[i.cid] = _tempSeries[i.cid] || { sup : [], sub : [] };
+					_temp[i.cid] = _tempSeries[i.cid];
+				}
+				
+				_tempSeries[i.cid].id = i;
+
+				if(i.to_cid){
+					_tempSeries[i.to_cid] = _tempSeries[i.to_cid] || { sup : [], sub : [] };
+					_tempSeries[i.cid].sup.push(_tempSeries[i.to_cid]);
+					_tempSeries[i.to_cid].sub.push(_tempSeries[i.cid]);
+
+					if(_temp[i.cid]) 
+						delete _temp[i.cid];
+				}
+			});
+
+			for(var i in _temp){
+				_cache.currencyMaps.push(_temp[i])
+			}
+			_cache.currencyMapsById = _temp;
+
+			callback(_cache.currencyMaps, _cache.currencyMapsById);	
+		}
+
+		_func.getCurrency(data, _parse, forceUpdate);
+	}
+
+
+
 	//********************************************
 	// Type **************************************
 	//********************************************
@@ -91,6 +155,8 @@ $.uipage.func = $.uipage.func || {};
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.type;
+				
+				_func.resetCache("typeById");
 
 				if($.uipage.errHandler(response)) return;
 

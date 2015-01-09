@@ -8,6 +8,25 @@ body{
 	display : none;
 }
 
+input ,select{
+	background-color: transparent;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color: rgba(0, 0, 0, 0.4);
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: rgba(0, 0, 0, 0.4);
+   	opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: rgba(0, 0, 0, 0.4);
+   	opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: rgba(0, 0, 0, 0.4);
+}
+
 /**** #manageDB ***/
 #manageDB .progress-bar{
 	display: inline-block;
@@ -109,6 +128,23 @@ body{
 }
 
 /**** #showCurrency ***/
+#showCurrency {
+	text-align: center;
+}
+
+#showCurrency #currency-Maps {
+	display: inline-block;
+	text-align: left;
+}
+
+#showCurrency .currency-Wrapper{
+	list-style-type: none;
+}
+
+#showCurrency .currency-Wrapper>li{
+	background-color: rgba(151, 151, 151, 0.3);
+}
+
 #showCurrency .cell {
 	padding: 0px 15px;
 	border-style: solid;
@@ -116,16 +152,86 @@ body{
 	border-color: rgb(163, 163, 163);
 }
 
+#showCurrency .table{
+	display: inline-table;
+}
+
+#showCurrency .td{
+	display: table-cell;
+	border: solid 1px rgba(0, 0, 0, 0.2);
+	text-align: center;
+	vertical-align: middle;
+	min-width: 120px;
+}
+
+#showCurrency input, #showCurrency select{
+	border:0;
+	height: 36px;
+	vertical-align: top;
+	text-align: center;
+}
+
+#showCurrency .checkbox-panel {
+	line-height: 40px;
+}
+
+#showCurrency .td-add{
+	border-color: transparent;
+	min-width: 0;
+}
+
+#showCurrency .td-cid{
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+#showCurrency .btn-add {
+	border-radius: 15px;
+	margin-right: 10px;
+	margin-top: 5px;
+	overflow: hidden;
+	display: inline-block;
+}
+
+#showCurrency .btn-add-word {
+	display: inline-block;
+	background-color: rgb(76, 171, 255);
+	padding: 5px 10px;
+	color: aliceblue;
+	cursor: pointer;
+}
+
+#showCurrency .td-addrate.master{
+	background-color: rgb(140, 0, 0);
+}
+
+#showCurrency .td-addrate.master input{
+	color: white;
+}
+
 /**** #showType ***/
+#showType {
+	text-align: center;
+}
+
+#showType .type-Maps {
+	display: inline-block;
+	text-align: left;
+}
+
 #showType .table{
 	display: inline-table;
 }
 
 #showType .td{
 	display: table-cell;
-	border: solid 1px #B7B7B7;
-	text-align: left;
+	border: solid 1px rgba(0, 0, 0, 0.2);
+	text-align: center;
 	vertical-align: middle;
+	min-width: 120px;
+}
+
+#showType .td-tid{
+	background-color: rgba(255, 255, 255, 0.4);
 }
 
 #showType input, #showType select{
@@ -133,12 +239,16 @@ body{
 }
 
 #showType #type_label{
+	text-align: center;
+}
+
+#showType #type_label, #showType #type_id{
 	line-height: 36px;
 	vertical-align: top;
 	padding: 0px 10px;
 }
 
-#showType .addType {
+#showType .addType{
 	text-align: center;
 }
 
@@ -155,6 +265,7 @@ body{
 
 #showType .td-add{
 	border-color: transparent;
+	min-width: 0;
 }
 
 #showType .btn-add {
@@ -181,6 +292,21 @@ body{
 	list-style-type: none;
 }
 
+#showType .typeMaps-Wrapper>li{
+	background-color: rgba(151, 151, 151, 0.3);
+}
+
+#showType .td-checkbox{
+	text-align: left;
+}
+
+#showType .typeMaps-Row{
+}
+
 #showType .typeMaps-unclassified_typeMaps{
-	background-color: rgba(78, 78, 78, 0.3);
+	background-color: rgba(78, 78, 78, 0.1);
+}
+
+#showType .typeMaps-unclassified_typeMaps-title{
+	color: gray;
 }

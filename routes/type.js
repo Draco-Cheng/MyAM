@@ -9,14 +9,7 @@ var tools = require('../controller/tools.js');
 var services  = {};
 	services.type = require('../services/type.js');
 
-
-
 var routes = {};
-
-
-/*
- * GET home page.
- */
 
 routes.get = function(req, res, next) {
 	var data = tools.createData(req);

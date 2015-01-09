@@ -112,6 +112,80 @@
     100% {opacity: 0;margin-left: -20px;}
 }
 
+
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#showCurrency .btn-add-word{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#showCurrency .btn-add-word:hover{
+    background-color: rgb(0, 110, 208);
+}
+
+
+
+#showCurrency .btn-add-word:before{
+    content: "";
+    position: absolute;
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.57);
+    height: 35px;
+    margin-top: -8px;
+    transform: rotate(21deg);
+    width: 10px;
+    opacity: 0;
+
+
+    -webkit-animation-name: webkit-showCurrency-btn-add-out;
+    -webkit-animation-duration: 0.25s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 0s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-play-state: running;
+
+    animation-name: showCurrency-btn-add-out;
+    animation-duration: 0.25s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+    animation-play-state: running;  
+
+}
+
+#showCurrency .btn-add-word:hover:before{
+    -webkit-animation-name: webkit-showCurrency-btn-add-in;
+    animation-name: showCurrency-btn-add-in;
+}
+
+@-webkit-keyframes webkit-showCurrency-btn-add-in {
+    0% {opacity: 0;margin-left: -20px;}
+    50%  {opacity: 1;}
+    100% {opacity: 0;margin-left: 20px;}
+
+}
+
+@-webkit-keyframes webkit-showCurrency-btn-add-out {
+    20%  {opacity: 1;}
+    100% {opacity: 0;margin-left: -20px;}
+}
+
+@keyframes showCurrency-btn-add-in {
+    0% {opacity: 0;margin-left: -20px;}
+    50%  {opacity: 1;}
+    100% {opacity: 0;margin-left: 20px;}
+
+}
+
+@keyframes showCurrency-btn-add-out {
+    20%  {opacity: 1;}
+    100% {opacity: 0;margin-left: -20px;}
+}
+
 /**********************************************/
 /****************** division ******************/
 /**********************************************/

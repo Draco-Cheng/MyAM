@@ -9,7 +9,6 @@ var responseHandler = require('../controller/responseHandler.js');
  * GET home page.
  */
 
-
 routes.index = function(req, res, next) {
 	if ('do next'){
 		next();
@@ -18,11 +17,9 @@ routes.index = function(req, res, next) {
 	}
 }
 
-
 routes.ping = function(req, res,next) {
 	responseHandler(200, req, res);
 }
-
 	
 router.all('*'		, routes.index)
 	  .head('/'		, routes.ping)

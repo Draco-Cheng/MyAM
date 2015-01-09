@@ -1,5 +1,6 @@
 "use strict";
 var express = require('express');
+var dateFormat = require('dateformat');
 var router = express.Router();
 
 var responseHandler = require('../controller/responseHandler.js');
@@ -9,7 +10,8 @@ var services  = {};
     services.initial = require('../services/initial.js');
 	services.dbService = require('../services/dbService.js');
 	services.currency = require('../services/currency.js');
-
+	services.type = require('../services/type.js');
+	
 
 var config = require("../config.js");
 
@@ -17,10 +19,6 @@ var routes = {};
 
 // logger is special function so its not in the controller object
 var logger = require("../controller/logger.js");
-
-/*
- * GET home page.
- */
 
 routes.check = function(req, res, next) {
 	var data = tools.createData(req);
@@ -69,20 +67,31 @@ routes.creat = function(req, res, next) {
 				throw responseHandler(data.code, req, res);
 			}else{
 				logger.info(data.reqId, "set currencies...");
-				data.main = true;
 				data.type = req.body.mainCurrenciesType.toUpperCase();
+				data.main = true;
 				data.memo = "initial_currence";
 				data.rate = 1;
-				data.date = Date.now();
+				data.date = dateFormat(new Date(),"yyyy-mm-dd");
 				data.showup = true;
 				return services.currency.setCurrencies(data);				
 			}
 		})
 		.then(function(data){
+			if(data.code){
+				throw responseHandler(data.code, req, res);
+			}else{
+				logger.info(data.reqId, "set types...");
+				data.type_label = "Unclassified";
+				data.cashType 	= 0;
+				data.master 	= false;
+				data.showInMap 	= true;
+				data.quickSelect= true;
+				return services.type.setTypes(data);				
+			}
+		})
+		.then(function(data){
 			responseHandler(200, req, res);
 		});
-
-
 }
 router.all('/create'	, routes.creat);
 

@@ -242,25 +242,25 @@ var _initialDatabase = function(data, callback){
 						sub_tid		//(timestamp) sub key
 						sequence	//int
 
-				data
-						id			//(timestamp) parent key
+				record
+						rid			//(timestamp) parent key
 						cid			//currencies 
 						value
 						memo		
-						date		//sort by date (ORDER BY "date" [ASC | DESC])
+						date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
 
-				dataTypes
-						id			//(timestamp) data id
+				recordTypeMap
+						rid			//(timestamp) record id
 						tid			//(timestamp)
 
 				currencies
 						cid 		//(timestamp) parent key
-						to_cid 		//(timestamp) parent key (default will be main currencies)
-						main		// bool
+						to_cid 		//(timestamp) parent key (empty will be current main currencies)
+						main		// bool 
 						type		// TWD, USD, etc...
 						memo
 						rate
-						date		//sort by date (ORDER BY "date" [ASC | DESC])
+						date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
 						showup		
 						--------------------------
 						+ the mian currencies
@@ -272,9 +272,9 @@ var _initialDatabase = function(data, callback){
 
 	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, cashType INT, master bool, showInMap bool, quickSelect bool);")
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS data (id BIGINT PRIMARY KEY NOT NULL, cid BIGINT, value FLOAT, memo TEXT, date bigint)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS dataTypes (id BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT, main bool, type TEXT, memo TEXT, rate FLOAT, date bigint, showup bool)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL, cid BIGINT, value FLOAT, memo TEXT, date TEXT)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS recordTypeMap (rid BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, showup bool)"); })
 		.then(function(data){
 			callback(null ,data);
 		});
@@ -284,7 +284,7 @@ exports.initialDatabase = Promise.denodeify(_initialDatabase);
 
 var _checkDBisCorrect = function(data, callback){
 
-	var _sql = "SELECT * FROM type, typeMap, data, dataTypes, currencies LIMIT 1";
+	var _sql = "SELECT * FROM type, typeMap, record, recordTypeMap, currencies LIMIT 1";
 	var _popDBList = data.DBList.pop();
 	data.dbFile = _popDBList.path;
 
@@ -334,7 +334,7 @@ var _getCurrencies = function(data, callback){
 		_sql += "WHERE cid=$cid ";
 	_sql += "ORDER BY date DESC";
 
-	_getSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
+	_allSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
 
 };
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
@@ -343,14 +343,14 @@ var _setCurrencies = function(data, callback){
 	var _param = [];
 	var _val = [];
 
-	["to_cid", "main", "type", "memo", "rate", "date", "showup"].forEach(function(each){
+	["to_cid", "type", "main", "memo", "rate", "date", "showup"].forEach(function(each){
 		if(data[each] !== undefined){
 			_param.push(each);
 			_val.push( _valHandler(data[each]) );
 		}
 	});
 
-	if(data.tid){
+	if(data.cid){
 		_val.push(data.cid);
 		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
 	}else{
@@ -435,9 +435,39 @@ var _setTypeMaps = function(data, callback){
 	var _sql = "INSERT INTO typeMap ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
 
 	_prepareSQL(data, _sql, [_val]).then(function(data){
-		console.log("!!!!!!!!",data)
 		callback(null ,data);
 	});
 
 };
 exports.setTypeMaps = Promise.denodeify(_setTypeMaps);
+
+
+//********************************************
+// record ************************************
+						cid			//currencies 
+						value
+						memo		
+						date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
+var _setRecord = function(data, callback){
+	var _param = [];
+	var _val = [];
+
+	["cid", "value", "memo", "date"].forEach(function(each){
+		if(data[each] !== undefined){
+			_param.push(each);
+			_val.push( _valHandler(data[each]) );
+		}
+	});
+
+	if(data.rid){
+		_val.push(data.rid);
+		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE rid = ?;";
+	}else{
+		_param.unshift("rid");
+		_val.unshift(Date.now());
+		var _sql = "INSERT INTO currencies ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
+	}
+
+	_prepareSQL(data, _sql, [_val]).then(function(data){callback(null ,data);});
+};
+exports.setRecord = Promise.denodeify(_setRecord);
