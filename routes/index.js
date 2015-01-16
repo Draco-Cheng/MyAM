@@ -26,6 +26,7 @@ router.all('*'		, routes.index)
 	  .get('/ping'	, routes.ping)
 	  .use('/db'	, require('./db'))
 	  .use('/currency'	, require('./currency'))
-	  .use('/type'	, require('./type'));	
+	  .use('/type'	, require('./type'))
+	  .use('/record'	, require('./record'));
 
 module.exports = router;

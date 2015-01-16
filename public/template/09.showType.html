@@ -1,21 +1,4 @@
 <div id="showType">
-	<div ng-if="types===ubdefiend">loading...</div>
-	<div ng-if="types.length===0">null</div>
-	<div ng-if="types">
-		<div class="typeMaps-classified_typeMaps">
-			<ul class="typeMaps-Wrapper type-Maps">
-				<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
-			</ul>
-		</div>
-		<div ng-if="unclassified_typeMaps">
-			<div class="typeMaps-unclassified_typeMaps">
-				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
-				<ul class="typeMaps-Wrapper type-Maps">
-					<li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
-				</ul>
-			</div>
-		</div>
-	</div>
 
 	<div class="addType">
 		<div class="table">
@@ -24,7 +7,7 @@
 					<div class="btn-add-word">{{i18n.showType.add}}</div>
 				</div>
 			</div>
-			<div class="td">
+			<div class="td td-type_label">
 				<input id="type_label" ng-model="addData.type_label" ng-click="removeErrorClass()" type="text" placeholder="{{i18n.showType.label}}" />
 			</div>
 			<div class="td">
@@ -48,6 +31,25 @@
 			</div>
 		</div>
 	</div>
+	
+	<div ng-if="types===ubdefiend">loading...</div>
+	<div ng-if="types.length===0">null</div>
+	<div ng-if="types">
+		<div class="typeMaps-classified_typeMaps">
+			<ul class="typeMaps-Wrapper type-Maps">
+				<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+			</ul>
+		</div>
+		<div ng-if="unclassified_typeMaps">
+			<div class="typeMaps-unclassified_typeMaps">
+				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
+				<ul class="typeMaps-Wrapper type-Maps">
+					<li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 

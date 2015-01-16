@@ -17,7 +17,7 @@ $.uipage.SCOPE = {};
 
 
 	_views['setting-view'] = {
-		templateUrl : 	$.uipage.templateURL+'10.showType.html',
+		templateUrl : 	$.uipage.templateURL+'09.showType.html',
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							
@@ -34,18 +34,14 @@ $.uipage.SCOPE = {};
 								$.uipage.func.getType({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
-									console.log(response);
 									$scope.types = response;
 								},forceUpdate);	
 
 								$.uipage.func.buildTypeMaps({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(maps, unclassified){
-									console.log(maps, unclassified);
 									$scope.typeMaps = maps;
 									$scope.unclassified_typeMaps = unclassified;
-
-									console.log(maps)
 								},forceUpdate);							
 							};
 							_getTypesData();
@@ -53,13 +49,13 @@ $.uipage.SCOPE = {};
 							
 
 							$scope.removeErrorClass = function(){
-								$("#type_label").removeClass("error");
+								$(".td-type_label").removeClass("error");
 							};
 
 							$scope.addType = function(){
 								var _addData = $scope.addData;
 								if(!_addData.type_label)
-									return $(".addType #type_label").addClass("error");
+									return $(".addType .td-type_label").addClass("error");
 
 								$.uipage.func.setType({
 									"db"			: $.uipage.storage("MyAM_userDB"),

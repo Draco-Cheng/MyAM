@@ -69,10 +69,10 @@ routes.creat = function(req, res, next) {
 				logger.info(data.reqId, "set currencies...");
 				data.type = req.body.mainCurrenciesType.toUpperCase();
 				data.main = true;
-				data.memo = "initial_currence";
+				data.memo = "Initialize";
 				data.rate = 1;
 				data.date = dateFormat(new Date(),"yyyy-mm-dd");
-				data.showup = true;
+				data.quickSelect = true;
 				return services.currency.setCurrencies(data);				
 			}
 		})

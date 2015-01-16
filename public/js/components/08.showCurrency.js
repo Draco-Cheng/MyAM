@@ -17,7 +17,7 @@ $.uipage.SCOPE = {};
 
 
 	_views['setting-view'] = {
-		templateUrl : 	$.uipage.templateURL+'09.showCurrency.html',
+		templateUrl : 	$.uipage.templateURL+'08.showCurrency.html',
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							
@@ -30,6 +30,7 @@ $.uipage.SCOPE = {};
 							$scope.addData = {};
 							$scope.addData.to_cid = "__main__";
 							$scope.addData.date = new Date().format("Y-m-d");
+							$scope.addData.quickSelect = true;
 
 							$scope.currencies = null;
 							$scope.currencyId = {};
@@ -65,17 +66,35 @@ $.uipage.SCOPE = {};
 							_initialData();
 
 							$scope.addCurrency = function(){
-								console.log($scope.addData)
 								var _addData = $scope.addData;
-								$.uipage.func.setCurrency({
+								var _data = {
 									db 		: $.uipage.storage("MyAM_userDB"),
-									type	: _addData.type.toUpperCase(),
+									type	: _addData.type,
 									to_cid	: _addData.to_cid,
 									memo	: _addData.memo,
 									rate 	: _addData.rate,
 									date 	: _addData.date,
-									showup 	: _addData.showup
-								},function(response){
+									quickSelect 	: _addData.quickSelect
+								}
+
+								if(!_data.type) 
+									return $("#showCurrency .td-type").addClass("error");
+								else
+									$("#showCurrency .td-type").removeClass("error");
+
+								if(!_data.rate) 
+									return $("#showCurrency .td-addrate").addClass("error");
+								else
+									$("#showCurrency .td-addrate").removeClass("error");
+
+								if(!_data.date) 
+									return $("#showCurrency .td-date").addClass("error");
+								else
+									$("#showCurrency .td-date").removeClass("error");
+								
+								_addData.type = _addData.type.toUpperCase()
+								
+								$.uipage.func.setCurrency(_data,function(response){
 									_initialData(true);
 								})
 							}
@@ -87,7 +106,7 @@ $.uipage.SCOPE = {};
 							$scope.str.to_cid = function(currency){
 								var _divStr = " / ";
 								if(currency.memo)
-									return currency.type + _divStr + $scope.str.memo(currency.memo) +_divStr + currency.date;
+									return currency.type + _divStr + currency.memo +_divStr + currency.date;
 								else
 									return currency.type + _divStr + currency.date;
 							}
@@ -102,20 +121,9 @@ $.uipage.SCOPE = {};
 								if($scope.addData.type && $scope.addData.to_cid){
 									return "1 "+$scope.addData.type+" = ? "+ $scope.currencyId[$scope.addData.to_cid].type;
 								}else{
-									return i18n.showCurrency.inputrate;
-								}								
-								
-							}
-
-							$scope.str.memo = function(memo){
-								switch(memo){
-									case "initial_currence":
-										return i18n.showCurrency["initial_currence"];
-										break;
-									default :
-										return memo;
+									return i18n.showCurrency.rate_placeholder;
 								}
-							};
+							}
 				        }]
 	};
 

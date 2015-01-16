@@ -12,7 +12,45 @@ $.uipage.func = $.uipage.func || {};
 			for(var ele in _cache)
 				delete _cache[ele];			
 	}
+	
+	//********************************************
+	// Record ************************************
+	//********************************************
+	_func.setRecord = function(data, callback){
+		$.uipage.ajax({
+			"url" : "record/set",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
+	
+	_func.setRecordTypes = function(data, callback){
+		$.uipage.ajax({
+			"url" : "record/setTypes",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
 
+	_func.getRecords = function(data, callback){
+		$.uipage.ajax({
+			"url" : "record/get",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
 
 	//********************************************
 	// Currency **********************************
@@ -38,7 +76,7 @@ $.uipage.func = $.uipage.func || {};
 						$.uipage.storage("MyAM_mainCurrency", record.cid);
 					
 					record.main = record.main ? true : false;
-					record.showup = record.showup ? true : false;
+					record.quickSelect = record.quickSelect ? true : false;
 				});				
 
 				_cache.currency = response.data;
@@ -118,7 +156,7 @@ $.uipage.func = $.uipage.func || {};
 					_temp[i.cid] = _tempSeries[i.cid];
 				}
 				
-				_tempSeries[i.cid].id = i;
+				_tempSeries[i.cid].data = i;
 
 				if(i.to_cid){
 					_tempSeries[i.to_cid] = _tempSeries[i.to_cid] || { sup : [], sub : [] };

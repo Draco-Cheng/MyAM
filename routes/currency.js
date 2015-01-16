@@ -34,7 +34,7 @@ routes.set = function(req, res, next) {
 	data.memo 	= req.body.memo;
 	data.rate 	= req.body.rate;
 	data.date 	= req.body.date;
-	data.showup = req.body.showup;
+	data.quickSelect = req.body.quickSelect;
 
 	if(!data.dbFile || (!data.cid && ( !data.type || !data.rate ) ) )
 		return responseHandler(406, req, res);

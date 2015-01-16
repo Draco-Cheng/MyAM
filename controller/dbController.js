@@ -261,7 +261,7 @@ var _initialDatabase = function(data, callback){
 						memo
 						rate
 						date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
-						showup		
+						quickSelect		
 						--------------------------
 						+ the mian currencies
 						+	rate = 1;
@@ -274,7 +274,7 @@ var _initialDatabase = function(data, callback){
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL, cid BIGINT, value FLOAT, memo TEXT, date TEXT)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS recordTypeMap (rid BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, showup bool)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, quickSelect bool)"); })
 		.then(function(data){
 			callback(null ,data);
 		});
@@ -343,7 +343,7 @@ var _setCurrencies = function(data, callback){
 	var _param = [];
 	var _val = [];
 
-	["to_cid", "type", "main", "memo", "rate", "date", "showup"].forEach(function(each){
+	["to_cid", "type", "main", "memo", "rate", "date", "quickSelect"].forEach(function(each){
 		if(data[each] !== undefined){
 			_param.push(each);
 			_val.push( _valHandler(data[each]) );
@@ -444,10 +444,6 @@ exports.setTypeMaps = Promise.denodeify(_setTypeMaps);
 
 //********************************************
 // record ************************************
-						cid			//currencies 
-						value
-						memo		
-						date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
 var _setRecord = function(data, callback){
 	var _param = [];
 	var _val = [];
@@ -461,13 +457,87 @@ var _setRecord = function(data, callback){
 
 	if(data.rid){
 		_val.push(data.rid);
-		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE rid = ?;";
+		var _sql = "UPDATE record SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE rid = ?;";
 	}else{
+		data.rid = Date.now();
 		_param.unshift("rid");
-		_val.unshift(Date.now());
-		var _sql = "INSERT INTO currencies ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
+		_val.unshift(data.rid);
+		var _sql = "INSERT INTO record ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
 	}
 
-	_prepareSQL(data, _sql, [_val]).then(function(data){callback(null ,data);});
+	_prepareSQL(data, _sql, [_val]).then(function(data){
+		data.resault = [];
+		data.resault.push([{ rid : data.rid }]);
+		callback(null ,data);
+	}).catch(function(e){});
 };
 exports.setRecord = Promise.denodeify(_setRecord);
+
+var _getRecordTypeMap = function(data, callback){
+	var _sql =  "SELECT * FROM recordTypeMap ";
+	var _conditions = [];
+
+	data.rids && data.rids.forEach(function(rid){
+		(rid = parseInt(rid)) && _conditions.push("rid="+rid);
+	});
+
+	data.tids && data.tids.forEach(function(tid){
+		(tid = parseInt(tid)) && _conditions.push("tid="+tid);
+	});
+
+	data.rid && (data.rid = parseInt(data.rid)) && _conditions.push("rid="+data.rid);
+	data.tid && (data.tid = parseInt(data.tid)) && _conditions.push("tid="+data.tid);
+
+	if(_conditions.length)
+		_sql += "WHERE "+ _conditions.join(" OR ");
+
+	_allSQL(data, _sql).then(function(data){callback(null ,data);})
+};
+exports.getRecordTypeMap =  Promise.denodeify(_getRecordTypeMap);
+
+var _addRecordTypeMap = function(data, callback){
+	var _val = [];
+	var _rid = parseInt( data.rid );
+
+	data.tids_add &&  data.tids_add.length && data.tids_add.forEach(function(tid){
+		var _tid = parseInt( tid );
+		_tid && _val.push({
+			$rid : _rid,
+			$tid : _tid
+		})
+	});
+
+	if(_val.length){
+		var _sql = "INSERT INTO recordTypeMap ( rid , tid ) VALUES( $rid , $tid );";
+		_prepareSQL(data, _sql, _val).then(function(data){
+			callback(data);
+		}).catch(function(e){});		
+	}else{
+		callback(data);
+	}
+
+}
+
+var _delRecordTypeMap = function(data, callback){
+	var _conditions = [];
+	data.tids_del &&  data.tids_del.length && data.tids_del.forEach(function(i){
+		_conditions.push("( rid="+data.rid+" AND tid="+i+" )");	
+	});
+
+	if(_conditions.length){
+		var _sql = "DELETE FROM recordTypeMap WHERE "+ _conditions.join(" OR ");
+		_allSQL(data, _sql).then(function(data){callback(data);})
+	}else{
+		callback(data);
+	}
+}
+
+var _setRecordTypeMap = function(data, callback){
+	console.log(data.tids_del,data.tids_add)
+	_addRecordTypeMap( data, function(data){
+		_delRecordTypeMap(data , function(data){
+			callback(null ,data);
+		})
+	})
+};
+exports.setRecordTypeMap =  Promise.denodeify(_setRecordTypeMap);
