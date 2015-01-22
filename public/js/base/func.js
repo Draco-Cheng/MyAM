@@ -12,10 +12,26 @@ $.uipage.func = $.uipage.func || {};
 			for(var ele in _cache)
 				delete _cache[ele];			
 	}
+
+	_func.checkDateFormat = function(date){
+		return (new Date(date) !== "Invalid Date" && date.length === 10 && date.search(/(\d{4})-(\d{2})-(\d{2})/g) === 0);
+	}
 	
 	//********************************************
 	// Record ************************************
 	//********************************************
+	_func.delRecord = function(data, callback){
+		$.uipage.ajax({
+			"url" : "record/del",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
+
 	_func.setRecord = function(data, callback){
 		$.uipage.ajax({
 			"url" : "record/set",
@@ -40,7 +56,29 @@ $.uipage.func = $.uipage.func || {};
 		});
 	}
 
-	_func.getRecords = function(data, callback){
+	_func.getRecordsTypes = function(data, callback, forceUpdate){
+		var _data = {
+			db : data.db,
+			rids_json : JSON.stringify(data.rids),
+			tids_json : JSON.stringify(data.tids)
+		}
+
+		$.uipage.ajax({
+			"url" : "record/getTypes",
+			"type" : "post",
+			"data" : _data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response.data);
+			}
+		});
+
+	}
+
+	_func.getRecords = function(data, callback, forceUpdate){
+		if(data.orderBy && typeof data.orderBy == "object")
+			data.orderBy =  JSON.stringify(data.orderBy)
+
 		$.uipage.ajax({
 			"url" : "record/get",
 			"type" : "post",
@@ -50,6 +88,61 @@ $.uipage.func = $.uipage.func || {};
 				callback(response);
 			}
 		});
+	}
+
+	_func.getRecordsAndType = function(data, callback){
+		var _getType_Flag = false;
+		var _getRecords_Flag = false;
+		var _getRecordsTypes_Flag = false;
+		var _data = { db : data.db };
+		var _res = {};
+
+		var _parse = function(){
+			if(!_getType_Flag || !_getRecords_Flag || !_getRecordsTypes_Flag) return;
+
+			_res.records.data.forEach(function(record){
+				record.types = {};
+				record.typesLength = 0;
+			});
+
+			_res.recordsTypes.forEach(function(type){
+				_res.recordsId[type.rid].types[type.tid] = _func.getTypeById(type.tid);
+				_res.recordsId[type.rid].typesLength += 1;
+			});
+			
+			callback(_res.records.data);
+		}
+
+		_func.getRecords(data, function(response){
+			_getRecords_Flag = true;
+			_res.records = response;
+			_res.recordsId = {};
+			_res.recordsArr = [];
+
+			response.data.forEach(function(item){
+				_res.recordsId[item.rid] = item;
+				_res.recordsArr.push(item.rid);
+			});
+
+			_getRecordsTypes();
+
+		});
+
+		_func.getType(_data, function(response){
+			_getType_Flag = true;
+			_parse();
+		});
+
+		var _getRecordsTypes = function(){
+			_func.getRecordsTypes({
+				db : data.db,
+				rids : _res.recordsArr
+			},function(response){
+				_getRecordsTypes_Flag = true;
+				_res.recordsTypes = response;
+				_parse();
+			})			
+		}
 	}
 
 	//********************************************

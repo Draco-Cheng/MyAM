@@ -1,17 +1,30 @@
 <div id="record">
 	
 	<div class="addRecord">
-		<div class="table  {{addData.cashType ? 'row-earn' : 'row-cost' }}">
+		<div class="table  {{addData.cashType == 1 ? 'row-earn' : 'row-cost' }}">
 			<div class="td td-add">
-				<div class="btn-add" ng-click="addRecord()">
+				<div class="btn-add" ng-click="addRecord(addData)">
 					<div class="btn-add-word">{{i18n.record.add}}</div>
 				</div>
 			</div>
 			<div class="td td-type">
 				<select id="cashType" ng-change="cleanTypes(addData)" ng-model="addData.cashType">
-					<option value="">{{i18n.record.cost}}</option>
+					<option value="-1">{{i18n.record.cost}}</option>
 					<option value="1">{{i18n.record.earn}}</option>
 				</select>
+			</div>
+			<div class="td td-value {{addData.invalidValue?'error':''}}">
+				<input ng-model="addData.value" placeholder="{{i18n.record.value_placeholder}}">
+			</div>
+			<div class="td">
+				<select id="typeList" ng-model="addData.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+				</select>
+			</div>
+			<div class="td {{addData.invalidDate?'error':''}}">
+				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="addData.date" />
+			</div>
+			<div class="td">
+				<input ng-model="addData.memo" placeholder="{{i18n.record.momo_placeholder}}">
 			</div>
 			<div class="td">
 				<select id="typeList" ng-model="addData.typeSelection"  ng-change="typeSelectionChange(addData)" ng-options="type as type.type_label for type in typeQuickSelectList(addData.cashType)">
@@ -23,58 +36,60 @@
 					<span>{{type.type_label}}</span>
 				</div>
 			</div>
-			<div class="td">
-				<select id="typeList" ng-model="addData.currency"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
-				</select>
-			</div>
-			<div class="td td-value">
-				<input ng-model="addData.value" placeholder="{{i18n.record.value_placeholder}}">
-			</div>
-			<div class="td">
-				<input ng-model="addData.memo" placeholder="{{i18n.record.momo_placeholder}}">
-			</div>
-			<div class="td">
-				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="addData.date" />
-			</div>
 		</div>
 	</div>
 
-	<div ng-if="types===ubdefiend">loading...</div>
-	<div ng-if="types.length===0">null</div>
-	<div ng-if="types">
+	<div ng-if="records===ubdefiend">loading...</div>
+	<div ng-if="records.length===0">null</div>
+	<div id="showRecordPanel" ng-if="records">
+		<div ng-repeat="record in records" ng-include="'recordTree'"></div>
 	</div>
 </div>
 
 
-<script type="text/ng-template" id="typeTree">
-	<div class="table">
-		<div class="td td-tid">
-			<span id="type_id">{{typeMap.data.tid}}</span>
+<script type="text/ng-template" id="recordTree">
+		<div class="table {{record.cashType == 1 ? 'row-earn' : 'row-cost' }}{{record.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{record.isDeleted? ' isDeleted' : ''}}">
+			<div class="td-operate">
+				<div ng-if="!record.isDeleted && !record.doubleCheckDelete">
+					<div class="record-delete" ng-click="record.doubleCheckDelete = true;"></div>
+					<div ng-if="record.isChange" class="record-save" ng-click="updateItem(record)"></div>
+				</div>
+				<div ng-if="!record.isDeleted && record.doubleCheckDelete" class="record-delete-confirm">
+					<div class="record-delete-cancle" ng-click="record.doubleCheckDelete = false;"></div>
+					<div class="record-delete-check" ng-click="deleteItem(record)"></div>					
+				</div>
+				<div ng-if="record.isDeleted">
+					<div class="record-recover" ng-click="addRecord(record)"></div>					
+				</div>
+			</div>
+			<div class="td td-type">
+				<select id="cashType" ng-change="record.isChange=true; cleanTypes(record);" ng-model="record.cashType">
+					<option value="-1">{{i18n.record.cost}}</option>
+					<option value="1">{{i18n.record.earn}}</option>
+				</select>
+			</div>
+			<div class="td td-value {{ ( !record.value || record.invalidValue ) ?'error':''}}">
+				<input ng-change="record.isChange=true;" ng-model="record.value" placeholder="{{i18n.record.value_placeholder}}">
+			</div>
+			<div class="td td-currency">
+				<select id="currencyList" ng-model="record.cid"  ng-change="record.isChange=true;" ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+				</select>
+			</div>
+			<div class="td {{ (!record.date || record.invalidDate)?'error':''}}">
+				<input ng-change="record.isChange=true;" class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="record.date" />
+			</div>
+			<div class="td">
+				<input ng-change="record.isChange=true;" ng-model="record.memo" placeholder="{{i18n.record.momo_placeholder}}">
+			</div>
+			<div class="td">
+				<select id="typeList" ng-model="record.typeSelection"  ng-change="record.isChange=true; typeSelectionChange(record)" ng-options="type as type.type_label for type in typeQuickSelectList(record.cashType)">
+					<option disabled value>{{i18n.record.type}}</option>
+				</select>
+			</div>
+			<div ng-if="record.typesLength" class="td td-types_block">
+				<div class="block-type-row" ng-repeat="type in record.types" ng-click="record.isChange=true; removeTypes(type,record);">
+					<span>{{type.type_label}}</span>
+				</div>
+			</div>
 		</div>
-		<div class="td">
-			<input id="type_label" value="{{typeMap.data.type_label}}" />
-		</div>
-		<div class="td">
-			<select id="cashType" ng-model="typeMap.data.cashType">
-				<option value="0">{{i18n.showType.cost_earn}}</option>
-				<option value="-1">{{i18n.showType.cost}}</option>
-				<option value="1">{{i18n.showType.earn}}</option>
-			</select>
-		</div>
-
-		<div class="td td-checkbox">
-			<div class="wrapper"><input ng-model="typeMap.data.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
-			<div class="wrapper"><input ng-model="typeMap.data.master" type="checkbox" />{{i18n.showType.master}}</div>
-			<br>
-			<div class="wrapper"><input ng-model="typeMap.data.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
-		</div>
-		<div class="td">
-			<select id="parent_tid" ng-model="type.tid" ng-options="type.tid as type.type_label for type in types">
-				<option value="" disabled>{{i18n.showType.parent}}</option>
-			</select>
-		</div>
-	</div>
-    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
-        <li ng-repeat="typeMap in typeMap.sub" ng-include="'typeTree'"></li>
-    </ul>
 </script>

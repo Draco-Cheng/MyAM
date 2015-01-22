@@ -244,6 +244,7 @@ var _initialDatabase = function(data, callback){
 
 				record
 						rid			//(timestamp) parent key
+						cashType	// cost val(-1), income val(1)
 						cid			//currencies 
 						value
 						memo		
@@ -272,7 +273,7 @@ var _initialDatabase = function(data, callback){
 
 	_runSQL(data,"CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, cashType INT, master bool, showInMap bool, quickSelect bool);")
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
-		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL, cid BIGINT, value FLOAT, memo TEXT, date TEXT)"); })
+		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL,cashType INT, cid BIGINT, value FLOAT, memo TEXT, date TEXT)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS recordTypeMap (rid BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
 		.then(function(data){ return _runSQL(data,"CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, quickSelect bool)"); })
 		.then(function(data){
@@ -444,11 +445,97 @@ exports.setTypeMaps = Promise.denodeify(_setTypeMaps);
 
 //********************************************
 // record ************************************
+var _getRecord = function(data, callback){
+	var _param = [];
+	var _val = {};
+
+	if(data.rid){
+		_param.push("rid=$rid");
+		_val.$rid = data.rid;
+	}
+
+	if(data.cashType){
+		_param.push("cashType=$cashType");
+		_val.$cashType = data.cashType;
+	}
+
+	if(data.cid){
+		_param.push("cid=$cid");
+		_val.$cid = data.cid;
+	}
+
+	if(data.minValue){
+		_param.push("value>=$minValue");
+		_val.$minValue = data.minValue;
+	}
+
+	if(data.maxValue){
+		_param.push("value<=$maxValue");
+		_val.$maxValue = data.maxValue;
+	}
+
+	if(data.memo){
+		_param.push("memo LIKE %$memo%");
+		_val.$memo = data.memo;
+	}
+	
+	if(data.mindate){
+		_param.push("data<=$mindate");
+		_val.$mindate = data.mindate;		
+	}
+
+	if(data.maxdate){
+		_param.push("data<=$maxdate");
+		_val.$maxdate = data.maxdate;		
+	}
+
+	if(data.rids_json){
+		try{
+			var _rids = JSON.parse(data.rids_json);
+			var _conditionOR = [];
+
+			_rids && _ridsforEach(function(rid){
+				(rid = parseInt(rid)) && _conditionOR.push("rid="+rid);
+			});
+
+			_param.push("( "+_conditionOR.join(" OR ")+" )");
+		}catch(e){}
+	}
+
+
+	var _sql =  "SELECT * FROM record ";
+	if(_param.length)
+		_sql += "WHERE "+_param.join(" AND ");
+
+
+
+
+	if(data.orderBy && /^[_a-zA-Z]{3,15}$/.test(data.orderBy[0]) ){
+		_sql += " ORDER BY "+data.orderBy[0];
+	}else{
+		_sql += " ORDER BY date";
+	}
+
+	if(data.orderBy && data.orderBy[1] == "ASC")
+		_sql += " ASC";
+	else
+		_sql += " DESC";
+
+	if(data.limit){
+		_sql += " LIMIT $limit";
+		_val.$limit = data.limit;
+	}
+		
+	_allSQL(data, _sql, _val).then(function(data){callback(null ,data);})
+
+};
+exports.getRecord = Promise.denodeify(_getRecord);
+
 var _setRecord = function(data, callback){
 	var _param = [];
 	var _val = [];
 
-	["cid", "value", "memo", "date"].forEach(function(each){
+	["cashType", "cid", "value", "memo", "date"].forEach(function(each){
 		if(data[each] !== undefined){
 			_param.push(each);
 			_val.push( _valHandler(data[each]) );
@@ -472,6 +559,19 @@ var _setRecord = function(data, callback){
 	}).catch(function(e){});
 };
 exports.setRecord = Promise.denodeify(_setRecord);
+
+var _delRecord = function(data, callback){
+	var _conditions = [];
+	data.del_rid && _conditions.push("( rid="+data.del_rid+" )");	
+
+	if(_conditions.length){
+		var _sql = "DELETE FROM record WHERE "+ _conditions.join(" OR ");
+		_allSQL(data, _sql).then(function(data){callback(null ,data);})
+	}else{
+		callback(null ,data);
+	}
+}
+exports.delRecord =  Promise.denodeify(_delRecord);
 
 var _getRecordTypeMap = function(data, callback){
 	var _sql =  "SELECT * FROM recordTypeMap ";
@@ -510,10 +610,10 @@ var _addRecordTypeMap = function(data, callback){
 	if(_val.length){
 		var _sql = "INSERT INTO recordTypeMap ( rid , tid ) VALUES( $rid , $tid );";
 		_prepareSQL(data, _sql, _val).then(function(data){
-			callback(data);
+			callback(null ,data);
 		}).catch(function(e){});		
 	}else{
-		callback(data);
+		callback(null ,data);
 	}
 
 }
@@ -524,18 +624,21 @@ var _delRecordTypeMap = function(data, callback){
 		_conditions.push("( rid="+data.rid+" AND tid="+i+" )");	
 	});
 
+	data.del_tid && _conditions.push("( tid="+data.del_tid+" )");
+	data.del_rid && _conditions.push("( rid="+data.del_rid+" )");	
+
 	if(_conditions.length){
 		var _sql = "DELETE FROM recordTypeMap WHERE "+ _conditions.join(" OR ");
-		_allSQL(data, _sql).then(function(data){callback(data);})
+		_allSQL(data, _sql).then(function(data){callback(null ,data);})
 	}else{
-		callback(data);
+		callback(null ,data);
 	}
 }
+exports.delRecordTypeMap =  Promise.denodeify(_delRecordTypeMap);
 
 var _setRecordTypeMap = function(data, callback){
-	console.log(data.tids_del,data.tids_add)
-	_addRecordTypeMap( data, function(data){
-		_delRecordTypeMap(data , function(data){
+	_addRecordTypeMap( data, function(err, data){
+		_delRecordTypeMap(data , function(err, data){
 			callback(null ,data);
 		})
 	})

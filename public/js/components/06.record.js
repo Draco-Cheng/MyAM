@@ -26,11 +26,28 @@ $.uipage.SCOPE = {};
 							$scope.data = $scope.data || {};
 							$scope.i18n = i18n;
 							$scope.str = $scope.str || {};
-							var _addData = $scope.addData = {};
-							_addData.date = new Date().format("Y-m-d");
-							_addData.types = {};
-							_addData.typesLength = 0;
-							_addData.currency = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
+
+							//****************************
+							//addData*********************
+							$scope.addData = {};
+							$scope.addData.date = new Date().format("Y-m-d");
+							$scope.addData.types = {};
+							$scope.addData.typesLength = 0;
+							$scope.addData.cashType = -1;
+							$scope.addData.cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
+							//****************************
+
+							//****************************
+							//addData*********************
+							$scope.filter = {};
+							$scope.filter.db = $.uipage.storage("MyAM_userDB");
+							$scope.filter.maxdate = null;
+							$scope.filter.mindate = null;
+							$scope.filter.limit = 10;
+							$scope.filter.orderBy = ["rid","DESC"];
+							$scope.filter.cashType = null;
+							$scope.filter.cid = null;
+							//****************************							
 
 							$scope.str.to_cid = function(currency){
 								var _divStr = " / ";
@@ -41,11 +58,8 @@ $.uipage.SCOPE = {};
 							}
 
 							var _initial = function(forceUpdate){
-								$.uipage.func.getRecords({
-									db : $.uipage.storage("MyAM_userDB"),
-									limit : 10
-								}, function(response){
-									$scope.records = response.data;
+								$.uipage.func.getRecordsAndType($scope.filter, function(response){
+									$scope.records = response;
 								},forceUpdate);
 
 								$.uipage.func.getType({
@@ -58,7 +72,6 @@ $.uipage.SCOPE = {};
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
 									$scope.currencies = response;
-									console.log("response",response)
 								},forceUpdate);
 							}
 							_initial();
@@ -74,7 +87,6 @@ $.uipage.SCOPE = {};
 								});
 							}
 
-
 							$scope.currencyQuickSelectList = function( cashType ){
 								if(!$scope.currencies) return;
 
@@ -82,7 +94,9 @@ $.uipage.SCOPE = {};
 									return	data.quickSelect;
 								});
 							}
+
 							$scope.typeSelectionChange = function(data){
+
 								if(!data.types[data.typeSelection.tid]){
 									data.types[data.typeSelection.tid] = data.typeSelection;
 									data.typesLength++;
@@ -104,27 +118,43 @@ $.uipage.SCOPE = {};
 								data.typesLength = 0;
 							}
 
-							$scope.addRecord = function(){
+							$scope.addRecord = function(record){
 								var _data = {
 									db : $.uipage.storage("MyAM_userDB"),
-									cid : $scope.addData.currency,
-									value : $scope.addData.value*($scope.addData.cashType ? 1 : -1),
-									memo : $scope.addData.memo,
-									date : $scope.addData.date
+									cashType : record.cashType,
+									cid : record.cid,									
+									value : record.value,
+									memo : record.memo,
+									date : record.date
 								};
 
-								if(!_data.value) return $(".td-value").addClass("error");
-								else $(".td-value").removeClass("error");
-								
+								record.invalidValue = !_data.value;
+								if(record.invalidValue) return;
+
+								record.invalidDate = !$.uipage.func.checkDateFormat(_data.date);
+								if(record.invalidDate) return;
+
 								$.uipage.func.setRecord(_data,function(response){
+									var _rid = response.data[0].rid;
 									$scope.setRecordTypes({
-										rid : response.data[0].rid,
-										types : $scope.addData.types
+										rid : _rid,
+										types : record.types
+									},function(){
+										if(record.isDeleted){
+											record.isDeleted = false;
+											record.isChange = false;
+											record.doubleCheckDelete = false;
+											record.rid = _rid;
+										}else{
+											_initial();
+											record.value="";											
+										}
+										
 									})
 								})
 							}
 
-							$scope.setRecordTypes = function(data){
+							$scope.setRecordTypes = function(data, callback){
 								var _data = {
 									db : $.uipage.storage("MyAM_userDB"),
 									rid: data.rid
@@ -138,9 +168,54 @@ $.uipage.SCOPE = {};
 
 
 								$.uipage.func.setRecordTypes(_data,function(response){
-									console.log(response)
+									callback && callback(response);
 								})
 							}
+
+							$scope.updateItem =function(record){
+								if(record.isDeleted) return;
+
+								var _data = {
+									db : $.uipage.storage("MyAM_userDB"),
+									rid : record.rid,
+									cashType : record.cashType,
+									cid : record.cid,
+									value : record.value,
+									memo : record.memo,
+									date : record.date
+								};
+
+								record.invalidValue = !_data.value;
+
+								if(record.invalidValue) return;
+
+								record.invalidDate = !$.uipage.func.checkDateFormat(_data.date);
+								if(record.invalidDate) return;
+								
+								$.uipage.func.setRecord(_data,function(response){
+									$scope.setRecordTypes({
+										rid : record.rid,
+										types : record.types
+									},function(){
+										record.isChange = false;
+									})
+								})
+							}
+
+							$scope.deleteItem =function(record){
+								var _data = {
+									db : $.uipage.storage("MyAM_userDB"),
+									rid : record.rid
+								};
+
+								$.uipage.func.delRecord(_data,function(response){
+									record.isDeleted = true;
+									record.isChange = false;
+									record.doubleCheckDelete = false;
+									delete record.rid;
+								})
+							}
+
 				        }]
 	};
 

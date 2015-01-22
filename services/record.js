@@ -9,14 +9,30 @@ var controller = {
 var logger = require("../controller/logger.js");
 
 
-
-/*
-var _getTypeMaps = function(data, callback){
+var _delRecord = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);
 
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
-			.then(function(data){ return controller.dbController.getTypeMaps(data); })
-			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){ return controller.dbController.delRecordTypeMap(data);})
+			.then(function(data){ return controller.dbController.delRecord(data);})
+			.then(function(data){ return controller.dbController.closeDB(data);})
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data);
+
+	});
+}
+exports.delRecord = Promise.denodeify(_delRecord);
+
+var _getRecord = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.getRecord(data);})
+			.then(function(data){ return controller.dbController.closeDB(data);})
 			.then(function(data){
 				callback(null, data);
 			});
@@ -25,7 +41,7 @@ var _getTypeMaps = function(data, callback){
 		callback(data)
 	});
 }
-exports.getTypeMaps = Promise.denodeify(_getTypeMaps);*/
+exports.getRecord = Promise.denodeify(_getRecord);
 
 var _setRecord = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);
@@ -77,3 +93,20 @@ var _setRecordTypes = function(data, callback){
 	});
 }
 exports.setRecordTypes = Promise.denodeify(_setRecordTypes);
+
+var _getRecordTypes = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.getRecordTypeMap(data);})
+			.then(function(data){ return controller.dbController.closeDB(data);})
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		console.log(data)
+		callback(data)
+	});
+}
+exports.getRecordTypes = Promise.denodeify(_getRecordTypes);
