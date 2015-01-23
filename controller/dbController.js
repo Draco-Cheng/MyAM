@@ -492,22 +492,28 @@ var _getRecord = function(data, callback){
 	if(data.rids_json){
 		try{
 			var _rids = JSON.parse(data.rids_json);
-			var _conditionOR = [];
-
+			_param.push("rid=$rids");
+			_val.$rids = [];
 			_rids && _ridsforEach(function(rid){
-				(rid = parseInt(rid)) && _conditionOR.push("rid="+rid);
+				(rid = parseInt(rid)) && _val.$rids.push(rid);
 			});
-
-			_param.push("( "+_conditionOR.join(" OR ")+" )");
 		}catch(e){}
 	}
 
+	if(data.tids_json){
+		try{
+			var _tids = JSON.parse(data.tids_json);
+			_param.push("recordTypeMap.tid=$tids");
+			_val.$tids = [];
+			_tids && _ridsforEach(function(tid){
+				(tid = parseInt(tid)) && _val.$tids.push(tid);
+			});
+		}catch(e){}
+	}
 
-	var _sql =  "SELECT * FROM record ";
+	var _sql =  "SELECT record.*,  GROUP_CONCAT(rm.tid) AS tids FROM record LEFT OUTER JOIN recordTypeMap rm on rm.rid = record.rid GROUP BY record.rid";
 	if(_param.length)
 		_sql += "WHERE "+_param.join(" AND ");
-
-
 
 
 	if(data.orderBy && /^[_a-zA-Z]{3,15}$/.test(data.orderBy[0]) ){
@@ -520,6 +526,7 @@ var _getRecord = function(data, callback){
 		_sql += " ASC";
 	else
 		_sql += " DESC";
+
 
 	if(data.limit){
 		_sql += " LIMIT $limit";

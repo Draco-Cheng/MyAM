@@ -147,7 +147,9 @@ $.uipage.SCOPE = {};
 											record.rid = _rid;
 										}else{
 											_initial();
-											record.value="";											
+											record.value="";
+											record.types={};
+											record.typesLength = 0;
 										}
 										
 									})

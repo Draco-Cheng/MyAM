@@ -93,21 +93,20 @@ $.uipage.func = $.uipage.func || {};
 	_func.getRecordsAndType = function(data, callback){
 		var _getType_Flag = false;
 		var _getRecords_Flag = false;
-		var _getRecordsTypes_Flag = false;
 		var _data = { db : data.db };
 		var _res = {};
 
 		var _parse = function(){
-			if(!_getType_Flag || !_getRecords_Flag || !_getRecordsTypes_Flag) return;
+			if(!_getType_Flag || !_getRecords_Flag ) return;
 
 			_res.records.data.forEach(function(record){
 				record.types = {};
 				record.typesLength = 0;
-			});
 
-			_res.recordsTypes.forEach(function(type){
-				_res.recordsId[type.rid].types[type.tid] = _func.getTypeById(type.tid);
-				_res.recordsId[type.rid].typesLength += 1;
+				record.tids && record.tids.split(",").forEach(function(tid){
+					record.types[tid] = _func.getTypeById(tid);
+					record.typesLength += 1;
+				});
 			});
 			
 			callback(_res.records.data);
@@ -117,14 +116,12 @@ $.uipage.func = $.uipage.func || {};
 			_getRecords_Flag = true;
 			_res.records = response;
 			_res.recordsId = {};
-			_res.recordsArr = [];
 
 			response.data.forEach(function(item){
 				_res.recordsId[item.rid] = item;
-				_res.recordsArr.push(item.rid);
 			});
 
-			_getRecordsTypes();
+			_parse();
 
 		});
 
@@ -132,17 +129,6 @@ $.uipage.func = $.uipage.func || {};
 			_getType_Flag = true;
 			_parse();
 		});
-
-		var _getRecordsTypes = function(){
-			_func.getRecordsTypes({
-				db : data.db,
-				rids : _res.recordsArr
-			},function(response){
-				_getRecordsTypes_Flag = true;
-				_res.recordsTypes = response;
-				_parse();
-			})			
-		}
 	}
 
 	//********************************************
