@@ -41,11 +41,22 @@ $.uipage.SCOPE = {};
 							//addData*********************
 							$scope.filter = {};
 							$scope.filter.db = $.uipage.storage("MyAM_userDB");
-							$scope.filter.maxdate = null;
-							$scope.filter.mindate = null;
-							$scope.filter.limit = 10;
-							$scope.filter.orderBy = ["rid","DESC"];
+							
 							$scope.filter.cashType = null;
+							$scope.filter.start_date = null;
+							$scope.filter.end_date = null;
+
+							$scope.filter.memo = null;
+							$scope.filter.value_greater = "";
+							$scope.filter.value_less = "";
+
+							$scope.filter.types = {};
+							$scope.filter.typesLength = 0;
+
+							$scope.filter.orderCol = "rid";
+							$scope.filter.orderBy = "DESC";
+							$scope.filter.limit = "10";
+
 							$scope.filter.cid = null;
 							//****************************							
 
@@ -56,11 +67,45 @@ $.uipage.SCOPE = {};
 								else
 									return currency.type + _divStr + currency.date;
 							}
+							
+							var _getRecords = function(forceUpdate){
+								var _filter = $scope.filter;
+								var _data = {};
+								_data.db = $.uipage.storage("MyAM_userDB");
+								_data.cashType = _filter.cashType || null;
+								_data.cid = _filter.cid || null;
+								_data.orderBy = [_filter.orderCol, _filter.orderBy];
+								_data.start_date = _filter.start_date || null;
+								_data.end_date = _filter.end_date || null;
 
-							var _initial = function(forceUpdate){
-								$.uipage.func.getRecordsAndType($scope.filter, function(response){
+								if(_data.start_date)
+									_data.invalidDate = !$.uipage.func.checkDateFormat(_data.start_date);
+								if(!_data.invalidDate && _data.end_date)
+									_data.invalidDate = !$.uipage.func.checkDateFormat(_data.end_date);
+								
+								if(_data.invalidDate)
+									return;
+
+								_data.memo = _filter.memo;
+								_data.value_greater = _filter.value_greater;
+								_data.value_less = _filter.value_less;
+								
+								var _tids = [];
+								for(var i in $scope.filter.types){
+									_tids.push(i)
+								}
+								if(_tids.length)
+								_data.tids_json = JSON.stringify(_tids);
+								
+								_data.limit = _filter.limit || null;
+
+								$.uipage.func.getRecordsAndType(_data, function(response){
 									$scope.records = response;
-								},forceUpdate);
+								},forceUpdate);								
+							}
+							$scope.getRecords = _getRecords;
+							var _initial = function(forceUpdate){
+								_getRecords(forceUpdate);
 
 								$.uipage.func.getType({
 									db : $.uipage.storage("MyAM_userDB")
@@ -75,6 +120,8 @@ $.uipage.SCOPE = {};
 								},forceUpdate);
 							}
 							_initial();
+
+
 
 							$scope.typeQuickSelectList = function( cashType ){
 								if(!$scope.types) return;

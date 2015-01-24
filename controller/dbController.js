@@ -353,7 +353,7 @@ var _setCurrencies = function(data, callback){
 
 	if(data.cid){
 		_val.push(data.cid);
-		var _sql = "UPDATE type SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
+		var _sql = "UPDATE currencies SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
 	}else{
 		_param.unshift("cid");
 		_val.unshift(Date.now());
@@ -464,57 +464,66 @@ var _getRecord = function(data, callback){
 		_val.$cid = data.cid;
 	}
 
-	if(data.minValue){
-		_param.push("value>=$minValue");
-		_val.$minValue = data.minValue;
+	if(data.value_greater){
+		_param.push("value>=$value_greater");
+		_val.$value_greater = data.value_greater;
 	}
 
-	if(data.maxValue){
-		_param.push("value<=$maxValue");
-		_val.$maxValue = data.maxValue;
+	if(data.value_less){
+		_param.push("value<=$value_less");
+		_val.$value_less = data.value_less;
 	}
 
 	if(data.memo){
-		_param.push("memo LIKE %$memo%");
-		_val.$memo = data.memo;
+		_param.push("memo LIKE $memo");
+		_val.$memo = "%"+data.memo+"%";
 	}
 	
-	if(data.mindate){
-		_param.push("data<=$mindate");
-		_val.$mindate = data.mindate;		
+	if(data.start_date){
+		_param.push("date>=$start_date");
+		_val.$start_date = data.start_date;		
 	}
 
-	if(data.maxdate){
-		_param.push("data<=$maxdate");
-		_val.$maxdate = data.maxdate;		
+	if(data.end_date){
+		_param.push("date<=$end_date");
+		_val.$end_date = data.end_date;		
 	}
 
 	if(data.rids_json){
 		try{
 			var _rids = JSON.parse(data.rids_json);
-			_param.push("rid=$rids");
-			_val.$rids = [];
-			_rids && _ridsforEach(function(rid){
-				(rid = parseInt(rid)) && _val.$rids.push(rid);
+			
+			_rids && _rids.forEach(function(rid){
+				if(! /^\d{13}$/.test(rid) ) throw "invalid rid "+rid;
 			});
-		}catch(e){}
+			_param.push("rid IN ($rids)");
+			_val.$rids = _rids.join(",");
+
+		}catch(e){console.log(e)}
 	}
+
+
+
+	var _sql =  "SELECT record.*,  GROUP_CONCAT(rm.tid) AS tids FROM record LEFT OUTER JOIN recordTypeMap rm on rm.rid = record.rid ";
+	if(_param.length)
+		_sql += " WHERE "+_param.join(" AND ");
+	_sql += " GROUP BY record.rid";
 
 	if(data.tids_json){
 		try{
 			var _tids = JSON.parse(data.tids_json);
-			_param.push("recordTypeMap.tid=$tids");
-			_val.$tids = [];
-			_tids && _ridsforEach(function(tid){
-				(tid = parseInt(tid)) && _val.$tids.push(tid);
+			
+			_tids && _tids.forEach(function(tid){
+				if(! /^\d{13}$/.test(tid) ) throw "invalid tid "+tid;
 			});
-		}catch(e){}
+
+			var _conditions = _tids.map(function(tid){
+				return "tids LIKE '%"+tid+"%'";
+			})
+			_sql = "SELECT * FROM ( "+_sql+" ) WHERE "+_conditions.join(" AND ")+" ";
+
+		}catch(e){console.log(e)}
 	}
-
-	var _sql =  "SELECT record.*,  GROUP_CONCAT(rm.tid) AS tids FROM record LEFT OUTER JOIN recordTypeMap rm on rm.rid = record.rid GROUP BY record.rid";
-	if(_param.length)
-		_sql += "WHERE "+_param.join(" AND ");
-
 
 	if(data.orderBy && /^[_a-zA-Z]{3,15}$/.test(data.orderBy[0]) ){
 		_sql += " ORDER BY "+data.orderBy[0];
@@ -526,8 +535,6 @@ var _getRecord = function(data, callback){
 		_sql += " ASC";
 	else
 		_sql += " DESC";
-
-
 	if(data.limit){
 		_sql += " LIMIT $limit";
 		_val.$limit = data.limit;

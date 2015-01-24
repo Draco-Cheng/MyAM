@@ -13,6 +13,9 @@ if(	config.uploadTempDir &&
 		})
 }
 
+if(	!require('fs').existsSync(config.dbFolder))
+	require('fs').mkdirSync(config.dbFolder);
+
 
 app.set('views', __dirname + '/views');
 app.use(bodyParser.json());

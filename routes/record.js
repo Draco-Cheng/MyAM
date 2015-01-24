@@ -75,6 +75,7 @@ routes.get = function(req, res, next) {
 	var data = tools.createData(req);
 	data.rid	= req.body.rid;
 	data.rids_json	= req.body.rids_json;
+	data.tids_json	= req.body.tids_json;
 	data.cid	= req.body.cid;
 	data.value_greater = req.body.value_greater;
 	data.value_less = req.body.value_less;

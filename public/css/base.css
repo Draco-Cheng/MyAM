@@ -47,6 +47,45 @@ body>.top {
 	margin-top: 90px;
 }
 
+.btn-delete, .btn-save, .btn-delete-check, .btn-delete-cancle, .btn-recover{
+	width: 25px;
+	height: 25px;
+	margin-right: 10px;
+	display: inline-block;
+	background-size: contain;
+	vertical-align: top;
+	background-position: center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.btn-delete{
+	background-image: url(../img/editing-delete-icon.png);
+}
+
+.btn-save{
+	background-image: url(../img/save.png);
+}
+
+.btn-delete-cancle{
+	background-image: url(../img/MB__back.png);
+}
+
+.btn-delete-check{
+	background-image: url(../img/metro-icon.png);
+	border-radius: 15px;
+}
+
+.btn-recover{
+	background-image: url(../img/DataRecoveryIcon.png);
+	border-radius: 15px;
+	background-color: rgba(0,0,0,0.7);
+}
+.td-operate {
+	min-width: 75px;
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+}
 
 /**** #manageDB ***/
 #manageDB .progress-bar{
@@ -211,12 +250,7 @@ body>.top {
 	text-align: left;	
 }
 
-#record .td-operate {
-	min-width: 75px;
-	display: table-cell;
-	text-align: center;
-	vertical-align: middle;
-}
+
 
 #record .td-currency{
 	min-width: inherit;
@@ -230,40 +264,6 @@ body>.top {
 }
 #record .td-value input{
 	width: 65px;
-}
-
-#record .record-delete, #record .record-save, #record .record-delete-check, #record .record-delete-cancle,#record .record-recover{
-	width: 25px;
-	height: 25px;
-	margin-right: 10px;
-	display: inline-block;
-	background-size: contain;
-	vertical-align: top;
-	background-position: center;
-	background-repeat: no-repeat;
-	cursor: pointer;
-}
-#record .record-delete{
-	background-image: url(../img/editing-delete-icon.png);
-}
-
-#record .record-save{
-	background-image: url(../img/save.png);
-}
-
-#record .record-delete-cancle{
-	background-image: url(../img/MB__back.png);
-}
-
-#record .record-delete-check{
-	background-image: url(../img/metro-icon.png);
-	border-radius: 15px;
-}
-
-#record .record-recover{
-	background-image: url(../img/DataRecoveryIcon.png);
-	border-radius: 15px;
-	background-color: rgba(0,0,0,0.7);
 }
 
 

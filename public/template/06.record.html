@@ -39,6 +39,69 @@
 		</div>
 	</div>
 
+	<div>
+		<div class="table">
+			<div class="td-operate">
+				<div class="btn-recover" ng-click="getRecords()"></div>					
+			</div>
+			<div class="td td-type">
+				<select id="cashType" ng-change="cleanTypes(filter)" ng-model="filter.cashType">
+					<option value=null>{{i18n.record.cost_earn}}</option>
+					<option value="-1">{{i18n.record.cost}}</option>
+					<option value="1">{{i18n.record.earn}}</option>
+				</select>
+			</div>
+			<div class="td td-value {{filter.invalidValue?'error':''}}">
+				<input ng-model="filter.value_greater" placeholder="{{i18n.record.value_placeholder}}">
+				~
+				<input ng-model="filter.value_less" placeholder="{{i18n.record.value_placeholder}}">
+			</div>
+
+			<div class="td">
+				<select id="typeList" ng-model="filter.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+					<option value="">{{i18n.record.selectCurrency}}</option>
+				</select>
+			</div>
+
+			<div class="td {{filter.invalidDate?'error':''}}">
+				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.start_date" />
+				~
+				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.end_date" />
+			</div>
+			<div class="td">
+				<input ng-model="filter.memo" placeholder="{{i18n.record.momo_placeholder}}">
+			</div>
+			<div class="td">
+				<select ng-model="filter.orderCol">
+					<option value="rid">{{i18n.record.rid}}</option>
+					<option value="date">{{i18n.record.date}}</option>
+				</select>
+				<select ng-model="filter.orderBy">
+					<option value="ASC">{{i18n.record.ASC}}</option>
+					<option value="DESC">{{i18n.record.DESC}}</option>
+				</select>
+				<select ng-model="filter.limit">
+					<option value="10">10</option>
+					<option value="20">20</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="">{{i18n.record.unlimit}}</option>
+				</select>				
+			</div>
+
+			<div class="td">
+				<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeQuickSelectList(filter.cashType)">
+					<option disabled value>{{i18n.record.type}}</option>
+				</select>
+			</div>
+			<div ng-if="filter.typesLength" class="td td-types_block">
+				<div class="block-type-row" ng-repeat="type in filter.types" ng-click="removeTypes(type,filter)">
+					<span>{{type.type_label}}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div ng-if="records===ubdefiend">loading...</div>
 	<div ng-if="records.length===0">null</div>
 	<div id="showRecordPanel" ng-if="records">
@@ -51,15 +114,15 @@
 		<div class="table {{record.cashType == 1 ? 'row-earn' : 'row-cost' }}{{record.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{record.isDeleted? ' isDeleted' : ''}}">
 			<div class="td-operate">
 				<div ng-if="!record.isDeleted && !record.doubleCheckDelete">
-					<div class="record-delete" ng-click="record.doubleCheckDelete = true;"></div>
-					<div ng-if="record.isChange" class="record-save" ng-click="updateItem(record)"></div>
+					<div class="btn-delete" ng-click="record.doubleCheckDelete = true;"></div>
+					<div ng-if="record.isChange" class="btn-save" ng-click="updateItem(record)"></div>
 				</div>
-				<div ng-if="!record.isDeleted && record.doubleCheckDelete" class="record-delete-confirm">
-					<div class="record-delete-cancle" ng-click="record.doubleCheckDelete = false;"></div>
-					<div class="record-delete-check" ng-click="deleteItem(record)"></div>					
+				<div ng-if="!record.isDeleted && record.doubleCheckDelete" class="btn-delete-confirm">
+					<div class="btn-delete-cancle" ng-click="record.doubleCheckDelete = false;"></div>
+					<div class="btn-delete-check" ng-click="deleteItem(record)"></div>					
 				</div>
 				<div ng-if="record.isDeleted">
-					<div class="record-recover" ng-click="addRecord(record)"></div>					
+					<div class="btn-recover" ng-click="addRecord(record)"></div>					
 				</div>
 			</div>
 			<div class="td td-type">

@@ -37,13 +37,6 @@ $.uipage.SCOPE = {};
 
 							var _data = { db : $.uipage.storage("MyAM_userDB") };
 
-							/*var _changeToCid = function(){
-								$scope.addData.to_cid = $("#showCurrency .addCurrency #to_cid").val();
-								$("#showCurrency .addCurrency .input-addrate").val("");
-								
-								$scope.str.rate_placeholder();								
-								$.uipage.forceRerender();
-							}*/
 							var _initialData = function(forceupdate){
 								$.uipage.func.getCurrency(_data, function(response){
 									$scope.currencies = response;
@@ -51,12 +44,9 @@ $.uipage.SCOPE = {};
 
 								$.uipage.func.getCurrencyMaps(_data, function(response){
 									$scope.currencyMaps = response;
-									$scope.addData.to_cid = parseInt($.uipage.storage("MyAM_mainCurrency"));
-									/*$("#showCurrency .addCurrency #to_cid")
-										.val($.uipage.storage("MyAM_mainCurrency"))
-										[0].onchange = _changeToCid;
 
-									setTimeout(_changeToCid)*/
+									$scope.addData.to_cid = parseInt($.uipage.storage("MyAM_mainCurrency"));
+
 								},forceupdate);
 
 								$.uipage.func.getCurrencyId(_data, function(response){
@@ -65,16 +55,17 @@ $.uipage.SCOPE = {};
 							}
 							_initialData();
 
-							$scope.addCurrency = function(){
-								var _addData = $scope.addData;
+							$scope.setCurrency = function(currency){
+								console.log(currency)
 								var _data = {
 									db 		: $.uipage.storage("MyAM_userDB"),
-									type	: _addData.type,
-									to_cid	: _addData.to_cid,
-									memo	: _addData.memo,
-									rate 	: _addData.rate,
-									date 	: _addData.date,
-									quickSelect 	: _addData.quickSelect
+									cid 	: currency.cid,
+									type	: currency.type,
+									to_cid	: currency.to_cid,
+									memo	: currency.memo,
+									rate 	: currency.rate,
+									date 	: currency.date,
+									quickSelect 	: currency.quickSelect
 								}
 
 								if(!_data.type) 
@@ -92,7 +83,7 @@ $.uipage.SCOPE = {};
 								else
 									$("#showCurrency .td-date").removeClass("error");
 								
-								_addData.type = _addData.type.toUpperCase()
+								_data.type = currency.type.toUpperCase()
 								
 								$.uipage.func.setCurrency(_data,function(response){
 									_initialData(true);

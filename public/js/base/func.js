@@ -13,8 +13,21 @@ $.uipage.func = $.uipage.func || {};
 				delete _cache[ele];			
 	}
 
-	_func.checkDateFormat = function(date){
-		return (new Date(date) !== "Invalid Date" && date.length === 10 && date.search(/(\d{4})-(\d{2})-(\d{2})/g) === 0);
+	_func.checkDateFormat = function(){
+		
+		for(var  i in arguments){
+			var date = arguments[i]
+			if(!(new Date(date) !== "Invalid Date" && 
+				 date.length === 10 && 
+				 date.search(/(\d{4})-(\d{2})-(\d{2})/g) === 0
+			)){
+				return false;
+			}
+				
+		};
+
+		return true;
+		
 	}
 	
 	//********************************************
@@ -228,17 +241,20 @@ $.uipage.func = $.uipage.func || {};
 			var _temp = {};
 			var _tempSeries = {};
 
-
 			response.forEach(function(i){
 				if(!_tempSeries[i.cid]){
-					_tempSeries[i.cid] = _tempSeries[i.cid] || { sup : [], sub : [] };
+					_tempSeries[i.cid] = { sup : [], sub : [] };
 					_temp[i.cid] = _tempSeries[i.cid];
 				}
 				
+				if(i.to_cid && !_tempSeries[i.to_cid]){
+					_tempSeries[i.to_cid] = { sup : [], sub : [] };
+					_temp[i.to_cid] = _tempSeries[i.to_cid];
+				}
+
 				_tempSeries[i.cid].data = i;
 
 				if(i.to_cid){
-					_tempSeries[i.to_cid] = _tempSeries[i.to_cid] || { sup : [], sub : [] };
 					_tempSeries[i.cid].sup.push(_tempSeries[i.to_cid]);
 					_tempSeries[i.to_cid].sub.push(_tempSeries[i.cid]);
 

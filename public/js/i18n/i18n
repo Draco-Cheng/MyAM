@@ -35,12 +35,19 @@
 	
 	"record" : {
 		"add" : "+",
+		"cost_earn" : "Cost & Earn",
 		"cost" : "Cost",
 		"earn" : "Earn",
 		"type" : "Add record types",
 		"value_placeholder" : "value",
 		"momo_placeholder" : "Enter momo here...",
-		"date_placeholder" : "yyyy-mm-dd"
+		"date_placeholder" : "yyyy-mm-dd",
+		"rid" : "Order",
+		"date" : "Date",
+		"ASC" : "Old -> New",
+		"DESC" : "New -> Old",
+		"unlimit" : "Unlimit",
+		"selectCurrency" : "Please Select Currency"
 	},
 
 	"setting" : {

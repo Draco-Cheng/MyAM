@@ -2,7 +2,7 @@
 	<div class="addCurrency">
 		<div class="table">
 			<div class="td td-add">
-				<div class="btn-add" ng-click="addCurrency()">
+				<div class="btn-add" ng-click="setCurrency(addData)">
 					<div class="btn-add-word">{{i18n.showCurrency.add}}</div>
 				</div>
 			</div>
@@ -39,23 +39,36 @@
 
 <script type="text/ng-template" id="currencyTree">
 	<div class="table">
+		<div class="td-operate">
+			<div ng-if="!currency.data.isDeleted && !currency.data.doubleCheckDelete">
+				<div ng-if="!currency.data.main" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
+				<div ng-if="currency.data.isChange" class="btn-save" ng-click="setCurrency(currency.data)"></div>
+			</div>
+			<div ng-if="!currency.data.isDeleted && currency.data.doubleCheckDelete" class="btn-delete-confirm">
+				<div class="btn-delete-cancle" ng-click="currency.data.doubleCheckDelete = false;"></div>
+				<div class="btn-delete-check" ng-click="deleteItem(currency.data)"></div>					
+			</div>
+			<div ng-if="currency.data.isDeleted">
+				<div class="btn-recover" ng-click="setCurrency(currency.data)"></div>					
+			</div>
+		</div>
 		<div class="td td-cid">
 			<span>{{currency.data.cid}}</span>
 		</div>
 		<div class="td">
-			<input ng-model="currency.data.type" placeholder="{{i18n.showCurrency.type_placeholder}}">
+			<input ng-model="currency.data.type" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.type_placeholder}}">
 		</div>
 		<div class="td">
-			<select ng-if="!currency.data.main" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+			<select ng-if="!currency.data.main" ng-change="currency.data.isChange=true;" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
 			</select>
 
 			<span ng-if="currency.data.main">
-				<option value>{{i18n.showCurrency.mainCurrency}}</option>
+				{{i18n.showCurrency.mainCurrency}}
 			</span>				
 		</div>
 		<div class="td td-rate">
 			<span ng-if="currency.data.to_cid">
-				<input ng-model="currency.data.rate">
+				<input ng-model="currency.data.rate" ng-change="currency.data.isChange=true;" >
 			</span>
 
 			<span ng-if="!currency.data.to_cid">
@@ -63,17 +76,17 @@
 			</span>	
 		</div>	
 		<div class="td">
-			<input ng-model="currency.data.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
+			<input ng-model="currency.data.memo" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.momo_placeholder}}">
 		</div>	
 		<div class="td">
 			<div class="checkbox-panel">
-				<input type="checkbox" ng-checked="currency.data.quickSelect">
+				<input type="checkbox" ng-click="currency.data.isChange=true;" ng-checked="currency.data.quickSelect">
 				<span class="hint">{{i18n.showCurrency.quickSelect}}</span>
 			</div>
 		</div>
 
 		<div class="td">
-			<input class="cell" type="date" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="currency.data.date" />
+			<input class="cell" type="date" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="currency.data.date" />
 		</div>
 	</div>
 	<ul class="currency-Wrapper"  ng-if="currency.sub">
