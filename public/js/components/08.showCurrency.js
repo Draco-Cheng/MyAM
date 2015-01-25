@@ -40,23 +40,23 @@ $.uipage.SCOPE = {};
 							var _initialData = function(forceupdate){
 								$.uipage.func.getCurrency(_data, function(response){
 									$scope.currencies = response;
+
+									$.uipage.func.getCurrencyMaps(_data, function(response){
+										$scope.currencyMaps = response;
+										$scope.addData.to_cid = parseInt($.uipage.storage("MyAM_mainCurrency"));
+									});
+
+									$.uipage.func.getCurrencyId(_data, function(response){
+										$scope.currencyId = response;
+									});
+
 								},forceupdate);
 
-								$.uipage.func.getCurrencyMaps(_data, function(response){
-									$scope.currencyMaps = response;
-
-									$scope.addData.to_cid = parseInt($.uipage.storage("MyAM_mainCurrency"));
-
-								},forceupdate);
-
-								$.uipage.func.getCurrencyId(_data, function(response){
-									$scope.currencyId = response;					
-								},forceupdate);								
+							
 							}
 							_initialData();
 
 							$scope.setCurrency = function(currency){
-								console.log(currency)
 								var _data = {
 									db 		: $.uipage.storage("MyAM_userDB"),
 									cid 	: currency.cid,
@@ -86,8 +86,30 @@ $.uipage.SCOPE = {};
 								_data.type = currency.type.toUpperCase()
 								
 								$.uipage.func.setCurrency(_data,function(response){
-									_initialData(true);
+									if(currency.isChange)
+										currency.isChange = false;
+									else
+										_initialData(true);
 								})
+							}
+
+							$scope.deleteItem = function(currency){
+								var _data = {
+									db 		: $.uipage.storage("MyAM_userDB"),
+									del_cid 	: currency.cid
+								}
+								$.uipage.func.delCurrency(_data,function(response){
+									if(response.code==200){
+/*										currency.isDeleted = true;
+										currency.doubleCheckDelete =false;
+										currency.isChange=false;
+										delete currency.cid;*/
+										_initialData(true);
+									}else{
+										$.uipage.alert(response.message)
+									}
+
+								})								
 							}
 
 							$scope.emptyAddDateRate = function(){
@@ -115,6 +137,7 @@ $.uipage.SCOPE = {};
 									return i18n.showCurrency.rate_placeholder;
 								}
 							}
+
 				        }]
 	};
 

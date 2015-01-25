@@ -47,13 +47,13 @@ body>.top {
 	margin-top: 90px;
 }
 
-.btn-delete, .btn-save, .btn-delete-check, .btn-delete-cancle, .btn-recover{
+.btn-delete, .btn-save, .btn-delete-check, .btn-delete-cancle, .btn-recover, .btn-unbind{
 	width: 25px;
 	height: 25px;
 	margin-right: 10px;
 	display: inline-block;
 	background-size: contain;
-	vertical-align: top;
+	vertical-align: middle;
 	background-position: center;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -86,7 +86,12 @@ body>.top {
 	text-align: center;
 	vertical-align: middle;
 }
-
+.btn-unbind{
+	background-image: url(../img/disconnect-hi.png);
+	border-radius: 15px;
+	background-color: rgba(229, 229, 229, 0.9);
+	border: 2px solid rgba(0, 0, 0, 0.65);
+}
 /**** #manageDB ***/
 #manageDB .progress-bar{
 	display: inline-block;

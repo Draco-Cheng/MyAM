@@ -28,7 +28,18 @@ var _setTypes = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);
 
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
-			.then(function(data){ return controller.dbController.setTypes(data); })
+			.then(function(data){ 
+				if(data.tid)
+					return controller.dbController.getTypes(data);
+				else
+					return new Promise(function(resolve, reject){resolve(data)});
+			})
+			.then(function(data){ 
+				if(data.tid && data.resault.push().length === 0 )
+					return new Promise(function(resolve, reject){resolve(data)});
+				else
+					return controller.dbController.setTypes(data);
+			})
 			.then(function(data){ return controller.dbController.closeDB(data); })
 			.then(function(data){
 				callback(null, data);
@@ -39,6 +50,39 @@ var _setTypes = function(data, callback){
 	});
 }
 exports.setTypes = Promise.denodeify(_setTypes);
+
+var _delTypes = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.delRecordTypeMap(data); })
+			.then(function(data){ return controller.dbController.delTypeMaps(data); })
+			.then(function(data){ return controller.dbController.delTypes(data); })
+			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data)
+	});
+}
+exports.delTypes = Promise.denodeify(_delTypes);
+
+var _delTypeMaps = function(data, callback){
+	var _checkDB = controller.dbFile.checkDB(data);
+	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+			.then(function(data){ return controller.dbController.delTypeMaps(data); })
+			.then(function(data){ return controller.dbController.closeDB(data); })
+			.then(function(data){
+				callback(null, data);
+			});
+
+	_checkDB.catch(function(data){
+		callback(data)
+	});
+}
+exports.delTypeMaps = Promise.denodeify(_delTypeMaps);
 
 var _getTypeMaps = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);
@@ -62,8 +106,10 @@ var _setTypeMaps = function(data, callback){
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
 			.then(function(data){ return controller.dbController.getTypeMaps(data); })
 			.then(function(data){ 
-				if(data.resault[0].length === 0)
+				if(data.resault[0].length === 0 && data.tid !== data.sub_tid)
 					return controller.dbController.setTypeMaps(data);
+				else
+					return new Promise(function(resolve, reject){resolve(data)});
 			})
 			.then(function(data){ return controller.dbController.closeDB(data); })
 			.then(function(data){

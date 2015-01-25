@@ -3,7 +3,7 @@
 	<div class="addType">
 		<div class="table">
 			<div class="td td-add">
-				<div class="btn-add" ng-click="addType()">
+				<div class="btn-add" ng-click="setType(addData)">
 					<div class="btn-add-word">{{i18n.showType.add}}</div>
 				</div>
 			</div>
@@ -54,15 +54,30 @@
 
 
 <script type="text/ng-template" id="typeTree">
-	<div class="table">
+	<div class="table" ng-init="data = typeMap.data;">
+		<div class="td-operate">
+			<div ng-if="!data.isDeleted && !data.doubleCheckDelete">
+				<div ng-if="!sup_tid" class="btn-delete" ng-click="data.doubleCheckDelete = true;"></div>
+				<div ng-if="sup_tid" class="btn-unbind" ng-click="delTypeMaps(sup_tid, data)"></div>
+				<div ng-if="data.isChange" class="btn-save" ng-click="setType(data)"></div>
+								
+			</div>
+			<div ng-if="!data.isDeleted && data.doubleCheckDelete" class="btn-delete-confirm">
+				<div class="btn-delete-cancle" ng-click="data.doubleCheckDelete = false;"></div>
+				<div class="btn-delete-check" ng-click="deleteType(data)"></div>
+			</div>
+			<div ng-if="data.isDeleted">
+				<div class="btn-recover" ng-click="setType(data)"></div>					
+			</div>
+		</div>
 		<div class="td td-tid">
-			<span id="type_id">{{typeMap.data.tid}}</span>
+			<span id="type_id">{{data.tid}}</span>
 		</div>
 		<div class="td">
-			<input id="type_label" value="{{typeMap.data.type_label}}" />
+			<input id="type_label" ng-change="data.isChange=true;" ng-model="data.type_label" />
 		</div>
 		<div class="td">
-			<select id="cashType" ng-model="typeMap.data.cashType">
+			<select id="cashType" ng-change="data.isChange=true;" ng-model="data.cashType">
 				<option value="0">{{i18n.showType.cost_earn}}</option>
 				<option value="-1">{{i18n.showType.cost}}</option>
 				<option value="1">{{i18n.showType.earn}}</option>
@@ -70,18 +85,18 @@
 		</div>
 
 		<div class="td td-checkbox">
-			<div class="wrapper"><input ng-model="typeMap.data.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
-			<div class="wrapper"><input ng-model="typeMap.data.master" type="checkbox" />{{i18n.showType.master}}</div>
+			<div class="wrapper"><input ng-model="data.quickSelect" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.quickSelect}}</div>
+			<div class="wrapper"><input ng-model="data.master" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.master}}</div>
 			<br>
-			<div class="wrapper"><input ng-model="typeMap.data.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
+			<div class="wrapper"><input ng-model="data.showInMap" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.showInMap}}</div>
 		</div>
 		<div class="td">
-			<select id="parent_tid" ng-model="type.tid" ng-options="type.tid as type.type_label for type in types">
+			<select id="parent_tid" ng-change="data.isChange=true;" ng-model="data.parent_tid" ng-options="type.tid as type.type_label for type in types">
 				<option value="" disabled>{{i18n.showType.parent}}</option>
 			</select>
 		</div>
 	</div>
     <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
-        <li ng-repeat="typeMap in typeMap.sub" ng-include="'typeTree'"></li>
+        <li ng-repeat="typeMap in typeMap.sub" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
     </ul>
 </script>

@@ -40,6 +40,7 @@ $.uipage.SCOPE = {};
 								$.uipage.func.buildTypeMaps({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(maps, unclassified){
+									console.log(maps,unclassified)
 									$scope.typeMaps = maps;
 									$scope.unclassified_typeMaps = unclassified;
 								},forceUpdate);							
@@ -52,23 +53,23 @@ $.uipage.SCOPE = {};
 								$(".td-type_label").removeClass("error");
 							};
 
-							$scope.addType = function(){
-								var _addData = $scope.addData;
-								if(!_addData.type_label)
+							$scope.setType = function(data){
+								if(!data.type_label)
 									return $(".addType .td-type_label").addClass("error");
 
 								$.uipage.func.setType({
 									"db"			: $.uipage.storage("MyAM_userDB"),
-									"type_label" 	: _addData.type_label,
-									"cashType" 		: _addData.cashType,
-									"master" 		: _addData.master,
-									"showInMap" 	: _addData.showInMap,
-									"quickSelect" 	: _addData.quickSelect
+									"tid" 	: data.tid,
+									"type_label" 	: data.type_label,
+									"cashType" 		: data.cashType,
+									"master" 		: data.master,
+									"showInMap" 	: data.showInMap,
+									"quickSelect" 	: data.quickSelect
 								}, function(json){
-									if(_addData.parent_tid){
+									if(data.parent_tid){
 										$.uipage.func.setTypeMaps({
 											"db"		: $.uipage.storage("MyAM_userDB"),
-											"tid"		: _addData.parent_tid,
+											"tid"		: data.parent_tid,
 											"sub_tid"	: json.data[0].tid
 										}, function(json){
 											_getTypesData(true);
@@ -76,6 +77,28 @@ $.uipage.SCOPE = {};
 									}else
 										_getTypesData(true);
 								})
+							}
+
+							$scope.deleteType = function(item){
+								$.uipage.func.delType({
+									"db"		: $.uipage.storage("MyAM_userDB"),
+									"del_tid"		: item.tid
+								}, function(json){
+									item.isDeleted = true;
+									item.isChange = false;
+									item.doubleCheckDelete = false;
+									delete item.tid;
+								});									
+							}
+
+							$scope.delTypeMaps = function(sup_tid, type){
+								$.uipage.func.delTypeMaps({
+									"db"		: $.uipage.storage("MyAM_userDB"),
+									"del_tid"		: sup_tid,
+									"del_sub_tid"		: type.tid
+								}, function(json){
+									_getTypesData(true);
+								});	
 							}
 				        }]
 	};

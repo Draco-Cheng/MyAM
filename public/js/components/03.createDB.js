@@ -43,6 +43,7 @@ $.uipage.SCOPE = {};
 										
 										if(json.successful){
 											$.uipage.storage("MyAM_userDB", _dbId);
+											$.uipage.func.resetCache();
 											$.uipage.redirect("lobby");
 										}else{
 											
@@ -54,6 +55,7 @@ $.uipage.SCOPE = {};
 													$.uipage.confirm(_message.format(_dbId), function(){
 														console.log("Next!!", _dbId);
 														$.uipage.storage("MyAM_userDB", _dbId);
+														$.uipage.func.resetCache();
 														$.uipage.redirect("lobby");
 													})
 													break;

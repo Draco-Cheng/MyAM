@@ -38,7 +38,7 @@
 
 
 <script type="text/ng-template" id="currencyTree">
-	<div class="table">
+	<div class="table {{currency.data.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{currency.data.isDeleted? ' isDeleted' : ''}}">
 		<div class="td-operate">
 			<div ng-if="!currency.data.isDeleted && !currency.data.doubleCheckDelete">
 				<div ng-if="!currency.data.main" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
@@ -80,7 +80,7 @@
 		</div>	
 		<div class="td">
 			<div class="checkbox-panel">
-				<input type="checkbox" ng-click="currency.data.isChange=true;" ng-checked="currency.data.quickSelect">
+				<input type="checkbox" ng-model="currency.data.quickSelect" ng-click="currency.data.isChange=true;" ng-checked="currency.data.quickSelect">
 				<span class="hint">{{i18n.showCurrency.quickSelect}}</span>
 			</div>
 		</div>

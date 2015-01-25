@@ -49,6 +49,22 @@ routes.set = function(req, res, next) {
 }
 router.all('/set'	, routes.set);
 
+routes.del = function(req, res, next) {
+	var data = tools.createData(req);
+	data.del_tid 		= req.body.del_tid;
+	if(!data.dbFile || !data.del_tid )
+		return responseHandler(406, req, res);
+
+	services.type.delTypes(data)
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, data.resault[0] , req, res);
+			}
+		});
+}
+router.all('/del'	, routes.del);
 
 routes.getMaps = function(req, res, next) {
 	var data = tools.createData(req);
@@ -84,6 +100,26 @@ routes.setMaps = function(req, res, next) {
 		});
 }
 router.all('/setMaps'	, routes.setMaps);
+
+
+routes.delTypeMaps = function(req, res, next) {
+	var data = tools.createData(req);
+	data.del_tid = req.body.del_tid;
+	data.del_sub_tid = req.body.del_sub_tid;
+
+	if(!data.dbFile || !data.del_tid || !data.del_sub_tid)
+		return responseHandler(406, req, res);
+
+	services.type.delTypeMaps(data)
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, data.resault[0] , req, res);
+			}
+		});
+}
+router.all('/delMaps'	, routes.delTypeMaps);
 
 routes.setMapSequence = function(req, res, next) {
 	var data = tools.createData(req);

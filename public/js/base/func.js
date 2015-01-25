@@ -149,13 +149,17 @@ $.uipage.func = $.uipage.func || {};
 	//********************************************
 	_func.getCurrency = function(data, callback, forceUpdate){
 		if(!forceUpdate && _cache.currency) return callback(_cache.currency);
-
+		console.log("!!!!!!",forceUpdate)
 		$.uipage.ajax({
 			"url" : "currency/get",
 			"type" : "post",
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.currency;
+				delete _cache.currencyType;
+				delete _cache.currencyId;
+				delete _cache.currencyMaps;
+				delete _cache.currencyMapsById;
 
 				response.data.sort(function(a,b){
 					// new -> old
@@ -173,6 +177,17 @@ $.uipage.func = $.uipage.func || {};
 
 				_cache.currency = response.data;
 				callback(_cache.currency);	
+			}
+		});
+	}
+
+	_func.delCurrency = function(data, callback){
+		$.uipage.ajax({
+			"url" : "currency/del",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				callback(response);	
 			}
 		});
 	}
@@ -213,7 +228,7 @@ $.uipage.func = $.uipage.func || {};
 		if(!forceUpdate && _cache.currencyId) return callback(_cache.currencyId);
 
 		var _parse = function(response){
-			delete _cache.currencyId;
+			delete _cache.currencyId;delete _cache.currencyType;
 			if($.uipage.errHandler(response)) return;
 
 			_cache.currencyId={};
@@ -335,11 +350,11 @@ $.uipage.func = $.uipage.func || {};
 				_cache.typeMaps = {};
 
 				response.data.forEach(function(e){
-					_cache.typeMaps[e.tid] = _cache.typeMaps[e.tid] || { sur :[], sub : []};
+					_cache.typeMaps[e.tid] = _cache.typeMaps[e.tid] || { sup :[], sub : []};
 					_cache.typeMaps[e.tid].sub.push(e.sub_tid)
 
-					_cache.typeMaps[e.sub_tid] = _cache.typeMaps[e.sub_tid] || { sur :[], sub : []};
-					_cache.typeMaps[e.sub_tid].sur.push(e.tid)
+					_cache.typeMaps[e.sub_tid] = _cache.typeMaps[e.sub_tid] || { sup :[], sub : []};
+					_cache.typeMaps[e.sub_tid].sup.push(e.tid)
 				});
 				callback && callback(_cache.typeMaps);	
 			}
@@ -380,7 +395,7 @@ $.uipage.func = $.uipage.func || {};
 				  		sub : _recursiveBuildTypeMaps(obj.tid)
 				  	});
 			  	else{
-			  		if(!_cache.typeMaps[obj.tid] || !_cache.typeMaps[obj.tid].sur.length)
+			  		if(!_cache.typeMaps[obj.tid] || !_cache.typeMaps[obj.tid].sup.length)
 				  		unclassified.push({
 					  		data : _func.getTypeById(obj.tid),
 					  		sub : _recursiveBuildTypeMaps(obj.tid)
@@ -407,6 +422,18 @@ $.uipage.func = $.uipage.func || {};
 		});
 	}
 
+	_func.delType = function(data, callback){
+		$.uipage.ajax({
+			"url" : "type/del",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
+
 	_func.setTypeMaps = function(data, callback){
 		$.uipage.ajax({
 			"url" : "type/setMaps",
@@ -419,5 +446,16 @@ $.uipage.func = $.uipage.func || {};
 		});
 	}
 
+	_func.delTypeMaps = function(data, callback){
+		$.uipage.ajax({
+			"url" : "type/delMaps",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback(response);
+			}
+		});
+	}
 
 })();

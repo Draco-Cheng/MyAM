@@ -331,11 +331,31 @@ exports.checkDBisCorrect = Promise.denodeify(_checkDBisCorrect);
 
 var _getCurrencies = function(data, callback){
 	var _sql =  "SELECT * FROM currencies ";
-	if(data.cid !== undefined)
-		_sql += "WHERE cid=$cid ";
-	_sql += "ORDER BY date DESC";
+	console.log()
+	var _param = [];
+	var _val = {};
 
-	_allSQL(data, _sql, {$cid : data.cid}).then(function(data){callback(null ,data);})
+	if(data.cid){
+		_param.push("cid=$cid");
+		_val.$cid = data.cid;
+	}
+
+	if(data.to_cid){
+		_param.push("to_cid=$to_cid");
+		_val.$to_cid = data.to_cid;
+	}
+
+	if(_param.length)
+		_sql += " WHERE "+_param.join(" AND ");
+
+	_sql += " ORDER BY date DESC";
+
+	if(data.limit){
+		_sql += " LIMIT $limit";
+		_val.$limit = data.limit;
+	}
+
+	_allSQL(data, _sql, _val).then(function(data){callback(null ,data);})
 
 };
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
@@ -344,13 +364,13 @@ var _setCurrencies = function(data, callback){
 	var _param = [];
 	var _val = [];
 
-	["to_cid", "type", "main", "memo", "rate", "date", "quickSelect"].forEach(function(each){
+	["to_cid","main", "type", "memo", "rate", "date", "quickSelect"].forEach(function(each){
 		if(data[each] !== undefined){
 			_param.push(each);
 			_val.push( _valHandler(data[each]) );
 		}
 	});
-
+	
 	if(data.cid){
 		_val.push(data.cid);
 		var _sql = "UPDATE currencies SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
@@ -363,6 +383,17 @@ var _setCurrencies = function(data, callback){
 	_prepareSQL(data, _sql, [_val]).then(function(data){callback(null ,data);});
 };
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
+
+var _delCurrencies = function(data, callback){
+	var _conditions = {
+		$del_cid : data.del_cid
+	};
+
+	var _sql =   "DELETE FROM currencies WHERE  cid = $del_cid";
+	_allSQL(data, _sql, _conditions).then(function(data){callback(null ,data);})
+
+};
+exports.delCurrencies = Promise.denodeify(_delCurrencies);
 
 
 //********************************************
@@ -407,6 +438,14 @@ var _setTypes = function(data, callback){
 };
 exports.setTypes = Promise.denodeify(_setTypes);
 
+var _delTypes = function(data, callback){
+	var _sql = "DELETE FROM type WHERE tid = $del_tid";
+	_allSQL(data, _sql, { $del_tid : data.del_tid }).then(function(data){
+		callback(null ,data);
+	});
+}
+exports.delTypes =  Promise.denodeify(_delTypes);
+
 var _getTypeMaps = function(data, callback){
 	var _sql =  "SELECT * FROM typeMap ";
 	
@@ -441,6 +480,24 @@ var _setTypeMaps = function(data, callback){
 
 };
 exports.setTypeMaps = Promise.denodeify(_setTypeMaps);
+
+var _delTypeMaps = function(data, callback){
+	var _conditions = {
+		$del_tid : data.del_tid,
+		$del_sub_tid : data.del_sub_tid
+	};
+
+	if(data.del_sub_tid)
+		var _sql = "DELETE FROM typeMap WHERE tid = $del_tid AND sub_tid = $del_sub_tid";
+	else
+		var _sql = "DELETE FROM typeMap WHERE tid = $del_tid OR sub_tid = $del_tid";
+
+	_allSQL(data, _sql, _conditions ).then(function(data){
+		callback(null ,data);
+	});
+}
+exports.delTypeMaps =  Promise.denodeify(_delTypeMaps);
+
 
 
 //********************************************

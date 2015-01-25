@@ -77,6 +77,7 @@ $.uipage.SCOPE = {};
 												_progressMsg.html(i18n.manageDB["uploadFinish"]+" - "+_file.name);
 												$("#manageDB select").val(_file.name);
 												$.uipage.storage("MyAM_userDB", _file.name);
+												$.uipage.func.resetCache();
 											});
 										}else{
 											var _error = i18n.code[_response.message.code] || "";
@@ -94,10 +95,12 @@ $.uipage.SCOPE = {};
 									$("#uploadDBfile").click();
 									$("#manageDB select").val("");
 									$.uipage.storage("MyAM_userDB", "");
+									$.uipage.func.resetCache();
 								}else{
 									var _data = JSON.parse(database);
 									console.log(_data)
 									$.uipage.storage("MyAM_userDB", _data.name);
+									$.uipage.func.resetCache();
 								}
 							}
 

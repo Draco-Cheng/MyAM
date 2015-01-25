@@ -475,6 +475,7 @@ if (!String.prototype.format) {
 				var _msg = $.uipage.i18n.code[obj.code].format($.uipage.storage("MyAM_userDB")) || obj.message;
 				$.uipage.alert(_msg, function(){
 					$.uipage.storage("MyAM_userDB", "");
+					$.uipage.func.resetCache();
 					$.uipage.redirect("/");
 				});
 				return true;
