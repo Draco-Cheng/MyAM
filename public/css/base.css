@@ -92,6 +92,15 @@ body>.top {
 	background-color: rgba(229, 229, 229, 0.9);
 	border: 2px solid rgba(0, 0, 0, 0.65);
 }
+.btn-more{
+	height: 50px;
+	background-image: url(../img/solutions-icon-more.png);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+}
+
 /**** #manageDB ***/
 #manageDB .progress-bar{
 	display: inline-block;

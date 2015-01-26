@@ -130,8 +130,9 @@ $.uipage.func = $.uipage.func || {};
 			_res.records = response;
 			_res.recordsId = {};
 
-			response.data.forEach(function(item){
+			response.data.forEach(function(item, no){
 				_res.recordsId[item.rid] = item;
+				item.no = no;
 			});
 
 			_parse();

@@ -11,7 +11,7 @@
 			</div>
 			<div class="td">
 				<select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate()" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
-					<option value>{{i18n.showCurrency.mainCurrency}}</option>
+					<option disabled value>{{i18n.showCurrency.mainCurrency}}</option>
 				</select>
 			</div>
 			<div class="td td-addrate">

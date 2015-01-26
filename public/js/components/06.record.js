@@ -60,7 +60,6 @@ $.uipage.SCOPE = {};
 							$scope.filter.cid = null;
 							$scope.filter.type_query_set = "intersection";
 
-							bb = $scope.filter
 							//****************************	
 
 							//****************************
@@ -142,6 +141,7 @@ $.uipage.SCOPE = {};
 
 								$.uipage.func.getRecordsAndType(_data, function(response){
 									_summarize(response);
+									$scope.renderLimit = 50;
 									$scope.records = response;
 								},forceUpdate);								
 							}
@@ -160,12 +160,8 @@ $.uipage.SCOPE = {};
 								}, function(response){
 									$scope.currencies = response;
 								},forceUpdate);
-
-						
 							}
 							_initial();
-
-
 
 							$scope.typeQuickSelectList = function( cashType ){
 								if(!$scope.types) return;
@@ -317,6 +313,10 @@ $.uipage.SCOPE = {};
 								})
 							}
 
+							$scope.addRenderLimit =function(){
+								if($scope.records.length >= $scope.renderLimit)
+									$scope.renderLimit+=50;
+							}
 				        }]
 	};
 

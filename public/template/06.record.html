@@ -117,8 +117,9 @@
 			<div class="record-summary-cost">{{i18n.record.cost}} : {{summary.cost}}</div>
 			<div class="record-summary-sum">{{i18n.record.sum}} : {{summary.sum}}</div>
 		</div>
-		<div ng-repeat="record in records" ng-include="'recordTree'"></div>
+		<div ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
 	</div>
+	<div ng-if="records.length > renderLimit" class="btn-more" ng-click="addRenderLimit()"></div>
 </div>
 
 
