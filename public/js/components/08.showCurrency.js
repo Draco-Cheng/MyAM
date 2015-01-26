@@ -106,7 +106,7 @@ $.uipage.SCOPE = {};
 										delete currency.cid;*/
 										_initialData(true);
 									}else{
-										$.uipage.alert(response.message)
+										$.uipage.alert($scope.i18n.code[response.message.replace(/"/g,"")] || response.message)
 									}
 
 								})								

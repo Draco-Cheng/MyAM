@@ -35,9 +35,9 @@
 	
 	"record" : {
 		"add" : "+",
-		"cost_earn" : "Cost & Earn",
+		"cost_income" : "Cost & Income",
 		"cost" : "Cost",
-		"earn" : "Earn",
+		"income" : "Income",
 		"type" : "Add record types",
 		"value_placeholder" : "value",
 		"momo_placeholder" : "Enter momo here...",
@@ -47,7 +47,9 @@
 		"ASC" : "Old -> New",
 		"DESC" : "New -> Old",
 		"unlimit" : "Unlimit",
-		"selectCurrency" : "Please Select Currency"
+		"selectCurrency" : "Please Select Currency",
+		"records" : "record(s)",
+		"sum" : "Sum"
 	},
 
 	"setting" : {
@@ -85,6 +87,9 @@
 	"code" : {
 		"200" : "success",
 		"412" : "database \"{0}\" is not exists!",
-		"SQLITE_NOTADB" : "DB Error"
+		"SQLITE_NOTADB" : "DB Error",
+		"record_dependencies" : "Can't delete the item, because there is record dependencies",
+		"currency_dependencies" : "Can't delete the item, because there is currency dependencies"
+
 	}
 }

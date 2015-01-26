@@ -55,12 +55,33 @@ var _delTypes = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);
 
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
-			.then(function(data){ return controller.dbController.delRecordTypeMap(data); })
-			.then(function(data){ return controller.dbController.delTypeMaps(data); })
-			.then(function(data){ return controller.dbController.delTypes(data); })
-			.then(function(data){ return controller.dbController.closeDB(data); })
+
 			.then(function(data){
-				callback(null, data);
+				var _tempData = {
+					db : data.db,
+					reqId : data.reqId,
+					tid : data.del_tid,
+					limit : 1
+				}
+				return controller.dbController.getRecordTypeMap(_tempData);
+			})
+			.then(function(tempData){
+
+				var _resault = tempData.resault.pop().length;
+				if(_resault){
+					data.code = 424;
+					data.message = "record_dependencies";
+					throw data;
+				}else{
+					return controller.dbController.delTypeMaps(data);
+				}				
+			})
+			.then(function(data){ return controller.dbController.delTypes(data); })
+			.nodeify(function(err){
+				controller.dbController.closeDB(data).then(function(){
+					err && logger.error(data.reqId, err);
+					callback(err , data);
+				});
 			});
 
 	_checkDB.catch(function(data){

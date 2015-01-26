@@ -232,7 +232,7 @@ var _initialDatabase = function(data, callback){
 				type	
 						tid			//(timestamp) parent key
 						type_label
-						cashType	// cost val(-1), both cost and earn val(0), earn val(1)
+						cashType	// cost val(-1), both cost and income val(0), income val(1)
 						master		// bool
 						showInMap	// bool
 						quickSelect	// bool
@@ -661,6 +661,10 @@ var _getRecordTypeMap = function(data, callback){
 
 	if(_conditions.length)
 		_sql += "WHERE "+ _conditions.join(" OR ");
+
+	if(data.limit){
+		_sql += " LIMIT "+data.limit;
+	}
 
 	_allSQL(data, _sql).then(function(data){callback(null ,data);})
 };

@@ -34,13 +34,14 @@ $.uipage.SCOPE = {};
 								$.uipage.func.getType({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
-									$scope.types = response;
+									$scope.types = response.filter(function(type){
+										return type.showInMap;
+									});
 								},forceUpdate);	
 
 								$.uipage.func.buildTypeMaps({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(maps, unclassified){
-									console.log(maps,unclassified)
 									$scope.typeMaps = maps;
 									$scope.unclassified_typeMaps = unclassified;
 								},forceUpdate);							
@@ -66,12 +67,15 @@ $.uipage.SCOPE = {};
 									"showInMap" 	: data.showInMap,
 									"quickSelect" 	: data.quickSelect
 								}, function(json){
+									$scope.addData.type_label = "";
+
 									if(data.parent_tid){
 										$.uipage.func.setTypeMaps({
 											"db"		: $.uipage.storage("MyAM_userDB"),
 											"tid"		: data.parent_tid,
 											"sub_tid"	: json.data[0].tid
 										}, function(json){
+											$scope.addData.parent_tid = "";
 											_getTypesData(true);
 										});										
 									}else
@@ -83,11 +87,16 @@ $.uipage.SCOPE = {};
 								$.uipage.func.delType({
 									"db"		: $.uipage.storage("MyAM_userDB"),
 									"del_tid"		: item.tid
-								}, function(json){
-									item.isDeleted = true;
-									item.isChange = false;
-									item.doubleCheckDelete = false;
-									delete item.tid;
+								}, function(response){
+
+									if(response.code==200){
+										item.isDeleted = true;
+										item.isChange = false;
+										item.doubleCheckDelete = false;
+										delete item.tid;
+									}else{
+										$.uipage.alert($scope.i18n.code[response.message.replace(/"/g,"")] || response.message)
+									}
 								});									
 							}
 

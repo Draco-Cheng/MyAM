@@ -242,7 +242,7 @@ body>.top {
 	color: red;
 }
 
-#record .row-earn .td-type, #record .row-earn .td-value{
+#record .row-income .td-type, #record .row-income .td-value{
 	background-color: rgba(0, 152, 0, 0.4);
 }
 
@@ -271,7 +271,25 @@ body>.top {
 	width: 65px;
 }
 
+#record .record-summary{
+	text-align: center;
+}
 
+#record .record-summary>div{
+	display: inline-block;
+	padding: 5px 10px;
+	margin: 10px 20px;
+	border-radius: 15px;
+}
+#record .record-summary-label{
+	background-color: rgb(215, 223, 250);
+}
+#record .record-summary-income, #record .income .record-summary-sum{
+	background-color: rgb(182, 253, 174);
+}
+#record .record-summary-cost, #record .cost .record-summary-sum{
+	background-color: rgb(250, 190, 190);
+}
 /**** #setting ***/
 #setting .setting-menu-block{
 	display: inline-table;

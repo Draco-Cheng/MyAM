@@ -58,6 +58,43 @@ $.uipage.SCOPE = {};
 							$scope.filter.limit = "10";
 
 							$scope.filter.cid = null;
+							//****************************	
+
+							//****************************
+							//addData*********************
+							
+							var _summarize = function(records){
+								$.uipage.func.getCurrencyId({
+									db : $.uipage.storage("MyAM_userDB")
+								}, function(response){
+									var _currencyId = response;
+									var _summaries = {};
+
+									records.forEach(function(record){
+										var _currencyType = _currencyId[record.cid].type 
+										var _summary = _summaries[_currencyType] = _summaries[_currencyType] || {
+											length : 0,
+											label : _currencyType,
+											cost : 0,
+											income : 0,
+											sum : 0
+										}
+										if(record.cashType == -1){
+											_summary.cost += record.value;
+										}else{
+											_summary.income += record.value;
+										}
+
+										_summary.length+=1;
+									});
+									
+									for(var summaryId in _summaries){
+										_summaries[summaryId].sum = _summaries[summaryId].income - _summaries[summaryId].cost;
+									}
+
+									$scope.summaries = _summaries;
+								})
+							}
 							//****************************							
 
 							$scope.str.to_cid = function(currency){
@@ -100,6 +137,7 @@ $.uipage.SCOPE = {};
 								_data.limit = _filter.limit || null;
 
 								$.uipage.func.getRecordsAndType(_data, function(response){
+									_summarize(response);
 									$scope.records = response;
 								},forceUpdate);								
 							}
@@ -118,6 +156,8 @@ $.uipage.SCOPE = {};
 								}, function(response){
 									$scope.currencies = response;
 								},forceUpdate);
+
+						
 							}
 							_initial();
 
@@ -195,6 +235,7 @@ $.uipage.SCOPE = {};
 										}else{
 											_initial();
 											record.value="";
+											record.memo="";
 											record.types={};
 											record.typesLength = 0;
 										}

@@ -58,9 +58,12 @@ routes.del = function(req, res, next) {
 	services.type.delTypes(data)
 		.nodeify(function(err, data){
 			if(err){
-				responseHandler(err.code, req, res);
+				if(err.message)
+					responseHandler(err.code,err.message, req, res);
+				else
+					responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200, data.resault[0] , req, res);
+				responseHandler(200, req, res);
 			}
 		});
 }
