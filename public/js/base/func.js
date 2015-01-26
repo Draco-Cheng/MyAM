@@ -362,24 +362,25 @@ $.uipage.func = $.uipage.func || {};
 		});		
 	}
 
-	var _recursiveBuildTypeMaps = function(tid, _series){
-		_series = _series || {};
+	var _recursiveBuildTypeMaps = function(tid, classifiedSeries, supSeries){
+		supSeries = supSeries || "";
 
-		if( _series[tid] ) return;
-		
-		_series[tid] = true;
+		if( supSeries.indexOf(tid) !== -1 ) return;
+		if(classifiedSeries) classifiedSeries[tid] = true;
 
 		var _list = [];
+		var _nextSupSeries = supSeries+ (supSeries ? ",":"") + tid;
 		
-		_cache.typeMaps[tid] && _cache.typeMaps[tid].sub.forEach(function(e){
-				var _typeMaps = _recursiveBuildTypeMaps(e, _series);
+		_cache.typeMaps[tid] && _cache.typeMaps[tid].sub.forEach(function(_tid){
+				var _typeMaps = _recursiveBuildTypeMaps(_tid, classifiedSeries, _nextSupSeries);
 				_list.push({
-			  		data : _func.getTypeById(e),
-			  		sub : _typeMaps
+			  		data : _func.getTypeById(_tid),
+			  		sub : _typeMaps,
+			  		supSeries : _nextSupSeries
 			  	});
 		});
 		
-		return {list : _list, series: _series};
+		return {list : _list, classifiedSeries : classifiedSeries};
 	}
 
 	_func.buildTypeMaps = function(data, callback, forceUpdate){
@@ -391,36 +392,34 @@ $.uipage.func = $.uipage.func || {};
 
 			var tidMaps = [];
 			var unclassified = [];
-			var unclassifiedSeries = {};
+			var classifiedSeries = {};
 
 			
 			_cache.type.forEach(function(obj){
 			  	if(obj.master){
-			  		var _typeMaps = _recursiveBuildTypeMaps(obj.tid);
+			  		var _typeMaps = _recursiveBuildTypeMaps(obj.tid, classifiedSeries);
 			  		tidMaps.push({
 				  		data : _func.getTypeById(obj.tid),
-				  		sub : _typeMaps
+				  		sub : _typeMaps,
+				  		supSeries : ""
 				  	});
-
-			  		$.extend(unclassifiedSeries,_typeMaps.series);
 			  	}
 			});
+
 
 			_cache.type.forEach(function(obj){
 			  	if(!obj.master){
-			  		if(!_cache.typeMaps[obj.tid] || !_cache.typeMaps[obj.tid].sup.length || !unclassifiedSeries[obj.tid] ){
+			  		if( !classifiedSeries[obj.tid] ){
 			  			var _typeMaps = _recursiveBuildTypeMaps(obj.tid);
 				  		unclassified.push({
 					  		data : _func.getTypeById(obj.tid),
-					  		sub : _typeMaps
+					  		sub : _typeMaps,
+				  			supSeries : _typeMaps.series
 					  	});
-
-					  	$.extend(unclassifiedSeries,_typeMaps.series);
 					 }
-					 unclassifiedSeries[obj.tid] = true;
 			  	}
 			});
-						
+
 			callback(tidMaps, unclassified);
 		}
 		_func.getType(data 		,function(){ _getTypeFlag=true;		_parse(); }, forceUpdate);
