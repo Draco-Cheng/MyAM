@@ -35,7 +35,7 @@ $.uipage.SCOPE = {};
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
 									$scope.types = response.filter(function(type){
-										return type.showInMap;
+										return type.quickSelect;
 									});
 								},forceUpdate);	
 

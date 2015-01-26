@@ -149,7 +149,7 @@ $.uipage.func = $.uipage.func || {};
 	//********************************************
 	_func.getCurrency = function(data, callback, forceUpdate){
 		if(!forceUpdate && _cache.currency) return callback(_cache.currency);
-		console.log("!!!!!!",forceUpdate)
+
 		$.uipage.ajax({
 			"url" : "currency/get",
 			"type" : "post",
@@ -362,20 +362,23 @@ $.uipage.func = $.uipage.func || {};
 	}
 
 	var _recursiveBuildTypeMaps = function(tid, _series){
-		_series = _series || [];
-		if( _series.indexOf(tid)!== -1) return;
+		_series = _series || {};
+
+		if( _series[tid] ) return;
 		
-		_series.push(tid);
+		_series[tid] = true;
 
 		var _list = [];
+		
 		_cache.typeMaps[tid] && _cache.typeMaps[tid].sub.forEach(function(e){
+				var _typeMaps = _recursiveBuildTypeMaps(e, _series);
 				_list.push({
 			  		data : _func.getTypeById(e),
-			  		sub : _recursiveBuildTypeMaps(e, _series)
-			  	});				
+			  		sub : _typeMaps
+			  	});
 		});
-
-		return _list;
+		
+		return {list : _list, series: _series};
 	}
 
 	_func.buildTypeMaps = function(data, callback, forceUpdate){
@@ -387,23 +390,36 @@ $.uipage.func = $.uipage.func || {};
 
 			var tidMaps = [];
 			var unclassified = [];
+			var unclassifiedSeries = {};
 
+			
 			_cache.type.forEach(function(obj){
-			  	if(obj.master)
+			  	if(obj.master){
+			  		var _typeMaps = _recursiveBuildTypeMaps(obj.tid);
 			  		tidMaps.push({
 				  		data : _func.getTypeById(obj.tid),
-				  		sub : _recursiveBuildTypeMaps(obj.tid)
+				  		sub : _typeMaps
 				  	});
-			  	else{
-			  		if(!_cache.typeMaps[obj.tid] || !_cache.typeMaps[obj.tid].sup.length)
-				  		unclassified.push({
-					  		data : _func.getTypeById(obj.tid),
-					  		sub : _recursiveBuildTypeMaps(obj.tid)
-					  	});	
-			  	}
 
+			  		$.extend(unclassifiedSeries,_typeMaps.series);
+			  	}
 			});
 
+			_cache.type.forEach(function(obj){
+			  	if(!obj.master){
+			  		if(!_cache.typeMaps[obj.tid] || !_cache.typeMaps[obj.tid].sup.length || !unclassifiedSeries[obj.tid] ){
+			  			var _typeMaps = _recursiveBuildTypeMaps(obj.tid);
+				  		unclassified.push({
+					  		data : _func.getTypeById(obj.tid),
+					  		sub : _typeMaps
+					  	});
+
+					  	$.extend(unclassifiedSeries,_typeMaps.series);
+					 }
+					 unclassifiedSeries[obj.tid] = true;
+			  	}
+			});
+						
 			callback(tidMaps, unclassified);
 		}
 		_func.getType(data 		,function(){ _getTypeFlag=true;		_parse(); }, forceUpdate);

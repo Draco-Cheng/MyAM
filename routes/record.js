@@ -84,6 +84,7 @@ routes.get = function(req, res, next) {
 	data.end_date = req.body.end_date;
 	data.limit = req.body.limit;
 	data.cashType = req.body.cashType;
+	data.type_query_set = req.body.type_query_set;
 
 	try{data.orderBy = JSON.parse(req.body.orderBy);}catch(e){};
 	

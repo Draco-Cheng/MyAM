@@ -49,7 +49,8 @@
 		"unlimit" : "Unlimit",
 		"selectCurrency" : "Please Select Currency",
 		"records" : "record(s)",
-		"sum" : "Sum"
+		"sum" : "Sum",
+		"alltype" : "All record types"
 	},
 
 	"setting" : {

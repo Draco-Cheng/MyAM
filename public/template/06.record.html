@@ -88,10 +88,15 @@
 					<option value="">{{i18n.record.unlimit}}</option>
 				</select>				
 			</div>
-
 			<div class="td">
-				<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeQuickSelectList(filter.cashType)">
-					<option disabled value>{{i18n.record.type}}</option>
+				<select id="typeQuerySet" ng-model="filter.type_query_set">
+					<option value = "intersection">intersection</option>
+					<option value = "union">union</option>
+				</select>
+			</div>
+			<div class="td">
+				<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeFilterSelectList(filter.cashType)">
+					<option value>{{i18n.record.alltype}}</option>
 				</select>
 			</div>
 			<div ng-if="filter.typesLength" class="td td-types_block">

@@ -76,6 +76,18 @@ $.uipage.SCOPE = {};
 				        }]
 	};
 
+	_views['lobby-dialog@lobby'] = {
+		templateUrl : 	$.uipage.templateURL+'05.lobby.index.html',
+		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
+							$.log("initial \""+_temp.name+"\" -> \"lobby-view\" controller ...");
+							var _controller = $.uipage.angular.controller[_temp.name] = {};
+							_controller.scope = $scope;
+							_controller.http = $http;
+							$scope.data = $scope.data || {};
+							$scope.i18n = i18n;
+							$scope.str = $scope.str || {};
+				        }]
+	};
 
 	$.uipage.angular.MVC_Template.push(_temp);
 

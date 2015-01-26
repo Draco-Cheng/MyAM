@@ -571,13 +571,21 @@ var _getRecord = function(data, callback){
 			var _tids = JSON.parse(data.tids_json);
 			
 			_tids && _tids.forEach(function(tid){
-				if(! /^\d{13}$/.test(tid) ) throw "invalid tid "+tid;
+				if(tid !== "_EMPTY_" && ! /^\d{13}$/.test(tid) ) throw "invalid tid "+tid;
 			});
 
 			var _conditions = _tids.map(function(tid){
-				return "tids LIKE '%"+tid+"%'";
+				if(tid === "_EMPTY_")
+					return "tids IS NULL";
+				else
+					return "tids LIKE '%"+tid+"%'";
 			})
-			_sql = "SELECT * FROM ( "+_sql+" ) WHERE "+_conditions.join(" AND ")+" ";
+			
+			//data.type_query_set  = (String) [∪ Union , ∩ intersection]
+			var _sqlSet = " AND "; // ∩ intersection
+			if(data.type_query_set == "union")
+				_sqlSet = " OR "; // ∪ Union
+			_sql = "SELECT * FROM ( "+_sql+" ) WHERE "+_conditions.join(_sqlSet)+" ";
 
 		}catch(e){console.log(e)}
 	}

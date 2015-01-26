@@ -62,6 +62,7 @@ $.uipage.SCOPE = {};
 									cid 	: currency.cid,
 									type	: currency.type,
 									to_cid	: currency.to_cid,
+									main 	: currency.main,
 									memo	: currency.memo,
 									rate 	: currency.rate,
 									date 	: currency.date,

@@ -58,6 +58,9 @@ $.uipage.SCOPE = {};
 							$scope.filter.limit = "10";
 
 							$scope.filter.cid = null;
+							$scope.filter.type_query_set = "intersection";
+
+							bb = $scope.filter
 							//****************************	
 
 							//****************************
@@ -114,6 +117,7 @@ $.uipage.SCOPE = {};
 								_data.orderBy = [_filter.orderCol, _filter.orderBy];
 								_data.start_date = _filter.start_date || null;
 								_data.end_date = _filter.end_date || null;
+								_data.type_query_set = _filter.type_query_set;
 
 								if(_data.start_date)
 									_data.invalidDate = !$.uipage.func.checkDateFormat(_data.start_date);
@@ -174,6 +178,14 @@ $.uipage.SCOPE = {};
 								});
 							}
 
+							$scope.typeFilterSelectList = function( cashType ){
+								if(!$scope.types) return;
+								var _seletion = $scope.typeQuickSelectList(cashType);
+								_seletion.unshift({ tid : '_EMPTY_', 'type_label' : 'EMPTY'});
+								return _seletion;
+
+							}
+
 							$scope.currencyQuickSelectList = function( cashType ){
 								if(!$scope.currencies) return;
 
@@ -183,7 +195,6 @@ $.uipage.SCOPE = {};
 							}
 
 							$scope.typeSelectionChange = function(data){
-
 								if(!data.types[data.typeSelection.tid]){
 									data.types[data.typeSelection.tid] = data.typeSelection;
 									data.typesLength++;

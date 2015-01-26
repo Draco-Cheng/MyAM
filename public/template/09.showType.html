@@ -34,7 +34,7 @@
 	
 	<div ng-if="types===ubdefiend">loading...</div>
 	<div ng-if="types.length===0">null</div>
-	<div ng-if="types.length">
+	<div>
 		<div class="typeMaps-classified_typeMaps">
 			<ul class="typeMaps-Wrapper type-Maps">
 				<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
@@ -97,6 +97,6 @@
 		</div>
 	</div>
     <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
-        <li ng-repeat="typeMap in typeMap.sub" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
+        <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
     </ul>
 </script>

@@ -1,0 +1,39 @@
+<div id="showType">	
+	<div ng-if="types===ubdefiend">loading...</div>
+	<div ng-if="types.length===0">null</div>
+	<div>
+		<div class="typeMaps-classified_typeMaps">
+			<ul class="typeMaps-Wrapper type-Maps">
+				<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+			</ul>
+		</div>
+		<div ng-if="unclassified_typeMaps">
+			<div class="typeMaps-unclassified_typeMaps">
+				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
+				<ul class="typeMaps-Wrapper type-Maps">
+					<li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+<script type="text/ng-template" id="typeTree">
+	<div class="table" ng-init="data = typeMap.data;">
+		<div class="td">
+			<input id="type_label" ng-change="data.isChange=true;" ng-model="data.type_label" />
+		</div>
+		<div class="td">
+			<select id="cashType" ng-change="data.isChange=true;" ng-model="data.cashType">
+				<option value="0">{{i18n.showType.cost_earn}}</option>
+				<option value="-1">{{i18n.showType.cost}}</option>
+				<option value="1">{{i18n.showType.earn}}</option>
+			</select>
+		</div>
+	</div>
+    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
+        <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
+    </ul>
+</script>
