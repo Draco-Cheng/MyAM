@@ -55,8 +55,8 @@ $.uipage.SCOPE = {};
 							};
 
 							$scope.setType = function(data){
-								if(!data.type_label)
-									return $(".addType .td-type_label").addClass("error");
+								data.invalid_type_label = !data.type_label;
+								if(data.invalid_type_label) return;
 
 								$.uipage.func.setType({
 									"db"			: $.uipage.storage("MyAM_userDB"),

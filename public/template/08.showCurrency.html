@@ -6,7 +6,7 @@
 					<div class="btn-add-word">{{i18n.showCurrency.add}}</div>
 				</div>
 			</div>
-			<div class="td td-type">
+			<div class="td td-type {{addData.invalid_type?'error' : ''}}">
 				<input ng-model="addData.type" ng-change="emptyAddDateRate()" placeholder="{{i18n.showCurrency.type_placeholder}}">
 			</div>
 			<div class="td">
@@ -14,7 +14,7 @@
 					<option disabled value>{{i18n.showCurrency.mainCurrency}}</option>
 				</select>
 			</div>
-			<div class="td td-addrate">
+			<div class="td td-addrate {{addData.invalid_rate?'error' : ''}}">
 				<input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder()}}">
 			</div>
 			<div class="td">
@@ -26,7 +26,7 @@
 					<span class="hint">{{i18n.showCurrency.quickSelect}}</span>
 				</div>
 			</div>
-			<div class="td td-date">
+			<div class="td td-date  {{addData.invalid_date?'error' : ''}}">
 				<input class="cell" type="date" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="addData.date" />
 			</div>
 		</div>
@@ -55,7 +55,7 @@
 		<div class="td td-cid">
 			<span>{{currency.data.cid}}</span>
 		</div>
-		<div class="td">
+		<div class="td  {{currency.data.invalid_type?'error' : ''}}">
 			<input ng-model="currency.data.type" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.type_placeholder}}">
 		</div>
 		<div class="td">
@@ -66,7 +66,7 @@
 				{{i18n.showCurrency.mainCurrency}}
 			</span>				
 		</div>
-		<div class="td td-rate">
+		<div class="td td-rate {{currency.data.invalid_rate?'error' : ''}}">
 			<span ng-if="currency.data.to_cid">
 				<input ng-model="currency.data.rate" ng-change="currency.data.isChange=true;" >
 			</span>
@@ -85,7 +85,7 @@
 			</div>
 		</div>
 
-		<div class="td">
+		<div class="td  {{currency.data.invalid_date?'error' : ''}}">
 			<input class="cell" type="date" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="currency.data.date" />
 		</div>
 	</div>

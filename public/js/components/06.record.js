@@ -66,10 +66,11 @@ $.uipage.SCOPE = {};
 							//addData*********************
 							
 							var _summarize = function(records){
-								$.uipage.func.getCurrencyId({
-									db : $.uipage.storage("MyAM_userDB")
-								}, function(response){
-									var _currencyId = response;
+								var _currencyId = null;
+								var _flatTypeMaps = null;
+								
+								var _parse = function(){
+									if(!_currencyId || !_flatTypeMaps) return;
 									var _summaries = {};
 
 									records.forEach(function(record){
@@ -95,7 +96,21 @@ $.uipage.SCOPE = {};
 									}
 
 									$scope.summaries = _summaries;
-								})
+								};
+
+								$.uipage.func.createFlatTypeMaps({
+									db : $.uipage.storage("MyAM_userDB")
+								}, function(response){
+									_flatTypeMaps = response;
+									_parse();
+								});
+
+								$.uipage.func.getCurrencyId({
+									db : $.uipage.storage("MyAM_userDB")
+								}, function(response){
+									_currencyId = response;
+									_parse();
+								});
 							}
 							//****************************							
 
@@ -105,6 +120,10 @@ $.uipage.SCOPE = {};
 									return currency.type + _divStr + currency.memo +_divStr + currency.date;
 								else
 									return currency.type + _divStr + currency.date;
+							}
+
+							$scope.str.filterSelectType = function(){
+								return $scope.filter.typesLength? i18n.record.type : i18n.record.alltype;
 							}
 							
 							var _getRecords = function(forceUpdate){
@@ -117,6 +136,8 @@ $.uipage.SCOPE = {};
 								_data.start_date = _filter.start_date || null;
 								_data.end_date = _filter.end_date || null;
 								_data.type_query_set = _filter.type_query_set;
+								_data.absoluteQuery = _filter.absoluteQuery;
+
 
 								if(_data.start_date)
 									_data.invalidDate = !$.uipage.func.checkDateFormat(_data.start_date);
@@ -135,7 +156,7 @@ $.uipage.SCOPE = {};
 									_tids.push(i)
 								}
 								if(_tids.length)
-								_data.tids_json = JSON.stringify(_tids);
+								_data.tids = _tids;
 								
 								_data.limit = _filter.limit || null;
 
@@ -143,7 +164,7 @@ $.uipage.SCOPE = {};
 									_summarize(response);
 									$scope.renderLimit = 50;
 									$scope.records = response;
-								},forceUpdate);								
+								},forceUpdate);
 							}
 							$scope.getRecords = _getRecords;
 							var _initial = function(forceUpdate){
@@ -316,6 +337,13 @@ $.uipage.SCOPE = {};
 							$scope.addRenderLimit =function(){
 								if($scope.records.length >= $scope.renderLimit)
 									$scope.renderLimit+=50;
+							}
+
+
+							$scope.showTypeMaps = function(record){
+								$.uipage.dialog("typeMaps", {
+									$scope
+								}) 
 							}
 				        }]
 	};

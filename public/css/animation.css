@@ -29,6 +29,29 @@
 /**********************************************/
 /****************** division ******************/
 /**********************************************/
+.btn-recover{
+    transition-duration: 1.5s;
+    -webkit-transition-duration: 1.5s;
+
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+
+.btn-recover:hover{
+    transform: rotate(-450deg);
+    -webkit-transform: rotate(-450deg);
+    background-color: rgba(0, 136, 255, 0.7);
+}
+
+.btn-recover:active{
+    transform: rotate(-1800deg);
+    -webkit-transform: rotate(-1800deg);
+    background-color: rgba(0, 136, 255, 1);
+}
+
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
 #setting .setting-menu-wrap{
     transition-duration: 0.5s;
     -webkit-transition-duration: 0.5s;

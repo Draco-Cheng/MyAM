@@ -30,6 +30,7 @@
 				<select id="typeList" ng-model="addData.typeSelection"  ng-change="typeSelectionChange(addData)" ng-options="type as type.type_label for type in typeQuickSelectList(addData.cashType)">
 					<option disabled value>{{i18n.record.type}}</option>
 				</select>
+				<div ng-click="showTypeMaps(addData)">show Maps</div>
 			</div>
 			<div ng-if="addData.typesLength" class="td td-types_block">
 				<div class="block-type-row" ng-repeat="type in addData.types" ng-click="removeTypes(type,addData)">
@@ -39,69 +40,77 @@
 		</div>
 	</div>
 
-	<div>
-		<div class="table">
-			<div class="td-operate">
-				<div class="btn-recover" ng-click="getRecords()"></div>					
-			</div>
-			<div class="td td-type">
-				<select id="cashType" ng-change="cleanTypes(filter)" ng-model="filter.cashType">
-					<option value=null>{{i18n.record.cost_income}}</option>
-					<option value="-1">{{i18n.record.cost}}</option>
-					<option value="1">{{i18n.record.income}}</option>
-				</select>
-			</div>
-			<div class="td td-value {{filter.invalidValue?'error':''}}">
-				<input ng-model="filter.value_greater" placeholder="{{i18n.record.value_placeholder}}">
-				~
-				<input ng-model="filter.value_less" placeholder="{{i18n.record.value_placeholder}}">
-			</div>
+	<div id="record-queryFilter">
+		<div class="record-queryFilter-title">{{i18n.record.queryFilter}}</div>
+		<div class="btn-recover" ng-click="getRecords()"></div>	
+		<div class="record-queryFilter-panel">
+			<div class="table">
+				<div class="td td-type">
+					<select id="cashType" ng-change="cleanTypes(filter)" ng-model="filter.cashType">
+						<option value=null>{{i18n.record.cost_income}}</option>
+						<option value="-1">{{i18n.record.cost}}</option>
+						<option value="1">{{i18n.record.income}}</option>
+					</select>
+				</div>
+				<div class="td td-value {{filter.invalidValue?'error':''}}">
+					<input ng-model="filter.value_greater" placeholder="{{i18n.record.value_placeholder}}">
+					~
+					<input ng-model="filter.value_less" placeholder="{{i18n.record.value_placeholder}}">
+				</div>
 
-			<div class="td">
-				<select id="typeList" ng-model="filter.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
-					<option value="">{{i18n.record.selectCurrency}}</option>
-				</select>
-			</div>
+				<div class="td">
+					<select id="typeList" ng-model="filter.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+						<option value="">{{i18n.record.selectCurrency}}</option>
+					</select>
+				</div>
 
-			<div class="td {{filter.invalidDate?'error':''}}">
-				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.start_date" />
-				~
-				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.end_date" />
+				<div class="td {{filter.invalidDate?'error':''}}">
+					<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.start_date" />
+					~
+					<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="filter.end_date" />
+				</div>
+				<div class="td">
+					<input ng-model="filter.memo" placeholder="{{i18n.record.momo_placeholder}}">
+				</div>
 			</div>
-			<div class="td">
-				<input ng-model="filter.memo" placeholder="{{i18n.record.momo_placeholder}}">
+			<div class="table tb-typeQuery">
+				<div class="td">
+					<select id="typeQuerySet" ng-model="filter.type_query_set">
+						<option value = "intersection">intersection</option>
+						<option value = "union">union</option>
+					</select>
+				</div>
+				<div class="td">
+					<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeFilterSelectList(filter.cashType)">
+						<option value>{{ str.filterSelectType()}}</option>
+					</select>
+				</div>
+				<div ng-if="filter.typesLength"  class="td">
+					<input id="absoluteQuery" ng-model="filter.absoluteQuery" type="checkbox" />{{i18n.record.absoluteQuery}}
+				</div>
+				<div ng-if="filter.typesLength" class="td td-types_block">
+					<div class="block-type-row" ng-repeat="type in filter.types" ng-click="removeTypes(type,filter)">
+						<span>{{type.type_label}}</span>
+					</div>
+				</div>
 			</div>
-			<div class="td">
-				<select ng-model="filter.orderCol">
-					<option value="rid">{{i18n.record.rid}}</option>
-					<option value="date">{{i18n.record.date}}</option>
-				</select>
-				<select ng-model="filter.orderBy">
-					<option value="ASC">{{i18n.record.ASC}}</option>
-					<option value="DESC">{{i18n.record.DESC}}</option>
-				</select>
-				<select ng-model="filter.limit">
-					<option value="10">10</option>
-					<option value="20">20</option>
-					<option value="50">50</option>
-					<option value="100">100</option>
-					<option value="">{{i18n.record.unlimit}}</option>
-				</select>				
-			</div>
-			<div class="td">
-				<select id="typeQuerySet" ng-model="filter.type_query_set">
-					<option value = "intersection">intersection</option>
-					<option value = "union">union</option>
-				</select>
-			</div>
-			<div class="td">
-				<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeFilterSelectList(filter.cashType)">
-					<option value>{{i18n.record.alltype}}</option>
-				</select>
-			</div>
-			<div ng-if="filter.typesLength" class="td td-types_block">
-				<div class="block-type-row" ng-repeat="type in filter.types" ng-click="removeTypes(type,filter)">
-					<span>{{type.type_label}}</span>
+			<div class="table">
+				<div class="td">
+					<select ng-model="filter.orderCol">
+						<option value="rid">{{i18n.record.rid}}</option>
+						<option value="date">{{i18n.record.date}}</option>
+					</select>
+					<select ng-model="filter.orderBy">
+						<option value="ASC">{{i18n.record.ASC}}</option>
+						<option value="DESC">{{i18n.record.DESC}}</option>
+					</select>
+					<select ng-model="filter.limit">
+						<option value="10">10 {{i18n.record.records}}</option>
+						<option value="20">20 {{i18n.record.records}}</option>
+						<option value="50">50 {{i18n.record.records}}</option>
+						<option value="100">100 {{i18n.record.records}}</option>
+						<option value="">{{i18n.record.unlimit}} {{i18n.record.records}}</option>
+					</select>				
 				</div>
 			</div>
 		</div>

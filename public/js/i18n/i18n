@@ -42,15 +42,17 @@
 		"value_placeholder" : "value",
 		"momo_placeholder" : "Enter momo here...",
 		"date_placeholder" : "yyyy-mm-dd",
-		"rid" : "Order",
-		"date" : "Date",
+		"rid" : "Order by insert sequence",
+		"date" : "Order by Date column",
 		"ASC" : "Old -> New",
 		"DESC" : "New -> Old",
 		"unlimit" : "Unlimit",
 		"selectCurrency" : "Please Select Currency",
 		"records" : "record(s)",
 		"sum" : "Sum",
-		"alltype" : "All record types"
+		"alltype" : "All record types",
+		"absoluteQuery" : "Absolute Query Types",
+		"queryFilter" : "Filter"
 	},
 
 	"setting" : {

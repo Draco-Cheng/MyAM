@@ -37,6 +37,15 @@ body>.top {
 #lobby {
 	margin-top: 50px;
 }
+#lobby-dialog-view {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: rgba(240, 248, 255, 0.8);
+	height: 100%;
+	width: 100%;
+	z-index: 9999;
+}
 
 #setting .setting-menu-block {
 	position: fixed;
@@ -299,6 +308,39 @@ body>.top {
 #record .record-summary-cost, #record .cost .record-summary-sum{
 	background-color: rgb(250, 190, 190);
 }
+
+#record #record-queryFilter{
+	background-color: rgba(178, 217, 251, 0.3);
+	padding: 10px 0px;
+	margin: 10px 0px;
+}
+
+#record #record-queryFilter .record-queryFilter-title{
+	font-style: italic;
+	font-size: 28px;
+	color: rgba(95, 95, 95, 0.61);
+	font-weight: 900;
+}
+
+#record #record-queryFilter .btn-recover{
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+}
+#record #record-queryFilter .table {
+	display: table;
+}
+#record #record-queryFilter input{
+	vertical-align: middle;
+}
+#record .record-queryFilter-panel{
+	display: inline-block;
+	vertical-align: middle;
+	text-align: left;
+}
+
+
+
 /**** #setting ***/
 #setting .setting-menu-block{
 	display: inline-table;

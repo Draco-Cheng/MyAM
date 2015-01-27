@@ -69,20 +69,16 @@ $.uipage.SCOPE = {};
 									quickSelect 	: currency.quickSelect
 								}
 
-								if(!_data.type) 
-									return $("#showCurrency .td-type").addClass("error");
-								else
-									$("#showCurrency .td-type").removeClass("error");
 
-								if(!_data.rate) 
-									return $("#showCurrency .td-addrate").addClass("error");
-								else
-									$("#showCurrency .td-addrate").removeClass("error");
 
-								if(!_data.date) 
-									return $("#showCurrency .td-date").addClass("error");
-								else
-									$("#showCurrency .td-date").removeClass("error");
+
+								currency.invalid_type = !currency.type
+								currency.invalid_rate = !parseInt(currency.rate);
+								currency.invalid_date = !(new Date("asdas") == "Invalid Date");
+
+								if(currency.invalid_type || currency.invalid_rate || currency.invalid_date)
+									return;
+								
 								
 								_data.type = currency.type.toUpperCase()
 								

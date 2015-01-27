@@ -104,14 +104,10 @@ $.uipage.func = $.uipage.func || {};
 	}
 
 	_func.getRecordsAndType = function(data, callback){
-		var _getType_Flag = false;
 		var _getRecords_Flag = false;
 		var _data = { db : data.db };
-		var _res = {};
 
-		var _parse = function(){
-			if(!_getType_Flag || !_getRecords_Flag ) return;
-
+		var _parse = function(_res){
 			_res.records.data.forEach(function(record){
 				record.types = {};
 				record.typesLength = 0;
@@ -125,24 +121,38 @@ $.uipage.func = $.uipage.func || {};
 			callback(_res.records.data);
 		}
 
-		_func.getRecords(data, function(response){
-			_getRecords_Flag = true;
-			_res.records = response;
-			_res.recordsId = {};
-
-			response.data.forEach(function(item, no){
-				_res.recordsId[item.rid] = item;
-				item.no = no;
-			});
-
-			_parse();
-
-		});
 
 		_func.getType(_data, function(response){
-			_getType_Flag = true;
-			_parse();
+
+			var _type = response;
+			_func.getFlatTypeMaps(_data, function(maps){
+				_getType_Flag = true;
+
+				if(data.tids){
+					var _temp = [];
+					data.tids.forEach(function(n){
+						(data.absoluteQuery || !maps[n]) ? _temp.push([n]) : _temp.push(maps[n].sub);
+					});
+					data.tids_json = JSON.stringify(_temp);
+					delete data.tids;
+				}
+
+
+				_func.getRecords(data, function(response){
+					var _res = {};
+					_res.records = response;
+					_res.recordsId = {};
+
+					response.data.forEach(function(item, no){
+						_res.recordsId[item.rid] = item;
+						item.no = no;
+					});
+
+					_parse(_res);
+				});				
+			})
 		});
+
 	}
 
 	//********************************************
@@ -297,14 +307,19 @@ $.uipage.func = $.uipage.func || {};
 	//********************************************
 	_func.getType = function(data, callback, forceUpdate){
 		if(!forceUpdate && _cache.type) return callback(_cache.type);
+		delete _cache.type;
+		delete _cache.typeMaps;
+		delete _cache.typeById;
+		delete _cache.buildTypeMaps;
+		delete _cache.flatTypeMaps;
 
 		$.uipage.ajax({
 			"url" : "type/get",
 			"type" : "post",
 			"data" : data,
 			"callback" : function(response){
-				delete _cache.type;
-				
+
+
 				_func.resetCache("typeById");
 
 				if($.uipage.errHandler(response)) return;
@@ -327,6 +342,7 @@ $.uipage.func = $.uipage.func || {};
 		if(!forceUpdate && _cache.typeById) return tid ? _cache.typeById[tid] : _cache.typeById;
 
 		delete _cache.typeById;
+
 		_cache.typeById = {};
 
 		_cache.type.forEach(function(e){
@@ -339,13 +355,17 @@ $.uipage.func = $.uipage.func || {};
 
 	_func.getTypeMaps = function(data, callback, forceUpdate){
 		if(!forceUpdate && _cache.typeMaps) return callback(_cache.typeMaps);
+		delete _cache.typeMaps;
+		delete _cache.buildTypeMaps;
+		delete _cache.flatTypeMaps;
 
 		$.uipage.ajax({
 			"url" : "type/getMaps",
 			"type" : "post",
 			"data" : data,
 			"callback" : function(response){
-				delete _cache.typeMaps;
+
+
 				if($.uipage.errHandler(response)) return;
 
 				_cache.typeMaps = {};
@@ -357,6 +377,7 @@ $.uipage.func = $.uipage.func || {};
 					_cache.typeMaps[e.sub_tid] = _cache.typeMaps[e.sub_tid] || { sup :[], sub : []};
 					_cache.typeMaps[e.sub_tid].sup.push(e.tid)
 				});
+
 				callback && callback(_cache.typeMaps);	
 			}
 		});		
@@ -364,18 +385,25 @@ $.uipage.func = $.uipage.func || {};
 
 	var _recursiveBuildTypeMaps = function(tid, classifiedSeries, supSeries){
 		supSeries = supSeries || "";
-
 		if( supSeries.indexOf(tid) !== -1 ) return;
 		if(classifiedSeries) classifiedSeries[tid] = true;
 
 		var _list = [];
 		var _nextSupSeries = supSeries+ (supSeries ? ",":"") + tid;
-		
-		_cache.typeMaps[tid] && _cache.typeMaps[tid].sub.forEach(function(_tid){
-				var _typeMaps = _recursiveBuildTypeMaps(_tid, classifiedSeries, _nextSupSeries);
+		var _type = _func.getTypeById(tid)
+
+		_cache.typeMaps[tid] && _cache.typeMaps[tid].sub.forEach(function(_subtid){
+				var _typeMaps = _recursiveBuildTypeMaps(_subtid, classifiedSeries, _nextSupSeries);
+				var _subtype = _func.getTypeById(_subtid);
+				_subtype.sup = _subtype.sup || {};
+				_subtype.sup[tid] = _type;
+				_type.sub = _type.sub || {};
+				_type.sub[tid] = _subtype;
+
 				_list.push({
-			  		data : _func.getTypeById(_tid),
+			  		data : _subtype,
 			  		sub : _typeMaps,
+			  		sup : {list : [_type]},
 			  		supSeries : _nextSupSeries
 			  	});
 		});
@@ -384,6 +412,10 @@ $.uipage.func = $.uipage.func || {};
 	}
 
 	_func.buildTypeMaps = function(data, callback, forceUpdate){
+		if(_cache.buildTypeMaps && forceUpdate) 
+			return callback && callback.apply(callback,_cache.buildTypeMaps);
+		delete _cache.buildTypeMaps;
+
 		var _getTypeFlag = false;
 		var _getTypeMapsFlag = false;
 
@@ -401,6 +433,7 @@ $.uipage.func = $.uipage.func || {};
 			  		tidMaps.push({
 				  		data : _func.getTypeById(obj.tid),
 				  		sub : _typeMaps,
+				  		sup : {list : []},
 				  		supSeries : ""
 				  	});
 			  	}
@@ -414,17 +447,75 @@ $.uipage.func = $.uipage.func || {};
 				  		unclassified.push({
 					  		data : _func.getTypeById(obj.tid),
 					  		sub : _typeMaps,
+					  		sup : {list : []},
 				  			supSeries : _typeMaps.series
 					  	});
 					 }
 			  	}
 			});
 
+			_cache.buildTypeMaps = [tidMaps, unclassified]
 			callback(tidMaps, unclassified);
 		}
 		_func.getType(data 		,function(){ _getTypeFlag=true;		_parse(); }, forceUpdate);
 		_func.getTypeMaps(data 	,function(){ _getTypeMapsFlag=true;	_parse(); }, forceUpdate);
 	}
+
+	var _recursiveBuildSupFlatTypeMaps = function(tid ,typeMaps , series){
+		series = series || [];		
+		if(series.indexOf(tid) !== -1 )return;
+		series.push(tid);
+
+		typeMaps[tid] && typeMaps[tid].sup.forEach(function(suptid){
+			_recursiveBuildSupFlatTypeMaps(suptid,typeMaps , series)
+		});
+
+		return series;
+	}
+	var _recursiveBuildSubFlatTypeMaps = function(tid ,typeMaps , series){
+		series = series || [];		
+		if(series.indexOf(tid) !== -1 )return;
+		series.push(tid);
+
+		typeMaps[tid] && typeMaps[tid].sub.forEach(function(subtid){
+			_recursiveBuildSubFlatTypeMaps(subtid,typeMaps , series)
+		});
+
+		return series;
+	}
+
+	_func.createFlatTypeMaps = function(data, callback, forceUpdate){
+		var _type = null;
+		var _typeMaps = null;
+
+		var _parse = function(){
+			if(!_type || !_typeMaps) return;
+
+			var _flatTypeMaps = {}
+
+			_type.forEach(function(obj){
+				_flatTypeMaps[obj.tid] = { 
+					data : _func.getTypeById(obj.tid),
+					sup : _recursiveBuildSupFlatTypeMaps(obj.tid, _typeMaps),
+					sub : _recursiveBuildSubFlatTypeMaps(obj.tid, _typeMaps)
+				};
+			});
+
+			callback(_flatTypeMaps);
+		}
+		_func.getType(data 		,function(response){ _type=response;		_parse(); }, forceUpdate);
+		_func.getTypeMaps(data 	,function(response){ _typeMaps=response;	_parse(); }, forceUpdate);
+	};
+
+	_func.getFlatTypeMaps = function(data, callback, forceUpdate){
+		if( _cache.flatTypeMaps && forceUpdate) callback && callback(_cache.flatTypeMaps);
+		delete _cache.flatTypeMaps;
+
+		_func.createFlatTypeMaps(data, function(response){
+			_cache.flatTypeMaps = response;
+			callback(response);
+		}, forceUpdate)
+	};
 
 	_func.setType = function(data, callback){
 		$.uipage.ajax({

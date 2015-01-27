@@ -568,18 +568,32 @@ var _getRecord = function(data, callback){
 
 	if(data.tids_json){
 		try{
-			var _tids = JSON.parse(data.tids_json);
+			var _tidsArray = JSON.parse(data.tids_json);
 			
-			_tids && _tids.forEach(function(tid){
-				if(tid !== "_EMPTY_" && ! /^\d{13}$/.test(tid) ) throw "invalid tid "+tid;
+			if(!_tidsArray || !_tidsArray.forEach)
+				throw "invalid _tidsArray "+_tidsArray;
+
+			//---check--- formate
+			_tidsArray.forEach(function(tids){
+				if(!tids || !tids.forEach) throw "invalid tids "+tids;
+				tids.forEach(function(tid){
+					if(tid !== "_EMPTY_" && ! /^\d{13}$/.test(tid) ) throw "invalid tid "+tid;
+				});
+			})
+
+			var _conditions = [];
+
+			_tidsArray.forEach(function(tids){
+				var _map = tids.map(function(tid){
+					if(tid === "_EMPTY_")
+						return "tids IS NULL";
+					else
+						return "tids LIKE '%"+tid+"%'";
+				});
+				_conditions.push(" ( "+_map.join(" OR ")+" ) ");
 			});
 
-			var _conditions = _tids.map(function(tid){
-				if(tid === "_EMPTY_")
-					return "tids IS NULL";
-				else
-					return "tids LIKE '%"+tid+"%'";
-			})
+
 			
 			//data.type_query_set  = (String) [∪ Union , ∩ intersection]
 			var _sqlSet = " AND "; // ∩ intersection

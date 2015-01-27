@@ -7,7 +7,7 @@
 					<div class="btn-add-word">{{i18n.showType.add}}</div>
 				</div>
 			</div>
-			<div class="td td-type_label">
+			<div class="td td-type_label {{addData.invalid_type_label?'error':''}}">
 				<input id="type_label" ng-model="addData.type_label" ng-click="removeErrorClass()" type="text" placeholder="{{i18n.showType.label}}" />
 			</div>
 			<div class="td">
@@ -49,7 +49,6 @@
 			</div>
 		</div>
 	</div>
-
 </div>
 
 
@@ -73,7 +72,7 @@
 		<div class="td td-tid">
 			<span id="type_id">{{data.tid}}</span>
 		</div>
-		<div class="td">
+		<div class="td {{data.invalid_type_label?'error':''}}">
 			<input id="type_label" ng-change="data.isChange=true;" ng-model="data.type_label" />
 		</div>
 		<div class="td">
