@@ -137,6 +137,25 @@ body>.top {
 	background-image: url(../img/finddocument-512.png);
 	cursor: pointer;
 }
+
+
+.btn-up-arrow, .btn-down-arrow{
+	height: 30px;
+	background-size: contain;
+	vertical-align: middle;
+	cursor: pointer;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.btn-up-arrow{
+	background-image: url(../img/up-arrow-icon.png);
+}
+
+.btn-down-arrow{
+	background-image: url(../img/down-arrow-icon.png);
+}
+
 /**** #manageDB ***/
 #manageDB .progress-bar{
 	display: inline-block;
@@ -297,7 +316,7 @@ body>.top {
 
 #record #showRecordPanel{
 	display: inline-block;
-	text-align: left;	
+	text-align: center;	
 }
 
 
@@ -314,26 +333,6 @@ body>.top {
 }
 #record .td-value input{
 	width: 65px;
-}
-
-#record .record-summary{
-	text-align: center;
-}
-
-#record .record-summary>div{
-	display: inline-block;
-	padding: 5px 10px;
-	margin: 10px 20px;
-	border-radius: 15px;
-}
-#record .record-summary-label{
-	background-color: rgb(215, 223, 250);
-}
-#record .record-summary-income, #record .income .record-summary-sum{
-	background-color: rgb(182, 253, 174);
-}
-#record .record-summary-cost, #record .cost .record-summary-sum{
-	background-color: rgb(250, 190, 190);
 }
 
 #record #record-queryFilter{
@@ -568,7 +567,11 @@ body>.top {
 	text-align: center;
 	display: inline-block;
 	font-style: italic;
-	width: 100%;
+	width: 50%;
+	background-color: rgba(42, 42, 42, 0.25);
+	border-radius: 20px;
+	padding: 10px 10px;
+	min-width: 600px;
 }
 
 #showTypeMaps .typeMaps-panel{
@@ -618,7 +621,7 @@ body>.top {
 	vertical-align: middle;
 	font-size: 18px;
 	line-height: 20px;
-	color: rgb(138, 138, 138);
+	color: rgb(66, 66, 66);
 	font-weight: 800;
 }
 
@@ -639,4 +642,53 @@ body>.top {
 
 #showTypeMaps .typeMap-check-block:hover .typeMap-check.checked{
 	background-image: url(../img/dialog-cancel-3.png);
+}
+
+/**** #recordSummary ***/
+#recordSummary{
+	margin-bottom: 10px;
+	display: inline-block;
+	font-style: italic;
+	color: rgb(107, 107, 107);
+}
+#recordSummary ul{
+	text-align: left;
+}
+
+#recordSummary li{
+	list-style-type: none;
+}
+#recordSummary .record-summary-type-top-li{
+	list-style-type: circle;
+}
+
+#recordSummary .record-summary{
+	text-align: center;
+}
+
+#recordSummary .record-summary>div{
+	display: inline-block;
+	padding: 0px 5px;
+	margin: 2px 5px;
+	border-radius: 15px;
+	min-width: 100px;
+}
+#recordSummary .record-summary-label{
+	background-color: rgb(215, 223, 250);
+}
+#recordSummary .record-summary-income, #record .income .record-summary-sum{
+	background-color: rgb(182, 253, 174);
+}
+#recordSummary .record-summary-cost, #record .cost .record-summary-sum{
+	background-color: rgb(250, 190, 190);
+}
+
+#recordSummary .record-summary-type{
+	border: 1px solid rgba(87, 87, 87, 0.57);
+	border-radius: 15px;
+	margin: 10px 0px;
+	background-color: rgba(154, 180, 202, 0.22);
+}
+#recordSummary .record-summary-type-wrapper{
+	display: inline-block;
 }

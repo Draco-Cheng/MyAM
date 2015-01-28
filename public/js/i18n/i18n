@@ -88,7 +88,8 @@
 	},
 
 	"typeMaps" : {
-		"unclassified_typeMaps" : "Unclassified"
+		"unclassified_typeMaps" : "Unclassified",
+		"noTypeMaps" : "There is no avaliable TypeMaps!"
 	},
 	"code" : {
 		"200" : "success",

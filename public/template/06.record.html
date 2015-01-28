@@ -120,18 +120,47 @@
 	<div ng-if="records===ubdefiend">loading...</div>
 	<div ng-if="records.length===0">null</div>
 	<div id="showRecordPanel" ng-if="records">
-		<div class="record-summary {{summary.sum<0 ? 'cost' : 'income'}}" ng-repeat="summary in summaries">
+
+		<div id="recordSummary">
+			<div class="record-summary-total" ng-init="summaries = totalSummary"  ng-include="'recordSummaryTree'"></div>
+			<div ng-if="showTypeSummary" class="record-summary-type" >
+				<ul class="record-summary-type-Wrapper">
+					<if ng-repeat="typeMap in typeMaps" >
+						<li class="record-summary-type-top-li"  ng-include="'recordSummaryTypeTree'"></li>
+					</if>
+				</ul>				
+			</div>
+			<div class="{{showTypeSummary?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="swtichShowTypeSummary()" ></div>
+		</div>
+
+		<div ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
+	</div>
+	<div ng-if="records.length > renderLimit" class="btn-more" ng-click="addRenderLimit()"></div>
+</div>
+
+<script type="text/ng-template" id="recordSummaryTree">
+	<div ng-repeat="summary in summaries">
+		<div class="record-summary {{summary.sum<0 ? 'cost' : 'income'}}">
 			<div class="record-summary-label">{{summary.label}}</div>
 			<div class="record-summary-length">{{summary.length}} {{i18n.record.records}}</div>
 			<div class="record-summary-income">{{i18n.record.income}} : {{summary.income}}</div>
 			<div class="record-summary-cost">{{i18n.record.cost}} : {{summary.cost}}</div>
 			<div class="record-summary-sum">{{i18n.record.sum}} : {{summary.sum}}</div>
 		</div>
-		<div ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
 	</div>
-	<div ng-if="records.length > renderLimit" class="btn-more" ng-click="addRenderLimit()"></div>
-</div>
+</script>
 
+<script type="text/ng-template" id="recordSummaryTypeTree">
+	<span class="record-summary-type-label">{{typeMap.data.type_label}}</span>
+	<div class="record-summary-type-wrapper">
+		<div ng-include="'recordSummaryTree'" ng-init="summaries = summaryFlatMaps[typeMap.data.tid].summary"></div>
+	</div>
+    <ul  class="record-summary-type-Wrapper" ng-if="typeMap.sub">
+		<if ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = type.tid">
+			<li class="record-summary-type-sub-li"  ng-include="'recordSummaryTypeTree'"></li>
+		</if>
+    </ul>
+</script>
 
 <script type="text/ng-template" id="recordTree">
 		<div class="table {{record.cashType == 1 ? 'row-income' : 'row-cost' }}{{record.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{record.isDeleted? ' isDeleted' : ''}}">

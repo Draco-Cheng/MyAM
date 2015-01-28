@@ -29,6 +29,8 @@ $.uipage.SCOPE = {};
 							$scope.str = $scope.str || {};
 							$scope.addData = {};
 							$scope.addData.cashType = 0;
+							$scope.addData.showInMap = true;
+							$scope.addData.quickSelect = true;
 
 							var _getTypesData = function(forceUpdate){
 								$.uipage.func.getType({

@@ -107,8 +107,16 @@ $.uipage.SCOPE = {};
 										$.uipage.func.buildTypeMaps({
 											db : $.uipage.storage("MyAM_userDB")
 										}, function(maps, unclassified){
+											var _flag = false;
+											for(var i = 0; i< maps.length && !_flag ; i++){
+												if(maps[i].data.showInMap) _flag = true;
+											}
+											
+											for(var i = 0; i< unclassified.length && !_flag ; i++){
+												if(unclassified[i].data.showInMap) _flag = true;
+											}
 
-											if(!maps.length && !unclassified.length) return;
+											if(!_flag) return $.uipage.alert(i18n["typeMaps"]["noTypeMaps"]);
 											
 											$scope.dynamicTemplate = $.uipage.templateURL+'05.lobby.dialog.typeMaps.html';
 											$scope.classname = "typeMaps";
@@ -128,7 +136,6 @@ $.uipage.SCOPE = {};
 											
 											$scope.data.click = data.click;
 											$scope.data.types = data.types;
-											console.log(data.types)
 											
 										});	
 										break;

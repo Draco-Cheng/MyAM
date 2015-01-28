@@ -37,6 +37,7 @@ $.uipage.SCOPE = {};
 							$scope.addData.cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
 							//****************************
 
+
 							//****************************
 							//addData*********************
 							$scope.filter = {};
@@ -71,32 +72,55 @@ $.uipage.SCOPE = {};
 								
 								var _parse = function(){
 									if(!_currencyId || !_flatTypeMaps) return;
-									var _summaries = {};
+									var _total = {};
 
 									records.forEach(function(record){
-										var _currencyType = _currencyId[record.cid].type 
-										var _summary = _summaries[_currencyType] = _summaries[_currencyType] || {
-											length : 0,
-											label : _currencyType,
-											cost : 0,
-											income : 0,
-											sum : 0
-										}
-										if(record.cashType == -1){
-											_summary.cost += record.value;
-										}else{
-											_summary.income += record.value;
-										}
+										var _currencyType = _currencyId[record.cid].type;
+										var _typeList = {};
+										var _totalSUM = _total[_currencyType] = _total[_currencyType] || { length : 0, label : _currencyType, cost : 0, income : 0, sum : 0 };
 
-										_summary.length+=1;
+										if(record.cashType == -1){
+											_totalSUM.cost += record.value;
+										}else{
+											_totalSUM.income += record.value;
+										}
+										_totalSUM.length+=1;
+
+
+										record.tids && record.tids.split(",").forEach(function(tid){
+											_flatTypeMaps[tid].sup.forEach(function(sup_tid){
+												_typeList[sup_tid] = _flatTypeMaps[sup_tid];
+												_typeList[sup_tid].summary = _typeList[sup_tid].summary || {};
+												var _SUM = _typeList[sup_tid].summary[_currencyType] = _typeList[sup_tid].summary[_currencyType] || { length : 0, label : _currencyType, cost : 0, income : 0, sum : 0 };
+
+												if(record.cashType == -1){
+													_SUM.cost += record.value;
+												}else{
+													_SUM.income += record.value;
+												}
+												_SUM.length+=1;
+
+											});
+										});										
 									});
 									
-									for(var summaryId in _summaries){
-										_summaries[summaryId].sum = _summaries[summaryId].income - _summaries[summaryId].cost;
+									for(var _summaryId in _flatTypeMaps){
+										var _summaries = _flatTypeMaps[_summaryId].summary;
+										for(var _currencyType in _summaries ){
+											var _summary = _summaries[_currencyType];
+											_summary.sum = _summary.income - _summary.cost;
+										}											
 									}
 
-									$scope.summaries = _summaries;
+									for(var _currencyType in _total ){
+										var _summary = _total[_currencyType];
+										_summary.sum = _summary.income - _summary.cost;
+									}
+									
+									$scope.summaryFlatMaps = _flatTypeMaps;
+									$scope.totalSummary = _total;
 								};
+
 
 								$.uipage.func.createFlatTypeMaps({
 									db : $.uipage.storage("MyAM_userDB")
@@ -104,7 +128,6 @@ $.uipage.SCOPE = {};
 									_flatTypeMaps = response;
 									_parse();
 								});
-
 								$.uipage.func.getCurrencyId({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
@@ -174,6 +197,12 @@ $.uipage.SCOPE = {};
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
 									$scope.types = response;
+										$.uipage.func.buildTypeMaps({
+											db : $.uipage.storage("MyAM_userDB")
+										}, function(maps, unclassified){
+											$scope.typeMaps = maps.concat(unclassified);
+											console.log($scope.typeMaps)
+										})
 								},forceUpdate);
 
 								$.uipage.func.getCurrency({
@@ -351,6 +380,10 @@ $.uipage.SCOPE = {};
 										record.isChange = true;
 									}
 								}) 
+							}
+
+							$scope.swtichShowTypeSummary = function(){
+								$scope.showTypeSummary = !$scope.showTypeSummary;
 							}
 				        }]
 	};
