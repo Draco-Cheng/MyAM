@@ -34,9 +34,7 @@ $.uipage.SCOPE = {};
 								$.uipage.func.getType({
 									db : $.uipage.storage("MyAM_userDB")
 								}, function(response){
-									$scope.types = response.filter(function(type){
-										return type.quickSelect;
-									});
+									$scope.types = response;
 								},forceUpdate);	
 
 								$.uipage.func.buildTypeMaps({
@@ -75,7 +73,7 @@ $.uipage.SCOPE = {};
 											"tid"		: data.parent_tid,
 											"sub_tid"	: json.data[0].tid
 										}, function(json){
-											$scope.addData.parent_tid = "";
+											data.parent_tid = "";
 											_getTypesData(true);
 										});										
 									}else
@@ -108,6 +106,29 @@ $.uipage.SCOPE = {};
 								}, function(json){
 									_getTypesData(true);
 								});	
+							}
+
+							$scope.showTypeMaps = function(type){
+								var _types = {};
+
+								$.uipage.dialog("typeMaps", {
+									types : _types,
+									click : function(data){
+										if(_types[data.tid]){
+											type.parent_tid = "";
+											delete _types[data.tid];
+										}else{
+											for(var i in _types){
+												delete _types[i];
+											}
+
+											_types[data.tid] = data;
+											type.parent_tid = data.tid;
+										}
+
+										type.isChange = true;
+									}
+								}) 
 							}
 				        }]
 	};

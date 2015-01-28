@@ -83,10 +83,13 @@
 		"showInMap" : "showInMap",
 		"parent" : "--Add Parent Node--",
 		"add" : "+",
-		"unclassified_typeMaps" : "------------------------------Unclassified types------------------------------",
+		"unclassified_typeMaps" : "- Unclassified types -",
 		"date_placeholder" : "yyyy-mm-dd"
 	},
 
+	"typeMaps" : {
+		"unclassified_typeMaps" : "Unclassified"
+	},
 	"code" : {
 		"200" : "success",
 		"412" : "database \"{0}\" is not exists!",

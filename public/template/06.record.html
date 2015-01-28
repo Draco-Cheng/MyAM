@@ -30,7 +30,7 @@
 				<select id="typeList" ng-model="addData.typeSelection"  ng-change="typeSelectionChange(addData)" ng-options="type as type.type_label for type in typeQuickSelectList(addData.cashType)">
 					<option disabled value>{{i18n.record.type}}</option>
 				</select>
-				<div ng-click="showTypeMaps(addData)">show Maps</div>
+				<div class="btn-showTypeMaps" ng-click="showTypeMaps(addData)"></div>
 			</div>
 			<div ng-if="addData.typesLength" class="td td-types_block">
 				<div class="block-type-row" ng-repeat="type in addData.types" ng-click="removeTypes(type,addData)">
@@ -84,6 +84,7 @@
 					<select id="typeList" ng-model="filter.typeSelection"  ng-change="typeSelectionChange(filter)" ng-options="type as type.type_label for type in typeFilterSelectList(filter.cashType)">
 						<option value>{{ str.filterSelectType()}}</option>
 					</select>
+					<div class="btn-showTypeMaps" ng-click="showTypeMaps(filter)"></div>
 				</div>
 				<div ng-if="filter.typesLength"  class="td">
 					<input id="absoluteQuery" ng-model="filter.absoluteQuery" type="checkbox" />{{i18n.record.absoluteQuery}}
@@ -170,6 +171,7 @@
 				<select id="typeList" ng-model="record.typeSelection"  ng-change="record.isChange=true; typeSelectionChange(record)" ng-options="type as type.type_label for type in typeQuickSelectList(record.cashType)">
 					<option disabled value>{{i18n.record.type}}</option>
 				</select>
+				<div class="btn-showTypeMaps" ng-click="showTypeMaps(record)"></div>
 			</div>
 			<div ng-if="record.typesLength" class="td td-types_block">
 				<div class="block-type-row" ng-repeat="type in record.types" ng-click="record.isChange=true; removeTypes(type,record);">

@@ -1,28 +1,36 @@
-<div id="showType">
-	<div class="typeMaps-classified_typeMaps">
-		<ul class="typeMaps-Wrapper type-Maps">
-			<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
-		</ul>
-	</div>
-	<div ng-if="unclassified_typeMaps">
-		<div class="typeMaps-unclassified_typeMaps">
-			<div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
+<div id="showTypeMaps">
+	<div class="typeMaps-panel">
+		<div class="typeMaps-classified_typeMaps">
 			<ul class="typeMaps-Wrapper type-Maps">
-				<li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeMapsTree'"></li>
+				<li class="typeMaps-top-li" ng-repeat="typeMap in data.typeMaps" ng-init="typeMap=typeMap" ng-include="'typeMapsTree'"></li>
 			</ul>
 		</div>
+		<div class="typeMaps-unclassified" ng-if="data.unclassified_typeMaps">
+			<div class="typeMaps-unclassified_typeMaps">
+				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.typeMaps.unclassified_typeMaps}}</div>
+				<ul class="typeMaps-Wrapper type-Maps">
+					<if ng-repeat="typeMap in data.unclassified_typeMaps" ng-init="typeMap=typeMap">
+						<li ng-if="typeMap.data.showInMap" class="typeMaps-top-li"  ng-include="'typeMapsTree'"></li>
+					</if>
+				</ul>
+			</div>
+		</div>
 	</div>
+	<br>
+	<div class="btn-done" ng-click="data.close()">OK</div>
 </div>
 
 
 <script type="text/ng-template" id="typeMapsTree">
-	<ul ng-if="typeMap.data.showInMap" ng-init="data = typeMap.data;">
-
-		<div id="type_label" ng-model="data.type_label" />
-			{{data.type_label}}
-		</div>
+	<ul ng-if="typeMap.data.showInMap" ng-init="type = typeMap.data;">
+		<span class="typeMap-check-block" ng-click="data.click(type)">
+			<span  class="typeMap-check {{data.check(type.tid)?'checked':'unchecked'}}"></span>
+			<span  class="typeMap-check-label">{{type.type_label}}</span>
+		</span>
 	    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
-	        <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
+			<if ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = type.tid">
+				<li ng-if="typeMap.data.showInMap"  class="typeMaps-sub-li"  ng-include="'typeMapsTree'"></li>
+			</if>
 	    </ul>
 	</ul>
 

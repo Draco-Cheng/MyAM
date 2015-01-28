@@ -212,13 +212,16 @@ $.uipage.SCOPE = {};
 							}
 
 							$scope.typeSelectionChange = function(data){
-								if(!data.types[data.typeSelection.tid]){
-									data.types[data.typeSelection.tid] = data.typeSelection;
-									data.typesLength++;
-								}
-									
+								$scope.addTypes(data.typeSelection, data);									
 								data.typeSelection = "";
 							}
+
+							$scope.addTypes = function(type, data){
+								if(!data.types[type.tid]){
+									data.types[type.tid]  = type;
+									data.typesLength++;
+								}								
+							}						
 
 							$scope.removeTypes = function(type, data){
 								if(data.types[type.tid]){
@@ -342,7 +345,11 @@ $.uipage.SCOPE = {};
 
 							$scope.showTypeMaps = function(record){
 								$.uipage.dialog("typeMaps", {
-									$scope
+									types : record.types,
+									click : function(type){						
+										(record.types[type.tid] ? $scope.removeTypes : $scope.addTypes)(type, record);
+										record.isChange = true;
+									}
 								}) 
 							}
 				        }]

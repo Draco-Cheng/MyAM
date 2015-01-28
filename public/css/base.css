@@ -45,8 +45,13 @@ body>.top {
 	height: 100%;
 	width: 100%;
 	z-index: 9999;
+	display: inline-table;
 }
-
+#lobby-dialog-view .lobby-dialog-td {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
 #setting .setting-menu-block {
 	position: fixed;
 	top: 50px;
@@ -110,6 +115,28 @@ body>.top {
 	cursor: pointer;
 }
 
+.btn-done {
+	font-size: 26px;
+	width: 50px;
+	height: 50px;
+	border-radius: 40px;
+	border: 1px solid rgba(17, 34, 51, 0.33);
+	line-height: 50px;
+	cursor: pointer;
+	background-color: rgba(116, 158, 196, 0.6);
+	color: white;
+	display: inline-block;
+}
+
+.btn-showTypeMaps{
+	width: 30px;
+	height: 30px;
+	background-size: cover;
+	vertical-align: middle;
+	display: inline-block;
+	background-image: url(../img/finddocument-512.png);
+	cursor: pointer;
+}
 /**** #manageDB ***/
 #manageDB .progress-bar{
 	display: inline-block;
@@ -234,8 +261,8 @@ body>.top {
 #record input, #record select{
 	border:0;
 	height: 36px;
-	vertical-align: top;
 	text-align: center;
+	vertical-align: middle;
 }
 
 #record .td-add{
@@ -468,6 +495,7 @@ body>.top {
 
 #showType input, #showType select{
 	border:0;
+	vertical-align: middle;
 }
 
 #showType #type_label{
@@ -486,7 +514,6 @@ body>.top {
 
 #showType #cashType, #showType #parent_tid {
 	height: 36px;
-	vertical-align: top;
 }
 
 #showType .wrapper {
@@ -534,4 +561,82 @@ body>.top {
 
 #showType .typeMaps-unclassified_typeMaps-title{
 	color: gray;
+}
+
+/**** #showTypeMaps ***/
+#showTypeMaps{
+	text-align: center;
+	display: inline-block;
+	font-style: italic;
+	width: 100%;
+}
+
+#showTypeMaps .typeMaps-panel{
+	text-align: center;
+	display: inline-block;
+	font-style: italic;
+	width: 80%;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+#showTypeMaps .typeMaps-unclassified{
+	background-color: rgba(101, 101, 101, 0.3);
+	padding: 10px 0px;
+	border-radius: 15px;
+	color: azure;
+	display: inline-block;
+}
+
+#showTypeMaps ul {
+	-webkit-padding-start: 10px;
+	list-style-type: none;
+}
+
+#showTypeMaps li {
+	background-color: rgba(73, 73, 73, 0.12);
+	border-radius: 5px;
+	padding: 2px 10px 2px 0px;
+}
+
+#showTypeMaps .typeMaps-top-li{
+	display: inline-block;
+	vertical-align: top;
+	margin: 0px 5px;
+	padding: 10px 20px 10px 10px;
+	border-radius: 15px;
+	border: 1px solid rgba(54, 54, 54, 0.3);
+	background-color: rgba(213, 231, 247, 0.8);
+	text-align: left;
+}
+
+#showTypeMaps .typeMap-check-block{
+	cursor: pointer;
+}
+
+#showTypeMaps .typeMap-check-label {
+	vertical-align: middle;
+	font-size: 18px;
+	line-height: 20px;
+	color: rgb(138, 138, 138);
+	font-weight: 800;
+}
+
+#showTypeMaps .typeMap-check{
+	border: 1px solid rgba(0, 0, 0, 0.4);
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	vertical-align: middle;
+	border-radius: 3px;
+}
+
+#showTypeMaps .typeMap-check.checked{
+	background-color: rgba(240, 248, 255, 0.5);
+	background-image: url(../img/symbol-check-icon.png);
+	background-size: cover;
+}
+
+#showTypeMaps .typeMap-check-block:hover .typeMap-check.checked{
+	background-image: url(../img/dialog-cancel-3.png);
 }

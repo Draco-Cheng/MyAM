@@ -92,25 +92,44 @@ $.uipage.SCOPE = {};
 								$scope.subScope = null;
 								$scope.showDialog = false;
 								$scope.dynamicTemplate = null;
-
+								$scope.classname = "";
 								$scope.data = {};
 							}
 
 							$scope.close();
 							
 							$.uipage.closeDialog = function(){ $scope.close(); }
+
+
 							$.uipage.dialog = function(name, data){
 								switch(name){
 									case "typeMaps":
-										$scope.dynamicTemplate = $.uipage.templateURL+'05.lobby.dialog.typeMaps.html';
-										$scope.data.types = data.types;
-										$scope.data.callback = data.callback;
-
 										$.uipage.func.buildTypeMaps({
 											db : $.uipage.storage("MyAM_userDB")
 										}, function(maps, unclassified){
+
+											if(!maps.length && !unclassified.length) return;
+											
+											$scope.dynamicTemplate = $.uipage.templateURL+'05.lobby.dialog.typeMaps.html';
+											$scope.classname = "typeMaps";
+											$scope.showDialog = true;
+
 											$scope.data.typeMaps = maps;
 											$scope.data.unclassified_typeMaps = unclassified;
+
+											$scope.data.check = function(tid){
+												return !!data.types[tid];
+											}
+
+											$scope.data.close = function(){
+												$scope.close();
+												data.close && data.close();	
+											};
+											
+											$scope.data.click = data.click;
+											$scope.data.types = data.types;
+											console.log(data.types)
+											
 										});	
 										break;
 
@@ -118,7 +137,7 @@ $.uipage.SCOPE = {};
 										return ;
 								}
 
-								$scope.showDialog = true;
+								
 							}
 				        }]
 	};

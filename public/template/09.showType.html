@@ -28,6 +28,7 @@
 				<select id="parent_tid" ng-model="addData.parent_tid" ng-options="type.tid as type.type_label for type in types">
 					<option value>{{i18n.showType.parent}}</option>
 				</select>
+				<div class="btn-showTypeMaps" ng-click="showTypeMaps(addData)"></div>
 			</div>
 		</div>
 	</div>
@@ -93,6 +94,7 @@
 			<select id="parent_tid" ng-change="data.isChange=true;" ng-model="data.parent_tid" ng-options="type.tid as type.type_label for type in types">
 				<option value="" disabled>{{i18n.showType.parent}}</option>
 			</select>
+			<div class="btn-showTypeMaps" ng-click="showTypeMaps(data)"></div>
 		</div>
 	</div>
     <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
