@@ -1,11 +1,11 @@
 <div id="showTypeMaps">
 	<div class="typeMaps-panel">
-		<div class="typeMaps-classified_typeMaps">
+		<div class="typeMaps-classified_typeMaps" ng-if="data.mapsFlag">
 			<ul class="typeMaps-Wrapper type-Maps">
 				<li class="typeMaps-top-li" ng-repeat="typeMap in data.typeMaps" ng-init="typeMap=typeMap" ng-include="'typeMapsTree'"></li>
 			</ul>
 		</div>
-		<div class="typeMaps-unclassified" ng-if="data.unclassified_typeMaps">
+		<div class="typeMaps-unclassified" ng-if="data.unclassifiedFlag">
 			<div class="typeMaps-unclassified_typeMaps">
 				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.typeMaps.unclassified_typeMaps}}</div>
 				<ul class="typeMaps-Wrapper type-Maps">

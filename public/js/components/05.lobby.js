@@ -107,16 +107,21 @@ $.uipage.SCOPE = {};
 										$.uipage.func.buildTypeMaps({
 											db : $.uipage.storage("MyAM_userDB")
 										}, function(maps, unclassified){
-											var _flag = false;
-											for(var i = 0; i< maps.length && !_flag ; i++){
-												if(maps[i].data.showInMap) _flag = true;
+											var _mapsFlag = false;
+											var _unclassifiedFlag = false;
+											
+											for(var i = 0; i< maps.length && !_mapsFlag ; i++){
+												if(maps[i].data.showInMap)  _mapsFlag= true;
 											}
 											
-											for(var i = 0; i< unclassified.length && !_flag ; i++){
-												if(unclassified[i].data.showInMap) _flag = true;
+											for(var i = 0; i< unclassified.length && !_unclassifiedFlag ; i++){
+												if(unclassified[i].data.showInMap) _unclassifiedFlag = true;
 											}
 
-											if(!_flag) return $.uipage.alert(i18n["typeMaps"]["noTypeMaps"]);
+											if(!_mapsFlag && !_unclassifiedFlag) return $.uipage.alert(i18n["typeMaps"]["noTypeMaps"]);
+
+											$scope.data.mapsFlag = _mapsFlag;
+											$scope.data.unclassifiedFlag = _unclassifiedFlag;
 											
 											$scope.dynamicTemplate = $.uipage.templateURL+'05.lobby.dialog.typeMaps.html';
 											$scope.classname = "typeMaps";

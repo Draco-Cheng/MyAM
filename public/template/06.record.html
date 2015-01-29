@@ -126,7 +126,7 @@
 			<div ng-if="showTypeSummary" class="record-summary-type" >
 				<ul class="record-summary-type-Wrapper">
 					<if ng-repeat="typeMap in typeMaps" >
-						<li class="record-summary-type-top-li"  ng-include="'recordSummaryTypeTree'"></li>
+						<li ng-if="summaryFlatMaps[typeMap.data.tid].summary" class="record-summary-type-top-li"  ng-include="'recordSummaryTypeTree'"></li>
 					</if>
 				</ul>				
 			</div>
@@ -143,9 +143,15 @@
 		<div class="record-summary {{summary.sum<0 ? 'cost' : 'income'}}">
 			<div class="record-summary-label">{{summary.label}}</div>
 			<div class="record-summary-length">{{summary.length}} {{i18n.record.records}}</div>
-			<div class="record-summary-income">{{i18n.record.income}} : {{summary.income}}</div>
-			<div class="record-summary-cost">{{i18n.record.cost}} : {{summary.cost}}</div>
-			<div class="record-summary-sum">{{i18n.record.sum}} : {{summary.sum}}</div>
+			<div ng-if="summary.income" class="record-summary-income">
+				{{i18n.record.income}} : {{summary.income}}
+			</div>
+			<div ng-if="summary.cost" class="record-summary-cost">
+				{{i18n.record.cost}} : {{summary.cost}}
+			</div>
+			<div ng-if="summary.cost && summary.income"
+				class="record-summary-sum">{{i18n.record.sum}} : {{summary.sum}}
+			</div>
 		</div>
 	</div>
 </script>
@@ -157,7 +163,7 @@
 	</div>
     <ul  class="record-summary-type-Wrapper" ng-if="typeMap.sub">
 		<if ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = type.tid">
-			<li class="record-summary-type-sub-li"  ng-include="'recordSummaryTypeTree'"></li>
+			<li ng-if="summaryFlatMaps[typeMap.data.tid].summary" class="record-summary-type-sub-li"  ng-include="'recordSummaryTypeTree'"></li>
 		</if>
     </ul>
 </script>

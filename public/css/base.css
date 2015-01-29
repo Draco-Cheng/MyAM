@@ -692,3 +692,7 @@ body>.top {
 #recordSummary .record-summary-type-wrapper{
 	display: inline-block;
 }
+#recordSummary .record-summary-type-label {
+	min-width: 80px;
+	display: inline-block;
+}
