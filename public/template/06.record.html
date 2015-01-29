@@ -44,7 +44,7 @@
 		<div class="record-queryFilter-title">{{i18n.record.queryFilter}}</div>
 		<div class="btn-recover" ng-click="getRecords()"></div>	
 		<div class="record-queryFilter-panel">
-			<div class="table">
+			<div ng-if="showAllfilter" class="table">
 				<div class="td td-type">
 					<select id="cashType" ng-change="cleanTypes(filter)" ng-model="filter.cashType">
 						<option value=null>{{i18n.record.cost_income}}</option>
@@ -73,7 +73,7 @@
 					<input ng-model="filter.memo" placeholder="{{i18n.record.momo_placeholder}}">
 				</div>
 			</div>
-			<div class="table tb-typeQuery">
+			<div ng-if="showAllfilter" class="table tb-typeQuery">
 				<div class="td">
 					<select id="typeQuerySet" ng-model="filter.type_query_set">
 						<option value = "intersection">intersection</option>
@@ -115,6 +115,7 @@
 				</div>
 			</div>
 		</div>
+		<div class="{{showAllfilter?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="showAllfilter=!showAllfilter;" ></div>
 	</div>
 
 	<div ng-if="records===ubdefiend">loading...</div>
@@ -130,7 +131,7 @@
 					</if>
 				</ul>				
 			</div>
-			<div class="{{showTypeSummary?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="swtichShowTypeSummary()" ></div>
+			<div class="{{showTypeSummary?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="showTypeSummary =!showTypeSummary" ></div>
 		</div>
 
 		<div ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
@@ -213,5 +214,6 @@
 					<span>{{type.type_label}}</span>
 				</div>
 			</div>
+			/*{{record.ex_label}}/{{record.ex_value}}/{{record.ex_preciseValue}}*/
 		</div>
 </script>

@@ -159,7 +159,7 @@ $.uipage.func = $.uipage.func || {};
 	// Currency **********************************
 	//********************************************
 	_func.getCurrency = function(data, callback, forceUpdate){
-		if(!forceUpdate && _cache.currency) return callback(_cache.currency);
+		if(!forceUpdate && _cache.currency && _cache.currency.data) return callback(_cache.currency.data);
 
 		$.uipage.ajax({
 			"url" : "currency/get",
@@ -167,10 +167,7 @@ $.uipage.func = $.uipage.func || {};
 			"data" : data,
 			"callback" : function(response){
 				delete _cache.currency;
-				delete _cache.currencyType;
-				delete _cache.currencyId;
-				delete _cache.currencyMaps;
-				delete _cache.currencyMapsById;
+				_cache.currency = {}
 
 				response.data.sort(function(a,b){
 					// new -> old
@@ -186,8 +183,8 @@ $.uipage.func = $.uipage.func || {};
 					record.quickSelect = record.quickSelect ? true : false;
 				});				
 
-				_cache.currency = response.data;
-				callback(_cache.currency);	
+				_cache.currency.data = response.data;
+				callback(_cache.currency.data);	
 			}
 		});
 	}
@@ -216,19 +213,19 @@ $.uipage.func = $.uipage.func || {};
 	}
 
 	_func.getCurrencyType = function(data, callback, forceUpdate){
-		if(!forceUpdate && _cache.currencyType) return callback(_cache.currencyType);
+		if(!forceUpdate && _cache.currency && _cache.currency.type) return callback(_cache.currency.type);
 
 		var _parse = function(response){
-			delete _cache.currencyType;
+			delete _cache.currency.type;
 			if($.uipage.errHandler(response)) return;
 
-			_cache.currencyType={};
+			_cache.currency.type={};
 
 			response.forEach(function(i){
-				_cache.currencyType[i.type] = _cache.currencyType[i.type] || i;
+				_cache.currency.type[i.type] = _cache.currency.type[i.type] || i;
 			});
 
-			callback(_cache.currencyType);	
+			callback(_cache.currency.type);	
 		}
 
 		_func.getCurrency(data, _parse, forceUpdate);
@@ -236,19 +233,20 @@ $.uipage.func = $.uipage.func || {};
 	}
 
 	_func.getCurrencyId = function(data, callback, forceUpdate){
-		if(!forceUpdate && _cache.currencyId) return callback(_cache.currencyId);
+		if(!forceUpdate && _cache.currency && _cache.currency.groupById) return callback(_cache.currency.groupById);
 
 		var _parse = function(response){
-			delete _cache.currencyId;delete _cache.currencyType;
+			delete _cache.currency.groupById;
+
 			if($.uipage.errHandler(response)) return;
 
-			_cache.currencyId={};
+			_cache.currency.groupById={};
 			
 			response.forEach(function(i){
-				_cache.currencyId[i.cid] = i;
+				_cache.currency.groupById[i.cid] = i;
 			});
 
-			callback(_cache.currencyId);	
+			callback(_cache.currency.groupById);	
 		}
 
 		_func.getCurrency(data, _parse, forceUpdate);
@@ -256,51 +254,216 @@ $.uipage.func = $.uipage.func || {};
 
 
 	_func.getCurrencyMaps = function(data, callback, forceUpdate){
-		if(!forceUpdate && _cache.currencyMaps) return callback(_cache.currencyMaps, _cache.currencyMapsById);
+		if(!forceUpdate && _cache.currency && _cache.currency.maps) return callback(_cache.currency.maps, _cache.currency.mapsById);
 
 		var _parse = function(response){
-			delete _cache.currencyMaps;
-			delete _cache.currencyMapsById;
+			delete _cache.currency.maps;
+			delete _cache.currency.mapsById;
 			if($.uipage.errHandler(response)) return;
 
-			_cache.currencyMaps=[];
+			_cache.currency.maps=[];
 			var _temp = {};
 			var _tempSeries = {};
 
-			response.forEach(function(i){
-				if(!_tempSeries[i.cid]){
-					_tempSeries[i.cid] = { sup : [], sub : [] };
-					_temp[i.cid] = _tempSeries[i.cid];
+			response.forEach(function(currency){
+				if(!_tempSeries[currency.cid]){
+					_tempSeries[currency.cid] = { sup : [], sub : [] };
+					_temp[currency.cid] = _tempSeries[currency.cid];
 				}
 				
-				if(i.to_cid && !_tempSeries[i.to_cid]){
-					_tempSeries[i.to_cid] = { sup : [], sub : [] };
-					_temp[i.to_cid] = _tempSeries[i.to_cid];
+				if(currency.to_cid && !_tempSeries[currency.to_cid]){
+					_tempSeries[currency.to_cid] = { sup : [], sub : [] };
+					_temp[currency.to_cid] = _tempSeries[currency.to_cid];
 				}
 
-				_tempSeries[i.cid].data = i;
+				_tempSeries[currency.cid].data = currency;
+				currency.sup = _tempSeries[currency.cid].sup;
+				currency.sub = _tempSeries[currency.cid].sub;
 
-				if(i.to_cid){
-					_tempSeries[i.cid].sup.push(_tempSeries[i.to_cid]);
-					_tempSeries[i.to_cid].sub.push(_tempSeries[i.cid]);
+				if(currency.to_cid){
+					_tempSeries[currency.cid].sup.push(_tempSeries[currency.to_cid]);
+					_tempSeries[currency.to_cid].sub.push(_tempSeries[currency.cid]);
 
-					if(_temp[i.cid]) 
-						delete _temp[i.cid];
+					if(_temp[currency.cid]) 
+						delete _temp[currency.cid];
 				}
 			});
 
 			for(var i in _temp){
-				_cache.currencyMaps.push(_temp[i])
+				_cache.currency.maps.push(_temp[i])
 			}
-			_cache.currencyMapsById = _temp;
+			_cache.currency.mapsById = _temp;
 
-			callback(_cache.currencyMaps, _cache.currencyMapsById);	
+			callback(_cache.currency.maps, _cache.currency.mapsById);	
 		}
 
 		_func.getCurrency(data, _parse, forceUpdate);
 	}
 
+	var _buildMainCurrencyArray = function(currencyId){
+		if(_cache.currency.mainCurrencyArray)
+			return _cache.currency.mainCurrencyArray;
 
+		var _chain = [];
+		var _main_tocid_index ={};
+		for(var cid in currencyId){
+			if( currencyId[cid].main){
+				if(currencyId[cid].to_cid)
+					_main_tocid_list[to_cid] = currencyId[cid];
+				else
+					_chain.unshift(cid)
+			}
+		}
+
+		while(_main_tocid_index[_chain[0]]){
+			_chain.unshift(_main_tocid_index[_chain[0]].cid)
+		}
+		return _cache.currency.mainCurrencyArray = _chain;
+	}
+
+	_func.currencyConverter = function(cid, to_cid, currencyId){
+		var _exchangeLists = _cache.currency.exchangeList = _cache.currency.exchangeList || {};
+		var _exchangeList =  _exchangeLists[cid] = _exchangeLists[cid] || {};
+		if(_exchangeList[to_cid]) return _exchangeList[to_cid];
+		_exchangeList[to_cid] = { rate : 1, preciseRate : 1};
+
+		var _mainCurrencyArray = _buildMainCurrencyArray(currencyId);
+
+		//***** build left chain *****/
+		var _leftChain = [{
+			cid : cid,
+			type : currencyId[cid].type,
+			rate : 1
+		}];
+
+		if(!currencyId[cid].main){
+			var _next_cid = cid;
+			do{
+				var _to_cid = currencyId[_next_cid].to_cid;
+				_to_cid && _leftChain.push({
+					cid : _to_cid,
+					type : currencyId[_to_cid].type,
+					rate : currencyId[_next_cid].rate
+				});					
+				
+				if(currencyId[_next_cid].main)
+					_next_cid = "";
+				else
+					_next_cid = _to_cid;
+
+			}while(_next_cid);
+		}
+		console.log("_leftChain",_leftChain)
+
+		//***** build right chain *****/
+		var _rightChain = [{
+			cid : to_cid,
+			type : currencyId[to_cid].type,
+			rate : 1/currencyId[to_cid].rate
+		}];
+
+		if(!currencyId[to_cid].main){
+			var _next_cid = to_cid;
+			do{
+				var _to_cid = currencyId[_next_cid].to_cid;
+				_to_cid && _rightChain.unshift({
+					cid : _to_cid,
+					type : currencyId[_to_cid].type,
+					rate : 1/currencyId[_to_cid].rate
+				});
+
+				
+				if(currencyId[_next_cid].main)
+					_next_cid = "";
+				else
+					_next_cid = _to_cid;
+
+			}while(_next_cid);
+		}
+
+		var _leftMainCidIndex = _mainCurrencyArray.indexOf(_leftChain[_leftChain.length-1].cid);
+		var _rightMainCidIndex = _mainCurrencyArray.indexOf(_rightChain[0].cid);
+
+		if(_leftMainCidIndex < _rightMainCidIndex){
+			_mainCurrencyArray.slice(_leftMainCidIndex, _rightMainCidIndex).forEach(function(cid){
+				var _to_cid = currencyId[cid].to_cid;
+				_to_cid && _leftChain.push({
+					cid : _to_cid,
+					type : currencyId[_to_cid].type,
+					rate : currencyId[cid].rate
+				});					
+			})
+		}else{
+			_mainCurrencyArray.slice(_leftMainCidIndex, _rightMainCidIndex).reverse().forEach(function(cid){
+				var _to_cid = currencyId[cid].to_cid;
+				_to_cid && _rightChain.unshift({
+					cid : _to_cid,
+					type : currencyId[_to_cid].type,
+					rate : 1/currencyId[_to_cid].rate
+				});							
+			})			
+		}
+
+		console.log("_leftChain - m",_leftChain)
+		console.log("_rightChain - m",_rightChain)
+
+		var _fullChain = _leftChain.concat(_rightChain);
+
+		//***** file same cid ****
+		var _gropupByCid = [];
+		do{
+			var _next = _fullChain.shift();
+			var _index = null;
+			_fullChain.forEach(function( item ,n ){
+				if( item.cid ==  _next.cid )
+					_index = n+1;
+			});
+			if(_index) _fullChain = _fullChain.slice(_index);
+
+			_gropupByCid.push(_next);
+		}while(_fullChain.length);
+
+		_gropupByCid.forEach(function(item){
+			_exchangeList[to_cid].preciseRate *= item.rate;
+		});
+		console.log("_gropupByCid", _gropupByCid);
+
+		//***** file same type ****
+		var _gropupByType = [];
+		do{
+			var _next = _gropupByCid.shift();
+			var _index = null;
+			_gropupByCid.forEach(function( item ,n ){
+				if( item.type ==  _next.type )
+					_index = n+1;
+			});
+
+			if(_index) _gropupByCid = _gropupByCid.slice(_index);
+
+			_gropupByType.push(_next);
+		}while(_gropupByCid.length);
+
+		_gropupByType.forEach(function(item){
+			_exchangeList[to_cid].rate *= item.rate;
+		});		
+		console.log("_gropupByType",_gropupByType);
+
+		return _exchangeList[to_cid];
+	}
+
+	_func.recordsCurrencyExchange = function(data, to_cid, reords, callback){
+		_func.getCurrencyId(data, function(currencyId){
+			reords.forEach(function(record){
+				if(record.cid != to_cid){
+					var _exchange = _func.currencyConverter(record.cid, to_cid, currencyId);
+					record.ex_value = record.value * _exchange.rate;
+					record.ex_preciseValue = record.value * _exchange.preciseRate;
+					record.ex_label = currencyId[to_cid].type;
+				}
+			});			
+			callback(reords);
+		});		
+	}	
 
 	//********************************************
 	// Type **************************************

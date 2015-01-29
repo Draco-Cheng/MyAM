@@ -28,7 +28,7 @@ $.uipage.SCOPE = {};
 							$scope.i18n = i18n;
 							$scope.str = $scope.str || {};
 							$scope.addData = {};
-							$scope.addData.to_cid = "__main__";
+							$scope.addData.to_cid = parseInt($.uipage.storage("MyAM_mainCurrency"));
 							$scope.addData.date = new Date().format("Y-m-d");
 							$scope.addData.quickSelect = true;
 
@@ -68,13 +68,10 @@ $.uipage.SCOPE = {};
 									date 	: currency.date,
 									quickSelect 	: currency.quickSelect
 								}
-
-
-
-
+								
 								currency.invalid_type = !currency.type
-								currency.invalid_rate = !parseInt(currency.rate);
-								currency.invalid_date = !(new Date("asdas") == "Invalid Date");
+								currency.invalid_rate = !(currency.rate*1);
+								currency.invalid_date = (new Date(currency.date) == "Invalid Date");
 
 								if(currency.invalid_type || currency.invalid_rate || currency.invalid_date)
 									return;
@@ -122,12 +119,10 @@ $.uipage.SCOPE = {};
 							}
 
 							$scope.str.rate_placeholder = function(){
-								if($scope.addData.to_cid === null && $scope.addData.type){
-									$("#showCurrency .td-addrate").addClass("master");
+								if(!$scope.addData.to_cid && $scope.addData.type){
 									return "1 "+$scope.currencyId[$.uipage.storage("MyAM_mainCurrency")].type+" = ? "+$scope.addData.type ;
 								}
 
-								$("#showCurrency .td-addrate").removeClass("master");
 								if($scope.addData.type && $scope.addData.to_cid){
 									return "1 "+$scope.addData.type+" = ? "+ $scope.currencyId[$scope.addData.to_cid].type;
 								}else{

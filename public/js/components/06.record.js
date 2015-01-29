@@ -21,6 +21,9 @@ $.uipage.SCOPE = {};
 		controller	: 	['$scope', '$http', 'i18n', function($scope, $http, i18n) {
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
+							var _defaultData = { db : $.uipage.storage("MyAM_userDB")};
+							var _default_cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
+
 							_controller.scope = $scope;
 							_controller.http = $http;
 							$scope.data = $scope.data || {};
@@ -34,14 +37,14 @@ $.uipage.SCOPE = {};
 							$scope.addData.types = {};
 							$scope.addData.typesLength = 0;
 							$scope.addData.cashType = -1;
-							$scope.addData.cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
+							$scope.addData.cid = _default_cid;
 							//****************************
 
 
 							//****************************
 							//addData*********************
 							$scope.filter = {};
-							$scope.filter.db = $.uipage.storage("MyAM_userDB");
+							$scope.filter.db = _defaultData.db;
 							
 							$scope.filter.cashType = null;
 							$scope.filter.start_date = null;
@@ -122,15 +125,11 @@ $.uipage.SCOPE = {};
 								};
 
 
-								$.uipage.func.createFlatTypeMaps({
-									db : $.uipage.storage("MyAM_userDB")
-								}, function(response){
+								$.uipage.func.createFlatTypeMaps(_defaultData, function(response){
 									_flatTypeMaps = response;
 									_parse();
 								});
-								$.uipage.func.getCurrencyId({
-									db : $.uipage.storage("MyAM_userDB")
-								}, function(response){
+								$.uipage.func.getCurrencyId(_defaultData, function(response){
 									_currencyId = response;
 									_parse();
 								});
@@ -152,7 +151,7 @@ $.uipage.SCOPE = {};
 							var _getRecords = function(forceUpdate){
 								var _filter = $scope.filter;
 								var _data = {};
-								_data.db = $.uipage.storage("MyAM_userDB");
+								_data.db = _defaultData.db;
 								_data.cashType = _filter.cashType || null;
 								_data.cid = _filter.cid || null;
 								_data.orderBy = [_filter.orderCol, _filter.orderBy];
@@ -183,32 +182,28 @@ $.uipage.SCOPE = {};
 								
 								_data.limit = _filter.limit || null;
 
-								$.uipage.func.getRecordsAndType(_data, function(response){
-									_summarize(response);
-									$scope.renderLimit = 50;
-									$scope.records = response;
+								$.uipage.func.getRecordsAndType(_data, function(records){
+
+									$.uipage.func.recordsCurrencyExchange(_defaultData, _default_cid, records, function(response){
+										_summarize(response);
+										$scope.renderLimit = 50;
+										$scope.records = response;
+									})
+
 								},forceUpdate);
 							}
 							$scope.getRecords = _getRecords;
 							var _initial = function(forceUpdate){
-								_getRecords(forceUpdate);
-
-								$.uipage.func.getType({
-									db : $.uipage.storage("MyAM_userDB")
-								}, function(response){
+								$.uipage.func.getType(_defaultData, function(response){
 									$scope.types = response;
-										$.uipage.func.buildTypeMaps({
-											db : $.uipage.storage("MyAM_userDB")
-										}, function(maps, unclassified){
+										$.uipage.func.buildTypeMaps(_defaultData, function(maps, unclassified){
 											$scope.typeMaps = maps.concat(unclassified);
-											console.log($scope.typeMaps)
 										})
 								},forceUpdate);
 
-								$.uipage.func.getCurrency({
-									db : $.uipage.storage("MyAM_userDB")
-								}, function(response){
+								$.uipage.func.getCurrency(_defaultData, function(response){
 									$scope.currencies = response;
+									_getRecords(forceUpdate);
 								},forceUpdate);
 							}
 							_initial();
@@ -267,7 +262,7 @@ $.uipage.SCOPE = {};
 
 							$scope.addRecord = function(record){
 								var _data = {
-									db : $.uipage.storage("MyAM_userDB"),
+									db : _defaultData.db,
 									cashType : record.cashType,
 									cid : record.cid,									
 									value : record.value,
@@ -306,7 +301,7 @@ $.uipage.SCOPE = {};
 
 							$scope.setRecordTypes = function(data, callback){
 								var _data = {
-									db : $.uipage.storage("MyAM_userDB"),
+									db : _defaultData.db,
 									rid: data.rid
 								}
 								var _tids = [];
@@ -326,7 +321,7 @@ $.uipage.SCOPE = {};
 								if(record.isDeleted) return;
 
 								var _data = {
-									db : $.uipage.storage("MyAM_userDB"),
+									db : _defaultData.db,
 									rid : record.rid,
 									cashType : record.cashType,
 									cid : record.cid,
@@ -354,7 +349,7 @@ $.uipage.SCOPE = {};
 
 							$scope.deleteItem =function(record){
 								var _data = {
-									db : $.uipage.storage("MyAM_userDB"),
+									db : _defaultData.db,
 									rid : record.rid
 								};
 
@@ -380,10 +375,6 @@ $.uipage.SCOPE = {};
 										record.isChange = true;
 									}
 								}) 
-							}
-
-							$scope.swtichShowTypeSummary = function(){
-								$scope.showTypeSummary = !$scope.showTypeSummary;
 							}
 				        }]
 	};

@@ -27,6 +27,22 @@ input ,select{
     color: rgba(0, 0, 0, 0.4);
 }
 
+.whitePlaceholder ::-webkit-input-placeholder { /* WebKit browsers */
+    color: rgba(255, 255, 255, 0.7);
+}
+.whitePlaceholder :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: rgba(255, 255, 255, 0.7);
+   	opacity:  1;
+}
+.whitePlaceholder ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: rgba(255, 255, 255, 0.7);
+   	opacity:  1;
+}
+.whitePlaceholder :-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
 body>.top {
 	position: fixed;
 	left: 0px;
@@ -458,11 +474,11 @@ body>.top {
 	cursor: pointer;
 }
 
-#showCurrency .td-addrate.master{
+#showCurrency .td-addrate.whitePlaceholder{
 	background-color: rgb(140, 0, 0);
 }
 
-#showCurrency .td-addrate.master input{
+#showCurrency .td-addrate.whitePlaceholder input{
 	color: white;
 }
 
@@ -691,8 +707,10 @@ body>.top {
 }
 #recordSummary .record-summary-type-wrapper{
 	display: inline-block;
+	vertical-align: top;
 }
 #recordSummary .record-summary-type-label {
 	min-width: 80px;
 	display: inline-block;
+	vertical-align: top;
 }
