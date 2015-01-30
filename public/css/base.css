@@ -373,7 +373,7 @@ body>.top {
 /**** #lobby-menu ***/
 #lobby-menu{
 	color: white;
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0.5);
 	line-height: 50px;
 }
 
@@ -522,7 +522,7 @@ body>.top {
 }
 
 #record #record-queryFilter{
-	background-color: rgba(178, 217, 251, 0.3);
+	background-color: rgba(235, 246, 255, 0.2);
 	padding: 10px 0px;
 	margin: 10px 0px;
 }
@@ -596,7 +596,7 @@ body>.top {
 
 #setting .setting-menu-wrap {
 	display: table-cell;
-	background-color: grey;
+	background-color: rgba(75, 75, 75, 0.5);
 	color: white;
 	cursor: pointer;
 	line-height: 36px;
@@ -929,10 +929,10 @@ body>.top {
 }
 
 #recordSummary .record-summary-type{
-	border: 1px solid rgba(87, 87, 87, 0.57);
+	border: 1px solid rgba(87, 87, 87, 0.2);
 	border-radius: 15px;
 	margin: 10px 0px;
-	background-color: rgba(154, 180, 202, 0.22);
+	background-color: rgba(154, 180, 202, 0.2);
 }
 #recordSummary .record-summary-type-wrapper{
 	display: inline-block;
