@@ -15,21 +15,21 @@
 			<div class="td td-value {{addData.invalidValue?'error':''}}">
 				<input ng-model="addData.value" placeholder="{{i18n.record.value_placeholder}}">
 			</div>
-			<div class="td">
-				<select id="typeList" ng-model="addData.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+			<div class="td td-currency">
+				<select id="currencyList" ng-model="addData.cid"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
 				</select>
-			</div>
-			<div class="td {{addData.invalidDate?'error':''}}">
-				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="addData.date" />
-			</div>
-			<div class="td">
-				<input ng-model="addData.memo" placeholder="{{i18n.record.momo_placeholder}}">
 			</div>
 			<div class="td">
 				<select id="typeList" ng-model="addData.typeSelection"  ng-change="typeSelectionChange(addData)" ng-options="type as type.type_label for type in typeQuickSelectList(addData.cashType)">
 					<option disabled value>{{i18n.record.type}}</option>
 				</select>
 				<div class="btn-showTypeMaps" ng-click="showTypeMaps(addData)"></div>
+			</div>
+			<div class="td {{addData.invalidDate?'error':''}}">
+				<input class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="addData.date" />
+			</div>
+			<div class="td">
+				<input ng-model="addData.memo" placeholder="{{i18n.record.momo_placeholder}}">
 			</div>
 			<div ng-if="addData.typesLength" class="td td-types_block">
 				<div class="block-type-row" ng-repeat="type in addData.types" ng-click="removeTypes(type,addData)">
