@@ -448,10 +448,12 @@ $.uipage.func = $.uipage.func || {};
 		});		
 		console.log("_gropupByType",_gropupByType);
 
+		_exchangeList[to_cid].label = currencyId[to_cid].type;
+
 		return _exchangeList[to_cid];
 	}
 
-	_func.recordsCurrencyExchange = function(data, to_cid, reords, callback){
+/*	_func.recordsCurrencyExchange = function(data, to_cid, reords, callback){
 		_func.getCurrencyId(data, function(currencyId){
 			reords.forEach(function(record){
 				if(record.cid != to_cid){
@@ -463,7 +465,7 @@ $.uipage.func = $.uipage.func || {};
 			});			
 			callback(reords);
 		});		
-	}	
+	}	*/
 
 	//********************************************
 	// Type **************************************

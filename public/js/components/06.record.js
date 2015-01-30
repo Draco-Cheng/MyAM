@@ -22,7 +22,8 @@ $.uipage.SCOPE = {};
 							$.log("initial \""+_temp.name+"\" controller ...");
 							var _controller = $.uipage.angular.controller[_temp.name] = {};
 							var _defaultData = { db : $.uipage.storage("MyAM_userDB")};
-							var _default_cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
+							
+							$scope.default_cid = parseInt($.uipage.storage("MyAM_tempCurrency")) || parseInt($.uipage.storage("MyAM_mainCurrency"));
 
 							_controller.scope = $scope;
 							_controller.http = $http;
@@ -37,7 +38,7 @@ $.uipage.SCOPE = {};
 							$scope.addData.types = {};
 							$scope.addData.typesLength = 0;
 							$scope.addData.cashType = -1;
-							$scope.addData.cid = _default_cid;
+							$scope.addData.cid = $scope.default_cid;
 							//****************************
 
 
@@ -106,6 +107,8 @@ $.uipage.SCOPE = {};
 											});
 										});										
 									});
+
+									
 									
 									for(var _summaryId in _flatTypeMaps){
 										var _summaries = _flatTypeMaps[_summaryId].summary;
@@ -119,11 +122,11 @@ $.uipage.SCOPE = {};
 										var _summary = _total[_currencyType];
 										_summary.sum = _summary.income - _summary.cost;
 									}
+
 									
 									$scope.summaryFlatMaps = _flatTypeMaps;
 									$scope.totalSummary = _total;
 								};
-
 
 								$.uipage.func.createFlatTypeMaps(_defaultData, function(response){
 									_flatTypeMaps = response;
@@ -183,12 +186,9 @@ $.uipage.SCOPE = {};
 								_data.limit = _filter.limit || null;
 
 								$.uipage.func.getRecordsAndType(_data, function(records){
-
-									$.uipage.func.recordsCurrencyExchange(_defaultData, _default_cid, records, function(response){
-										_summarize(response);
-										$scope.renderLimit = 50;
-										$scope.records = response;
-									})
+									_summarize(records);
+									$scope.renderLimit = 50;
+									$scope.records = records;
 
 								},forceUpdate);
 							}
@@ -201,9 +201,13 @@ $.uipage.SCOPE = {};
 										})
 								},forceUpdate);
 
-								$.uipage.func.getCurrency(_defaultData, function(response){
+								$.uipage.func.getCurrency(_defaultData, function(response, res2){
 									$scope.currencies = response;
-									_getRecords(forceUpdate);
+
+									$.uipage.func.getCurrencyId(_defaultData, function(currencyId){
+										$scope.currencyId = currencyId;
+										_getRecords(forceUpdate);
+									});									
 								},forceUpdate);
 							}
 							_initial();
@@ -314,6 +318,7 @@ $.uipage.SCOPE = {};
 
 								$.uipage.func.setRecordTypes(_data,function(response){
 									callback && callback(response);
+									_summarize($scope.records);
 								})
 							}
 
@@ -375,6 +380,13 @@ $.uipage.SCOPE = {};
 										record.isChange = true;
 									}
 								}) 
+							}
+
+							$scope.getRecordExchangeRate = function(record){
+								if(!$scope.currencyId) return;
+								var _rate = $.uipage.func.currencyConverter(record.cid, $scope.default_cid,$scope.currencyId);
+								return _rate;
+
 							}
 				        }]
 	};
