@@ -190,6 +190,14 @@ body>.top {
 	width: 100%;	
 }
 
+.block-loading,.block-empty{
+	color: rgba(111, 111, 111, 0.62);
+	font-size: 24px;
+	font-style: italic;
+	margin-top:15px;
+	font-weight: 900;
+}
+
 
 /**** #greeting_room ***/
 #greeting_room {

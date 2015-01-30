@@ -117,8 +117,8 @@
 		<div class="{{showAllfilter?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="showAllfilter=!showAllfilter;" ></div>
 	</div>
 
-	<div ng-if="records===ubdefiend">loading...</div>
-	<div ng-if="records.length===0">null</div>
+	<div class="block-loading" ng-if="records===ubdefiend">{{i18n.common.load}}</div>
+	<div class="block-empty" ng-if="records.length===0">{{i18n.common.empty}}</div>
 	<div id="showRecordPanel" ng-if="records">
 
 		<div id="recordSummary" class="{{totalSummary?'showTotalSum' : ''}}">

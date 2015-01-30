@@ -99,5 +99,10 @@
 		"record_dependencies" : "Can't delete the item, because there is record dependencies",
 		"currency_dependencies" : "Can't delete the item, because there is currency dependencies"
 
+	},
+
+	"common" : {
+		"load" : "Loading...",
+		"empty" : "There is no records..."
 	}
 }

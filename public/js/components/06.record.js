@@ -194,6 +194,7 @@ $.uipage.SCOPE = {};
 							}
 							
 							var _getRecords = function(forceUpdate){
+								delete $scope.records;
 								var _filter = $scope.filter;
 								var _data = {};
 								_data.db = _defaultData.db;
