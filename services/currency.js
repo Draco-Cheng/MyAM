@@ -27,36 +27,77 @@ exports.getCurrencies = Promise.denodeify(_getCurrencies);
 var _setCurrencies = function(data, callback){
 	controller.dbController.connectDB(data)
 		.then(function(data){
-
-			if(data.to_cid){
-				var _tempData = {
-					db : data.db,
-					reqId : data.reqId,
-					cid : data.to_cid,
-					limit : 1
-				}
-
-				return controller.dbController.getCurrencies(_tempData);				
-			}else
-				return new Promise(function(resolve, reject){resolve(data)});
-
+			var _tempData = {
+				db : data.db,
+				reqId : data.reqId
+			}
+			return controller.dbController.getCurrencies(_tempData);
 		})
 		.then(function(tempData){
-			
-			if(data.to_cid){
-				var _resault = tempData.resault.pop().length;
-				if(_resault)
+			var _resault = tempData.resault.pop();
+			//**** check to_cid is exsist ****
+			var _to_cid_isexist = false;
+			var _cid_dependency = false;
+			var _original_tocid = null;
+			var _main_cid = false;
+
+			_resault.forEach(function(currency){
+				if(data.to_cid == currency.cid )
+					_to_cid_isexist = true;
+				if(data.cid == currency.to_cid )
+					_cid_dependency = true;
+				if(data.cid == currency.cid )
+					_original_tocid = currency.to_cid;
+				if( !currency.to_cid  && currency.main)
+					_main_cid = currency.cid;				
+			})
+
+			if(data.main){
+				if(!data.cid && !data.to_cid){
+					data.to_cid_rate = data.rate;
+					data.main_cid = _main_cid;
+					data.rate = 1;
+
 					return controller.dbController.setCurrencies(data);
-				else{
+				}
+				
+				if(!data.cid && data.to_cid){
 					data.code = 424;
 					throw data;
 				}
-			}else{
-				return controller.dbController.setCurrencies(data);				
+			}				
+
+			if(!data.cid && !data.main)
+				return controller.dbController.setCurrencies(data);
+
+
+			if(data.cid && data.main && data.to_cid != _original_tocid){
+				data.code = 424;
+				data.message = "main_cid_cant_change_to_cid";
+				throw data;
 			}
 
+			if(!_to_cid_isexist && _main_cid != data.cid){
+				data.code = 424;
+				data.message = "to_cid_not_exist";
+				throw data;
+			}
 
-				
+			if(_cid_dependency && data.to_cid != _original_tocid){
+				data.code = 424;
+				data.message = "to_cid_dependency";
+				throw data;
+			}
+			
+			delete data.main;
+
+			return controller.dbController.setCurrencies(data);		
+		})
+		.then(function(data){ 
+			if(data.main && !data.to_cid && data.to_cid_rate && data.main_cid){
+				return controller.dbController.updateMainCurrency(data);
+			}else
+				return new Promise(function(resolve, reject){resolve(data)});
 		})
 		.nodeify(function(err){
 			controller.dbController.closeDB(data).then(function(){

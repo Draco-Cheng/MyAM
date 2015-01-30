@@ -62,7 +62,7 @@ $.uipage.SCOPE = {};
 									cid 	: currency.cid,
 									type	: currency.type,
 									to_cid	: currency.to_cid,
-									main 	: currency.main,
+									main 	: !currency.to_cid ? true : null,
 									memo	: currency.memo,
 									rate 	: currency.rate,
 									date 	: currency.date,
@@ -118,13 +118,13 @@ $.uipage.SCOPE = {};
 									return currency.type + _divStr + currency.date;
 							}
 
-							$scope.str.rate_placeholder = function(){
-								if(!$scope.addData.to_cid && $scope.addData.type){
-									return "1 "+$scope.currencyId[$.uipage.storage("MyAM_mainCurrency")].type+" = ? "+$scope.addData.type ;
+							$scope.str.rate_placeholder = function(data){
+								if(!data.to_cid && data.type){
+									return "1 "+$scope.currencyId[$.uipage.storage("MyAM_mainCurrency")].type+" = ? "+data.type ;
 								}
 
-								if($scope.addData.type && $scope.addData.to_cid){
-									return "1 "+$scope.addData.type+" = ? "+ $scope.currencyId[$scope.addData.to_cid].type;
+								if(data.type && data.to_cid){
+									return "1 "+data.type+" = ? "+ $scope.currencyId[data.to_cid].type;
 								}else{
 									return i18n.showCurrency.rate_placeholder;
 								}

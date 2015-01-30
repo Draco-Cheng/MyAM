@@ -309,9 +309,9 @@ $.uipage.func = $.uipage.func || {};
 		for(var cid in currencyId){
 			if( currencyId[cid].main){
 				if(currencyId[cid].to_cid)
-					_main_tocid_list[to_cid] = currencyId[cid];
+					_main_tocid_index[currencyId[cid].to_cid] = currencyId[cid];
 				else
-					_chain.unshift(cid)
+					_chain.unshift(parseInt(cid))
 			}
 		}
 
@@ -353,7 +353,6 @@ $.uipage.func = $.uipage.func || {};
 
 			}while(_next_cid);
 		}
-		console.log("_leftChain",_leftChain)
 
 		//***** build right chain *****/
 		var _rightChain = [{
@@ -372,14 +371,16 @@ $.uipage.func = $.uipage.func || {};
 					rate : 1/currencyId[_to_cid].rate
 				});
 
-				
-				if(currencyId[_next_cid].main)
+
+				if(currencyId[_to_cid].main)
 					_next_cid = "";
 				else
 					_next_cid = _to_cid;
 
 			}while(_next_cid);
 		}
+
+		
 
 		var _leftMainCidIndex = _mainCurrencyArray.indexOf(_leftChain[_leftChain.length-1].cid);
 		var _rightMainCidIndex = _mainCurrencyArray.indexOf(_rightChain[0].cid);
@@ -394,7 +395,7 @@ $.uipage.func = $.uipage.func || {};
 				});					
 			})
 		}else{
-			_mainCurrencyArray.slice(_leftMainCidIndex, _rightMainCidIndex).reverse().forEach(function(cid){
+			_mainCurrencyArray.slice(_rightMainCidIndex, _leftMainCidIndex).forEach(function(cid){
 				var _to_cid = currencyId[cid].to_cid;
 				_to_cid && _rightChain.unshift({
 					cid : _to_cid,
@@ -403,9 +404,6 @@ $.uipage.func = $.uipage.func || {};
 				});							
 			})			
 		}
-
-		console.log("_leftChain - m",_leftChain)
-		console.log("_rightChain - m",_rightChain)
 
 		var _fullChain = _leftChain.concat(_rightChain);
 
@@ -426,7 +424,7 @@ $.uipage.func = $.uipage.func || {};
 		_gropupByCid.forEach(function(item){
 			_exchangeList[to_cid].preciseRate *= item.rate;
 		});
-		console.log("_gropupByCid", _gropupByCid);
+
 
 		//***** file same type ****
 		var _gropupByType = [];
@@ -446,26 +444,16 @@ $.uipage.func = $.uipage.func || {};
 		_gropupByType.forEach(function(item){
 			_exchangeList[to_cid].rate *= item.rate;
 		});		
-		console.log("_gropupByType",_gropupByType);
 
-		_exchangeList[to_cid].label = currencyId[to_cid].type;
+
+		_exchangeList[to_cid].label = currencyId[cid].type;
+		_exchangeList[to_cid].to_label = currencyId[to_cid].type;
+		_exchangeList[to_cid].preciseRate = Math.round(_exchangeList[to_cid].preciseRate*1000)/1000;
+		_exchangeList[to_cid].rate = Math.round(_exchangeList[to_cid].rate*1000)/1000;
 
 		return _exchangeList[to_cid];
 	}
 
-/*	_func.recordsCurrencyExchange = function(data, to_cid, reords, callback){
-		_func.getCurrencyId(data, function(currencyId){
-			reords.forEach(function(record){
-				if(record.cid != to_cid){
-					var _exchange = _func.currencyConverter(record.cid, to_cid, currencyId);
-					record.ex_value = record.value * _exchange.rate;
-					record.ex_preciseValue = record.value * _exchange.preciseRate;
-					record.ex_label = currencyId[to_cid].type;
-				}
-			});			
-			callback(reords);
-		});		
-	}	*/
 
 	//********************************************
 	// Type **************************************

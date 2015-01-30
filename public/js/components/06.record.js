@@ -69,25 +69,42 @@ $.uipage.SCOPE = {};
 
 							//****************************
 							//addData*********************
-							
+							var _defaultSummary = {
+									length : 0,
+									cost : 0,
+									ex_cost : 0,
+									exp_cost : 0,
+									income : 0,
+									ex_income : 0,
+									exp_income : 0,
+									sum : 0
+								};
+
 							var _summarize = function(records){
 								var _currencyId = null;
 								var _flatTypeMaps = null;
-								
 								var _parse = function(){
+
 									if(!_currencyId || !_flatTypeMaps) return;
 									var _total = {};
-
 									records.forEach(function(record){
+										if(!record.rid) return;
+
 										var _currencyType = _currencyId[record.cid].type;
 										var _typeList = {};
-										var _totalSUM = _total[_currencyType] = _total[_currencyType] || { length : 0, label : _currencyType, cost : 0, income : 0, sum : 0 };
+										var _totalSUM = _total[_currencyType] = _total[_currencyType] || $.extend({ label : _currencyType }, _defaultSummary);
+										var _exData = $scope.getRecordExchangeRate(record);
 
 										if(record.cashType == -1){
-											_totalSUM.cost += record.value;
+											_totalSUM.cost += record.value*1;
+											_totalSUM.ex_cost += record.value*_exData.rate;
+											_totalSUM.exp_cost += record.value*_exData.preciseRate;
 										}else{
-											_totalSUM.income += record.value;
+											_totalSUM.income += record.value*1;
+											_totalSUM.ex_income += record.value*_exData.rate;
+											_totalSUM.exp_income += record.value*_exData.preciseRate;
 										}
+										_totalSUM.ex_label = _totalSUM.ex_label || _exData.to_label;
 										_totalSUM.length+=1;
 
 
@@ -95,13 +112,19 @@ $.uipage.SCOPE = {};
 											_flatTypeMaps[tid].sup.forEach(function(sup_tid){
 												_typeList[sup_tid] = _flatTypeMaps[sup_tid];
 												_typeList[sup_tid].summary = _typeList[sup_tid].summary || {};
-												var _SUM = _typeList[sup_tid].summary[_currencyType] = _typeList[sup_tid].summary[_currencyType] || { length : 0, label : _currencyType, cost : 0, income : 0, sum : 0 };
+												var _SUM = _typeList[sup_tid].summary[_currencyType] = _typeList[sup_tid].summary[_currencyType] || $.extend({ label : _currencyType }, _defaultSummary);
 
 												if(record.cashType == -1){
-													_SUM.cost += record.value;
+													_SUM.cost += record.value*1;
+													_SUM.ex_cost += record.value*_exData.rate;
+													_SUM.exp_cost += record.value*_exData.preciseRate;
 												}else{
-													_SUM.income += record.value;
+													_SUM.income += record.value*1;
+													_SUM.ex_income += record.value*_exData.rate;
+													_SUM.exp_income += record.value*_exData.preciseRate;
 												}
+
+												_SUM.ex_label = _SUM.ex_label || _exData.to_label;
 												_SUM.length+=1;
 
 											});
@@ -109,23 +132,42 @@ $.uipage.SCOPE = {};
 									});
 
 									
-									
+
 									for(var _summaryId in _flatTypeMaps){
 										var _summaries = _flatTypeMaps[_summaryId].summary;
 										for(var _currencyType in _summaries ){
 											var _summary = _summaries[_currencyType];
 											_summary.sum = _summary.income - _summary.cost;
+											_summary.ex_sum = _summary.ex_income - _summary.ex_cost;
+											_summary.exp_sum = _summary.exp_income - _summary.exp_cost;
 										}											
 									}
 
+									var _totalSUM = $.extend({}, _defaultSummary);
+									var _totalLength = 0;
 									for(var _currencyType in _total ){
 										var _summary = _total[_currencyType];
 										_summary.sum = _summary.income - _summary.cost;
+										_summary.ex_sum = _summary.ex_income - _summary.ex_cost;
+										_summary.exp_sum = _summary.exp_income - _summary.exp_cost;
+
+										_totalSUM.ex_income += _summary.ex_income;
+										_totalSUM.exp_income += _summary.exp_income;
+										_totalSUM.ex_cost += _summary.ex_cost;
+										_totalSUM.exp_cost += _summary.exp_cost;
+										_totalSUM.label = _totalSUM.label || _summary.ex_label;
+										_totalSUM.length += _summary.length;
+										_totalLength++;
 									}
 
+									_totalSUM.ex_sum = _totalSUM.ex_income - _totalSUM.ex_cost;
+									_totalSUM.exp_sum = _totalSUM.exp_income - _totalSUM.exp_cost;
 									
+									$scope.showTotalSUM = _totalLength > 1;
+
 									$scope.summaryFlatMaps = _flatTypeMaps;
-									$scope.totalSummary = _total;
+									$scope.totalSummaries = _total;
+									$scope.totalSummary = { "sum" : _totalSUM };
 								};
 
 								$.uipage.func.createFlatTypeMaps(_defaultData, function(response){
@@ -201,7 +243,7 @@ $.uipage.SCOPE = {};
 										})
 								},forceUpdate);
 
-								$.uipage.func.getCurrency(_defaultData, function(response, res2){
+								$.uipage.func.getCurrency(_defaultData, function(response){
 									$scope.currencies = response;
 
 									$.uipage.func.getCurrencyId(_defaultData, function(currencyId){
@@ -231,10 +273,11 @@ $.uipage.SCOPE = {};
 
 							}
 
-							$scope.currencyQuickSelectList = function( cashType ){
+							$scope.currencyQuickSelectList = function( cid ){
 								if(!$scope.currencies) return;
 
 								return $scope.currencies.filter(function(data){
+									if(data.cid == cid) return true;
 									return	data.quickSelect;
 								});
 							}
@@ -363,6 +406,7 @@ $.uipage.SCOPE = {};
 									record.isChange = false;
 									record.doubleCheckDelete = false;
 									delete record.rid;
+									_summarize($scope.records);
 								})
 							}
 
@@ -386,7 +430,10 @@ $.uipage.SCOPE = {};
 								if(!$scope.currencyId) return;
 								var _rate = $.uipage.func.currencyConverter(record.cid, $scope.default_cid,$scope.currencyId);
 								return _rate;
+							}
 
+							$scope.console = function(record){
+									console.log(record)
 							}
 				        }]
 	};

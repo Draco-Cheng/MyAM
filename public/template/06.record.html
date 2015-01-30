@@ -122,8 +122,9 @@
 	<div ng-if="records.length===0">null</div>
 	<div id="showRecordPanel" ng-if="records">
 
-		<div id="recordSummary">
-			<div class="record-summary-total" ng-init="summaries = totalSummary"  ng-include="'recordSummaryTree'"></div>
+		<div id="recordSummary" class="{{totalSummary?'showTotalSum' : ''}}">
+			<div ng-if="totalSummary && showTotalSUM" class="record-summary-sum" ng-init="summaries = totalSummary"  ng-include="'recordSummaryTree'"></div>
+			<div ng-if="totalSummaries" class="record-summary-total" ng-init="summaries = totalSummaries"  ng-include="'recordSummaryTree'"></div>
 			<div ng-if="showTypeSummary" class="record-summary-type" >
 				<ul class="record-summary-type-Wrapper">
 					<if ng-repeat="typeMap in typeMaps" >
@@ -134,7 +135,7 @@
 			<div class="{{showTypeSummary?'btn-up-arrow' : 'btn-down-arrow'}}" ng-click="showTypeSummary =!showTypeSummary" ></div>
 		</div>
 
-		<div ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
+		<div class="records-list" ng-repeat="record in records.slice(0,renderLimit)" ng-include="'recordTree'"></div>
 	</div>
 	<div ng-if="records.length > renderLimit" class="btn-more" ng-click="addRenderLimit()"></div>
 </div>
@@ -153,6 +154,34 @@
 			<div ng-if="summary.cost && summary.income"
 				class="record-summary-sum">{{i18n.record.sum}} : {{summary.sum}}
 			</div>
+			<if ng-if="summary.label != summary.ex_label || summary.sum != summary.ex_sum || summary.sum != summary.exp_sum">
+				<span class="record-summary-arrow"></span>
+				<div ng-if="summary.ex_label" class="record-summary-ex-label">{{summary.ex_label}}</div>
+				<if ng-if="summary.ex_sum != summary.sum">
+					<div ng-if="summary.ex_income"  class="record-summary-income">
+						{{i18n.record.income}} : {{summary.ex_income}}
+					</div>
+					<div ng-if="summary.ex_cost" class="record-summary-cost">
+						{{i18n.record.cost}} : {{summary.ex_cost}}
+					</div>
+					<div ng-if="summary.ex_cost && summary.ex_income"
+						class="record-summary-sum">{{i18n.record.sum}} : {{summary.ex_sum}}
+					</div>
+				</if>
+				<if ng-if="summary.ex_sum != summary.exp_sum">
+					<div>{{i18n.record.preciseExchange}}</div>
+					<div ng-if="summary.exp_income"  class="record-summary-income">
+						{{i18n.record.income}} : {{summary.exp_income}}
+					</div>
+					<div ng-if="summary.exp_cost" class="record-summary-cost">
+						{{i18n.record.cost}} : {{summary.exp_cost}}
+					</div>
+					<div ng-if="summary.exp_cost && summary.exp_income"
+						class="record-summary-sum">{{i18n.record.sum}} : {{summary.exp_sum}}
+					</div>
+				</if>
+			</if>
+
 		</div>
 	</div>
 </script>
@@ -170,7 +199,7 @@
 </script>
 
 <script type="text/ng-template" id="recordTree">
-		<div class="table {{record.cashType == 1 ? 'row-income' : 'row-cost' }}{{record.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{record.isDeleted? ' isDeleted' : ''}}">
+		<div ng-init="exData = getRecordExchangeRate(record)" class="table {{record.cashType == 1 ? 'row-income' : 'row-cost' }}{{record.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{record.isDeleted? ' isDeleted' : ''}}">
 			<div class="td-operate">
 				<div ng-if="!record.isDeleted && !record.doubleCheckDelete">
 					<div class="btn-delete" ng-click="record.doubleCheckDelete = true;"></div>
@@ -192,15 +221,20 @@
 			</div>
 			<div class="td td-value {{ ( !record.value || record.invalidValue ) ?'error':''}}">
 				<input ng-change="record.isChange=true;" ng-model="record.value" placeholder="{{i18n.record.value_placeholder}}">
-			</div>
-			<div class="td td-exValue" ng-init="exData = getRecordExchangeRate(record)">
-				{{record.value*exData.label}}/
-				{{record.value*exData.rate}}/
-				{{record.value*exData.preciseRate}}
-			</div>			
+			</div>		
 			<div class="td td-currency">
-				<select id="currencyList" ng-model="record.cid"  ng-change="record.isChange=true;" ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList()">
+				<select id="currencyList" ng-model="record.cid"  ng-change="record.isChange=true; exData = getRecordExchangeRate(record);" ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList(record.cid)">
 				</select>
+			</div>
+			<div ng-if="record.cid != default_cid;" class="td td-exValue">
+				<span class="record-summary-arrow"></span>
+				<div class="ex-label">{{exData.to_label}}</div>
+				<div class="ex-cid">{{default_cid}}</div>
+				<div class="ex-value"  ng-if="exData.label != exData.to_label">{{record.value*exData.rate}}</div>
+				<div class="ex-precise"  ng-if="exData.rate != exData.preciseRate">
+					<div class="ex-precise-label">{{i18n.record.preciseExchange}}</div>
+					<div class="ex-precise-value">{{record.value*exData.preciseRate}}</div>
+				</div>
 			</div>
 			<div class="td {{ (!record.date || record.invalidDate)?'error':''}}">
 				<input ng-change="record.isChange=true;" class="cell" type="date" placeholder="{{i18n.record.date_placeholder}}" ng-model="record.date" />
@@ -219,6 +253,5 @@
 					<span>{{type.type_label}}</span>
 				</div>
 			</div>
-			/*{{record.ex_label}}/{{record.ex_value}}/{{record.ex_preciseValue}}*/
 		</div>
 </script>

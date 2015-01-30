@@ -4,14 +4,13 @@
 				<div  class="alert-box-title">{{i18n.createDB.Title}}</div>
 				
 				<input type="text" placeholder="{{i18n.createDB.Name}}" ng-model="name">
-				{{i18n.createDB.NameSuffix}}
+				<span class="nameSuffix">{{i18n.createDB.NameSuffix}}</span>
 				<br>
 				<input type="text" placeholder="{{i18n.createDB.Currency}}" ng-model="currencyType">
 				<br>
 				<div class="renderLogin button" ng-click="submit(4)" >
 					{{i18n.createDB.Create}}
 				</div>
-				{{name}}
 			<div>
 	</div>
 </div>

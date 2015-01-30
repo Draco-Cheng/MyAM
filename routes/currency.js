@@ -40,13 +40,16 @@ routes.set = function(req, res, next) {
 	if(!data.dbFile || (!data.cid && ( !data.type || !data.rate ) ) )
 		return responseHandler(406, req, res);
 
-	if(!data.main &&  !data.to_cid)
+	if( (!data.main &&  !data.to_cid ) || ( !data.cid && data.main && data.to_cid ) )
 		return responseHandler(424, req, res);
 
 	services.currency.setCurrencies(data)
 		.nodeify(function(err, data){
 			if(err){
-				responseHandler(err.code, req, res);
+				if(err.message)
+					responseHandler(err.code, err.message, req, res);
+				else
+					responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
 			}

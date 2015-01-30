@@ -13,6 +13,44 @@
 /**********************************************/
 /****************** division ******************/
 /**********************************************/
+#lobby-menu .menu-default_cid{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#lobby-menu .menu-default_cid:hover{
+    background-color: rgb(255, 255, 255);
+}
+
+
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#greeting_room .button{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#greeting_room .button:hover{
+    background-color: rgb(255, 255, 255);
+    color:  rgb(52, 68, 82);
+}
+
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
+#initialPanel .button{
+    transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
+}
+
+#initialPanel .button:hover{
+    background-color: rgb(255, 255, 255);
+    color:  rgb(52, 68, 82);
+}
+/**********************************************/
+/****************** division ******************/
+/**********************************************/
 #lobby-menu .menu-tools{
     transition-duration: 1.5s;
     -webkit-transition-duration: 1.5s;

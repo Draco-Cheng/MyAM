@@ -4,7 +4,10 @@
 	<div class="menu-block" ui-sref="lobby.record" > + record </div>
 
 	<div class="menu-tools" ui-sref="lobby.setting"></div>
+
 	<div class="menu-user">
 		{{str.userName}}
 	</div>
+	<select class="menu-default_cid" ng-model="default_cid" ng-change="changeDefault_cid()"  ng-options="currency.cid as str.to_cid(currency) for currency in currencyQuickSelectList(default_cid)">
+	</select>
 </div>

@@ -9,13 +9,13 @@
 			<div class="td td-type {{addData.invalid_type?'error' : ''}}">
 				<input ng-model="addData.type" ng-change="emptyAddDateRate()" placeholder="{{i18n.showCurrency.type_placeholder}}">
 			</div>
-			<div class="td">
-				<select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate()" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+			<div class="td td-rate {{addData.to_cid? '' : 'whitePlaceholder'}} {{addData.invalid_rate?'error' : ''}}">
+				<input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder(addData)}}">
+			</div>
+			<div class="td td-to_cid">
+				<select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate(); addData.main=!addData.to_cid;" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
 					<option value>{{i18n.showCurrency.mainCurrency}}</option>
 				</select>
-			</div>
-			<div class="td td-addrate {{addData.to_cid? '' : 'whitePlaceholder'}} {{addData.invalid_rate?'error' : ''}}">
-				<input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder()}}">
 			</div>
 			<div class="td">
 				<input ng-model="addData.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
@@ -41,7 +41,7 @@
 	<div class="table {{currency.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{currency.data.isDeleted? ' isDeleted' : ''}}">
 		<div class="td-operate">
 			<div ng-if="!currency.data.isDeleted && !currency.data.doubleCheckDelete">
-				<div ng-if="!currency.data.main" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
+				<div ng-if="currency.data.to_cid" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
 				<div ng-if="currency.data.isChange" class="btn-save" ng-click="setCurrency(currency.data)"></div>
 			</div>
 			<div ng-if="!currency.data.isDeleted && currency.data.doubleCheckDelete" class="btn-delete-confirm">
@@ -55,26 +55,27 @@
 		<div class="td td-cid">
 			<span>{{currency.data.cid}}</span>
 		</div>
-		<div class="td  {{currency.data.invalid_type?'error' : ''}}">
+		<div class="td td-type {{currency.data.invalid_type?'error' : ''}}">
 			<input ng-model="currency.data.type" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.type_placeholder}}">
-		</div>
-		<div class="td">
-			<select ng-if="!currency.data.main" ng-change="currency.data.isChange=true;" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
-			</select>
-
-			<span ng-if="currency.data.main">
-				{{i18n.showCurrency.mainCurrency}}
-			</span>				
 		</div>
 		<div class="td td-rate {{currency.data.invalid_rate?'error' : ''}}">
 			<span ng-if="currency.data.to_cid">
-				<input ng-model="currency.data.rate" ng-change="currency.data.isChange=true;" >
+				<input ng-model="currency.data.rate" placeholder="{{str.rate_placeholder(currency.data)}}" ng-change="currency.data.isChange=true;" >
 			</span>
 
 			<span ng-if="!currency.data.to_cid">
 				{{currency.data.rate}}
 			</span>	
 		</div>	
+		<div class="td td-to_cid">
+			<select ng-if="!currency.data.main" ng-change="currency.data.isChange=true;" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+			</select>
+
+			<span ng-if="currency.data.main">
+				<div ng-if="currency.data.to_cid" class="main-currency-lebel">{{str.to_cid(currencyId[currency.data.to_cid])}}</div>
+				<div class="main-currency-hint">{{i18n.showCurrency.mainCurrency}}</div>
+			</span>				
+		</div>
 		<div class="td">
 			<input ng-model="currency.data.memo" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.momo_placeholder}}">
 		</div>	

@@ -375,8 +375,9 @@ var _setCurrencies = function(data, callback){
 		_val.push(data.cid);
 		var _sql = "UPDATE currencies SET "+ _param.map(function(e ,n){return e+" = ? "}) + "WHERE cid = ?;";
 	}else{
+		data.cid = Date.now();
 		_param.unshift("cid");
-		_val.unshift(Date.now());
+		_val.unshift(data.cid);
 		var _sql = "INSERT INTO currencies ("+_param.join(",")+") VALUES("+_param.map(function(){return "?"}).join(",")+");";
 	}
 
@@ -384,12 +385,18 @@ var _setCurrencies = function(data, callback){
 };
 exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
+var _updateMainCurrency = function(data, callback){
+	var _sql = "UPDATE currencies SET to_cid = $to_cid, rate = $rate WHERE cid = $main_cid";
+	_allSQL(data, _sql, {$to_cid : data.cid, $rate : data.to_cid_rate, $main_cid : data.main_cid}).then(function(data){callback(null ,data);});
+};
+exports.updateMainCurrency = Promise.denodeify(_updateMainCurrency);
+
 var _delCurrencies = function(data, callback){
 	var _conditions = {
 		$del_cid : data.del_cid
 	};
 
-	var _sql =   "DELETE FROM currencies WHERE  cid = $del_cid";
+	var _sql =   "DELETE FROM currencies WHERE  cid = $del_cid AND to_cid NOT NULL AND to_cid != ''";
 	_allSQL(data, _sql, _conditions).then(function(data){callback(null ,data);})
 
 };
