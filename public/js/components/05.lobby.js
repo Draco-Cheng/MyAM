@@ -47,14 +47,33 @@ $.uipage.SCOPE = {};
 							}
 
 							$scope.changeDefault_cid = function(){
-								console.log($scope.default_cid)
 								$.uipage.storage("MyAM_tempCurrency", $scope.default_cid)
 							}
 
 							var _defaultData = { db : $.uipage.storage("MyAM_userDB")};
 
 							$.uipage.func.getCurrency(_defaultData, function(response){
-								$scope.currencies = response;							
+								var _main = null;
+								var _default_cid_isExist = false;
+
+								response.forEach(function(currency){
+									if(currency.main && !currency.to_cid)
+										_main = currency.cid;
+
+									if(currency.cid == $scope.default_cid)
+										_default_cid_isExist = true;
+
+								});
+
+								if(!_default_cid_isExist)
+									$.uipage.storage("MyAM_tempCurrency", $scope.default_cid = _main)
+
+								$.uipage.storage("MyAM_mainCurrency", _main)
+
+
+								$scope.currencies = response;
+
+
 							});
 
 

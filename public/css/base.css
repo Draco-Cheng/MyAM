@@ -580,6 +580,7 @@ body>.top {
 	overflow: auto;
 	border-top: 40px solid transparent;
 	box-sizing: border-box;
+	padding-top: 15px;
 }
 
 #setting .setting-menu-block {
@@ -705,7 +706,7 @@ body>.top {
 	font-style: italic;
 }
 #showCurrency .main-currency-hint{
-	font-size: 9px;
+	font-size: 14px;
 	color: rgba(0, 0, 0, 0.49);
 	font-style: italic;
 }
@@ -748,6 +749,7 @@ body>.top {
 	line-height: 36px;
 	vertical-align: top;
 	padding: 0px 10px;
+	height: 36px;
 }
 
 #showType .addType{
