@@ -3,7 +3,6 @@ html, body{
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	background-size: cover;
 	overflow: auto;
 }
 
@@ -53,9 +52,28 @@ body>.top {
 	width: 100%;
 }
 
-#lobby {
-	margin-top: 50px;
+#backgroundDiv{
+	background-image: url(../img/bk1.jpg);
+	background-size: cover;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	z-index: -1;
 }
+
+#lobby {
+	padding-top: 50px;
+	height: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+#lobby .midTableTd{
+	height: 100%;
+	vertical-align: middle;
+}
+
+
 #lobby-dialog-view {
 	position: fixed;
 	top: 0;
@@ -70,14 +88,6 @@ body>.top {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;
-}
-#setting .setting-menu-block {
-	position: fixed;
-	top: 50px;
-}
-
-#setting-view {
-	margin-top: 90px;
 }
 
 .btn-delete, .btn-save, .btn-delete-check, .btn-delete-cancle, .btn-recover, .btn-unbind{
@@ -340,6 +350,18 @@ body>.top {
 }
 
 /**** #lobby-index ***/
+#lobby-index{
+	display: inline-table;
+	height: 100%;
+	width: 100%;	
+}
+
+#lobby-index .midTableTd {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
 #lobby-index .lobby-index-title{
 	font-family: fantasy;
 	font-size: 20px;
@@ -401,7 +423,11 @@ body>.top {
 /**** #setting ***/
 #record {
 	text-align: center;
-	margin-top: 60px;
+	height: 100%;
+	overflow: auto;
+	padding-top: 15px;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 #record .td-add{
@@ -546,6 +572,21 @@ body>.top {
 
 
 /**** #setting ***/
+#setting {
+	height: 100%;
+}
+#setting #setting-view{
+	height: 100%;
+	overflow: auto;
+	border-top: 40px solid transparent;
+	box-sizing: border-box;
+}
+
+#setting .setting-menu-block {
+	position: fixed;
+	top: 50px;
+}
+
 #setting .setting-menu-block{
 	display: inline-table;
 	width: 100%;
