@@ -718,4 +718,19 @@ $.uipage.func = $.uipage.func || {};
 		});
 	}
 
+	//********************************************
+	// file **************************************
+	//********************************************
+	_func.backupDB = function(data, callback, forceUpdate){
+		$.uipage.ajax({
+			"url" : "db/backup",
+			"type" : "post",
+			"data" : data,
+			"callback" : function(response){
+				if($.uipage.errHandler(response)) return;
+				callback && callback(_cache.type);	
+			}
+		});
+	}
+
 })();

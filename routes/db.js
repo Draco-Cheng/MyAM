@@ -106,6 +106,33 @@ routes.upload = function(req, res, next) {
 }
 router.all('/upload'	, routes.upload);
 
+routes.rename = function(req, res, next) {
+	var data = tools.createData(req);
+	services.dbService.renameDB(data)
+		.then(function(data){
+			responseHandler(200 , req, res);
+		});
+}
+router.all('/rename'	, routes.rename);
+
+routes.del = function(req, res, next) {
+	var data = tools.createData(req);
+	services.dbService.delDB(data)
+		.then(function(data){
+			responseHandler(200 , req, res);
+		});
+}
+router.all('/del'	, routes.del);
+
+routes.backup = function(req, res, next) {
+	var data = tools.createData(req);
+	services.dbService.backupDB(data)
+		.then(function(data){
+			responseHandler(200 , req, res);
+		});
+}
+router.all('/backup'	, routes.backup);
+
 module.exports = router;
 
 

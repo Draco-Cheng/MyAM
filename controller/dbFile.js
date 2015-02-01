@@ -192,3 +192,38 @@ var _unlink = function(data, callback){
        
 }
 exports.unlink = Promise.denodeify(_unlink);
+
+var _createFolder = function(folder, callback){
+    try{
+        if( !fs.existsSync(folder))
+            fs.mkdirSync(folder);  
+        return true;
+    }catch(e){
+        return false;
+    }
+}
+exports.createFolder = _createFolder;
+
+var _copyFile = function(source, target, callback){
+    /**********************************************
+    Error: EXDEV, Cross-device link
+    **********************************************/
+        var is = fs.createReadStream(source);
+        var os = fs.createWriteStream(target);
+        is.pipe(os);
+        is.on('end',function() {
+            callback();
+        });
+    /*********************************************/   
+}
+exports.copyFile = _copyFile;
+
+var _renameFile = function(source, target){
+    try{
+        fs.renameSync(source,  target);
+        return true;
+    }catch(e){
+        return false;
+    }
+}
+exports.renameFile = _renameFile;

@@ -52,7 +52,7 @@ $.uipage.SCOPE = {};
 								var _file = _uploadDBfile[0].files[0];
 								_uploadDBfile.val("");
 
-								_progressBlock.append(_progressMsg).append(_progressBar).appendTo("#progress-panel");
+								$("#progress-panel").html(_progressBlock.append(_progressMsg).append(_progressBar));
 
 								$.uipage.formApi.uploadFiles({
 									name : "fileUpload",
@@ -73,7 +73,7 @@ $.uipage.SCOPE = {};
 
 										if(_response.isCorrect){
 											_getdbList(function(){
-												_progressBar.addClass("done");
+												_progressBlock.addClass("done");
 												_progressMsg.html(i18n.manageDB["uploadFinish"]+" - "+_file.name);
 												$("#manageDB select").val(_file.name);
 												$.uipage.storage("MyAM_userDB", _file.name);
@@ -82,27 +82,24 @@ $.uipage.SCOPE = {};
 										}else{
 											var _error = i18n.code[_response.message.code] || "";
 											_progressMsg.html( _error+"-"+_file.name)
-											_progressBar.addClass("error");											
+											_progressBlock.addClass("error");											
 										}
 										$.uipage.forceRerender();										
 									}
 								})
 							};
 
-							$scope.selectOption = function(database){
-								if(database==="__upload__"){
-									$("#uploadDBfile")[0].onchange = _fileNameChanged;
-									$("#uploadDBfile").click();
-									$("#manageDB select").val("");
-									$.uipage.storage("MyAM_userDB", "");
+							$scope.setDB = function(database){									
+									$.uipage.storage("MyAM_userDB", database.name);
 									$.uipage.func.resetCache();
-								}else{
-									var _data = JSON.parse(database);
-									console.log(_data)
-									$.uipage.storage("MyAM_userDB", _data.name);
-									$.uipage.func.resetCache();
-								}
 							}
+
+							$scope.uploadDB = function(database){
+								$("#uploadDBfile")[0].onchange = _fileNameChanged;
+								$("#uploadDBfile").click();
+								$.uipage.storage("MyAM_userDB", "");
+								$.uipage.func.resetCache();
+							}							
 
 							$scope.done = function(){
 								if($.uipage.storage("MyAM_userDB"))

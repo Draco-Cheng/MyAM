@@ -85,7 +85,7 @@ $.uipage.SCOPE = {};
 								var _flatTypeMaps = null;
 								var _parse = function(){
 
-									if(!_currencyId || !_flatTypeMaps) return;
+									if(!_currencyId || !_flatTypeMaps || !records) return;
 									var _total = {};
 									records.forEach(function(record){
 										if(!record.rid) return;

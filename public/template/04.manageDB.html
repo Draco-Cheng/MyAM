@@ -2,14 +2,12 @@
 	<div class="midTableTd">
 			<div class="alert-box">
 				<div  class="alert-box-title">{{i18n.manageDB.Title}}</div>
-					<select ng-model="selectDatabase" ng-change="selectOption(selectDatabase)">
-						<option value="" selected disabled>{{i18n.manageDB.selectOption}}</option>
-						<option ng-repeat="database in databases" value="{{database}}">{{database.name}}</option>
-						<option value="__upload__">{{i18n.manageDB.upload}}</option>
-					</select>
-					<div  id="progress-panel"></div>
+				<div class="selection_list">
+					<div ng-repeat="database in databases" ng-click="setDB(database)">{{database.name}}</div>
 					
-				<br>
+					<div  id="progress-panel"></div>					
+				</div>
+				<div class="button" ng-click="uploadDB()">{{i18n.manageDB.upload}}</div>	
 				<a class="renderLogin button" ng-click="done()" >
 					{{i18n.manageDB.ok}}
 				</a>

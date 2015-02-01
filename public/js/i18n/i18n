@@ -22,7 +22,7 @@
 
 	"manageDB" : {
 		"Title" : "Choose your database",
-		"upload" : "Upload database...",
+		"upload" : "Upload",
 		"selectOption" : "-- Select --",
 		"ok" : "done!",
 		"porting" : "porting...",

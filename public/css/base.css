@@ -326,11 +326,11 @@ body>.top {
 
 }
 
-#manageDB .progress-bar.done{
+#manageDB .done .progress-bar{
 	background-color: green;
 }
 
-#manageDB .progress-bar.error{
+#manageDB .error .progress-bar{
 	background-color: red;
 }
 
@@ -353,10 +353,13 @@ body>.top {
 	height: 0px;
 	z-index: 99999;
 	transform: translate3d(0px, 0px , 100px);
-	color: rgb(209, 209, 209);
+	color: rgba(0, 0, 0, 0.7);
 	white-space: nowrap;
 }
-
+#manageDB .selection_list {
+	max-height: 110px;
+	margin: 5px 0px;
+}
 /**** #lobby-index ***/
 #lobby-index{
 	display: inline-table;
