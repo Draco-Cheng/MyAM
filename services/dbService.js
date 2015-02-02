@@ -22,24 +22,6 @@ var _dbList = function(data, callback){
 }
 exports.dbList = Promise.denodeify(_dbList);
 
-var _syncTimeout = {};
-
-var _syncDB = function(data){
-	if(_syncTimeout[data.dbFileName])
-		clearTimeout(_syncTimeout[data.dbFileName]);
-	_syncTimeout[data.dbFileName] = setTimeout(function(){
-		data = data || {};
-		logger.debug(data.reqId,"syncDB Database Folder"+data.dbFileName+" ...");
-		controller.dbFile.checkFile({checkFile : config.dbFolder+data.dbFileName})
-			.then(function(_tempData){
-				if(_tempData.fileExists){
-					if(	controller.dbFile.createFolder(config.backupFolder+data.dbFileName))
-						controller.dbFile.copyFile(config.dbFolder+data.dbFileName, config.backupFolder+data.dbFileName+"/sync-"+data.dbFileName);
-				}
-			})	
-	},60000);
-}
-exports.syncDB = Promise.denodeify(_syncDB);
 
 var _backupDB = function(data, callback){
 	data = data || {};
@@ -130,3 +112,24 @@ var _downloadDB = function(data, callback){
 
 }
 exports.downloadDB = Promise.denodeify(_downloadDB);
+
+//***************************** syncDB *****************************
+var _syncTimeout = {};
+var _syncList = [];
+var _syncDB = function(data){
+	if(_syncList.indexOf(data.dbFileName)==-1) 
+		_syncList.push(data.dbFileName);	
+}
+exports.syncDB = Promise.denodeify(_syncDB);
+
+process.on('uncaughtException', function(err){ 	process.exit(); });
+process.on('SIGINT', function(err){ 	process.exit(); });
+process.on('SIGHUP', function(err){ 	process.exit(); });
+process.on('exit', function(err) {
+	_syncList.forEach(function(dbName){
+		logger.debug("syncDB Database Folder"+dbName+" ...");
+		if(fs.existsSync(config.dbFolder+dbName))
+			if(	controller.dbFile.createFolder(config.backupFolder+dbName) )
+				fs.writeFileSync(config.backupFolder+dbName+"/sync-"+dbName, fs.readFileSync(config.dbFolder+dbName));
+	})
+});
