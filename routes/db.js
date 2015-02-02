@@ -108,9 +108,18 @@ router.all('/upload'	, routes.upload);
 
 routes.rename = function(req, res, next) {
 	var data = tools.createData(req);
+	data.dbFileRename	= req.body.dbFileRename;
+
+	if(!data.dbFile || !data.dbFileRename)
+		return responseHandler(406, req, res);
+
 	services.dbService.renameDB(data)
-		.then(function(data){
-			responseHandler(200 , req, res);
+		.nodeify(function(err, data){
+			if(err){
+				responseHandler(err.code, req, res);
+			}else{
+				responseHandler(200, req, res);
+			}
 		});
 }
 router.all('/rename'	, routes.rename);
@@ -132,6 +141,16 @@ routes.backup = function(req, res, next) {
 		});
 }
 router.all('/backup'	, routes.backup);
+
+routes.download = function(req, res, next) {
+	var data = tools.createData(req);
+	data.res = res;
+	services.dbService.downloadDB(data)
+		.then(function(data){
+			responseHandler(200 ,data.downloadLink, req, res);
+		});
+}
+router.all('/download'	, routes.download);
 
 module.exports = router;
 

@@ -8,6 +8,7 @@ var tools = require('../controller/tools.js');
 
 var services  = {};
 	services.type = require('../services/type.js');
+	services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
@@ -44,6 +45,7 @@ routes.set = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, data.resault[0] , req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -64,6 +66,7 @@ routes.del = function(req, res, next) {
 					responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -99,6 +102,7 @@ routes.setMaps = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, data.resault[0] , req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -119,6 +123,7 @@ routes.delTypeMaps = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, data.resault[0] , req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -139,6 +144,7 @@ routes.setMapSequence = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, data.resault[0] , req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }

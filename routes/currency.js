@@ -8,6 +8,7 @@ var tools = require('../controller/tools.js');
 
 var services  = {};
 	services.currency = require('../services/currency.js');
+	services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
@@ -52,6 +53,7 @@ routes.set = function(req, res, next) {
 					responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -73,6 +75,7 @@ routes.del = function(req, res, next) {
 					responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }

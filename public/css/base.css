@@ -204,8 +204,13 @@ body>.top {
 	height: 100%;
 	width: 100%;
 	display: inline-table;
-	vertical-align: middle;
 	text-align: center;
+}
+
+#greeting_room .midTableTd {
+	height: 100%;
+	display: table-cell;
+	vertical-align: middle;
 }
 
 #greeting_room .alert-box{
@@ -256,8 +261,8 @@ body>.top {
 }
 
 #initialPanel .panel{
-	height: 200px;
-	width: 300px;
+	height: 230px;
+	width: 370px;
 	display: inline-block;
 	background: rgba(142, 189, 229, 0.7);
 	border-radius: 25px;
@@ -311,13 +316,58 @@ body>.top {
 #manageDB {
 	display: inline-table;
 	height: 100%;
+	width: 100%;
 }
 
 #manageDB .midTableTd {
 	display: table-cell;
 	vertical-align: middle;
+	width: 100%;
 }
-#manageDB .progress-bar{
+
+#manageDB .oprate-block{
+	display: inline-block;
+	width: 125px;
+}
+#manageDB .btn-delete{
+	margin: 0;
+}
+#manageDB .selectDB{
+	display: inline-block;
+	height: 25px;
+	width: 25px;
+	background-size: cover;
+	border: 1px solid rgba(17, 34, 51, 0.18);
+	vertical-align: middle;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+#manageDB .selectDB.selected{
+	background-image: url(../img/13027-check-mark-blue-design.png);
+}
+
+#manageDB .btn-download{
+	display: inline-block;
+	height: 25px;
+	width: 25px;
+	background-size: contain;
+	vertical-align: middle;
+	cursor: pointer;
+	background-image: url(../img/Arrow-Download-4-icon.png);
+}
+#manageDB .selection_list {
+	height: auto;
+	margin: 5px 0px;
+	overflow: auto;
+	max-height: 150px;
+}
+/**** #progress-panel ***/
+#progress-panel {
+	margin-top: 10px;
+}
+
+#progress-panel .progress-bar{
 	display: inline-block;
 	width: 0%;
 	background-color: rgb(61, 139, 232);
@@ -326,19 +376,19 @@ body>.top {
 
 }
 
-#manageDB .done .progress-bar{
+#progress-panel .done .progress-bar{
 	background-color: green;
 }
 
-#manageDB .error .progress-bar{
+#progress-panel .error .progress-bar{
 	background-color: red;
 }
 
-#manageDB .progress-bar, #manageDB .progress-block{
+#progress-panel .progress-bar, #progress-panel .progress-block{
 	height: 20px;
 }
 
-#manageDB .progress-block {
+#progress-panel .progress-block {
 	display: inline-block;
 	border: solid 1px #C2C2C2;
 	width: 200px;
@@ -346,7 +396,7 @@ body>.top {
 	overflow: hidden;
 }
 
-#manageDB .progress-msg {
+#progress-panel .progress-msg {
 	line-height: 20px;
 	display: block;
 	text-align: center;
@@ -356,9 +406,11 @@ body>.top {
 	color: rgba(0, 0, 0, 0.7);
 	white-space: nowrap;
 }
-#manageDB .selection_list {
+#progress-panel .selection_list {
 	max-height: 110px;
 	margin: 5px 0px;
+	overflow: auto;
+	width: 100%;
 }
 /**** #lobby-index ***/
 #lobby-index{

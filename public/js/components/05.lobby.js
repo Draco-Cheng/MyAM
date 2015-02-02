@@ -95,21 +95,34 @@ $.uipage.SCOPE = {};
 
 							var _db = $.uipage.storage("MyAM_userDB");
 
-							if(_db)
+							if(_db){
 								$.uipage.ajax({
 									url : "db/check",
 									type : "post",
 									data : { "db" : _db},
 									callback : function(response){
 										if($.uipage.errHandler(response)) return;
+										// check and backup
+										var _timestamp = parseInt($.uipage.storage("MyAM_autoBackUp_"+_db)) || 0;
+										if( Date.now() - _timestamp >= 1000*60*60*24*7 )
+											$.uipage.ajax({
+												url : "db/backup",
+												type : "post",
+												data : { "db" : _db},
+												callback : function(response){
+													if(response.code == 200)
+														$.uipage.storage("MyAM_autoBackUp_"+_db, Date.now());
+												}
+											});
 									}
 								})
-							else
+							}else{
 								setTimeout(function(){
 									$.uipage.alert(i18n.lobby["NOT_SET_DB"], function(){
 										$.uipage.redirect("initial/manageDB");
 									})									
 								})
+							}
 				        }]
 	};
 

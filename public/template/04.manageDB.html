@@ -3,15 +3,31 @@
 			<div class="alert-box">
 				<div  class="alert-box-title">{{i18n.manageDB.Title}}</div>
 				<div class="selection_list">
-					<div ng-repeat="database in databases" ng-click="setDB(database)">{{database.name}}</div>
-					
-					<div  id="progress-panel"></div>					
+					<div class="" ng-repeat="database in databases">
+						<div  class="oprate-block">
+							<div ng-if="!database.doubleCheckDelete">
+								<span class="selectDB {{selectedDB == database.name?'selected':''}}" ng-click="setDB(database)"></span>
+								<div class="btn-delete" ng-click="database.doubleCheckDelete = true;"></div>
+								<span class="btn-download" ng-click="downloadDB(database)"></span>
+								<div class="btn-save" ng-click="rename(database)" ng-if="database.rename!=database.name"></div>
+							</div>
+							<div ng-if="database.doubleCheckDelete" class="btn-delete-confirm">
+								<div class="btn-delete-cancle" ng-click="database.doubleCheckDelete = false;"></div>
+								<div class="btn-delete-check" ng-click="delDB(database)"></div>					
+							</div>
+						</div>				
+						<input ng-model="database.rename">
+						
+					</div>
+									
 				</div>
 				<div class="button" ng-click="uploadDB()">{{i18n.manageDB.upload}}</div>	
 				<a class="renderLogin button" ng-click="done()" >
 					{{i18n.manageDB.ok}}
 				</a>
 				<input id="uploadDBfile" class="hidden" type="file" multiple="multiple"/>
-			<div>
+			</div>
+
 	</div>
 </div>
+<div  id="progress-panel"></div>

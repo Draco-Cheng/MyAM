@@ -26,7 +26,9 @@
 		"selectOption" : "-- Select --",
 		"ok" : "done!",
 		"porting" : "porting...",
-		"uploadFinish" : "Done!"
+		"uploadFinish" : "Done!",
+		"confirmDel" : "Are you sur you want to delete the database!?",
+		"plzSelectDB" : "Please select a database or create new one!"
 	},
 
 	"lobby" : {

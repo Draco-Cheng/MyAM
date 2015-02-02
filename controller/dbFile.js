@@ -204,16 +204,19 @@ var _createFolder = function(folder, callback){
 }
 exports.createFolder = _createFolder;
 
-var _copyFile = function(source, target, callback){
+var _copyFile = function(source, target){
     /**********************************************
     Error: EXDEV, Cross-device link
     **********************************************/
+    return new Promise(function(resolve, reject){
         var is = fs.createReadStream(source);
         var os = fs.createWriteStream(target);
         is.pipe(os);
         is.on('end',function() {
-            callback();
+            resolve();
         });
+    })
+
     /*********************************************/   
 }
 exports.copyFile = _copyFile;
@@ -223,6 +226,7 @@ var _renameFile = function(source, target){
         fs.renameSync(source,  target);
         return true;
     }catch(e){
+        console.log(e)
         return false;
     }
 }

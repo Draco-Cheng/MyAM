@@ -8,6 +8,7 @@ var tools = require('../controller/tools.js');
 
 var services  = {};
 	services.record = require('../services/record.js');
+	services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
@@ -24,6 +25,7 @@ routes.del = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -47,6 +49,7 @@ routes.set = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200,data.resault[0] , req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
@@ -66,6 +69,7 @@ routes.setTypes = function(req, res, next) {
 				responseHandler(err.code, req, res);
 			}else{
 				responseHandler(200, req, res);
+				services.dbService.syncDB(data);
 			}
 		});
 }
