@@ -28,7 +28,8 @@
 		"porting" : "porting...",
 		"uploadFinish" : "Done!",
 		"confirmDel" : "Are you sur you want to delete the database!?",
-		"plzSelectDB" : "Please select a database or create new one!"
+		"plzSelectDB" : "Please select a database or create new one!",
+		"409" : "{0} is already exist..."
 	},
 
 	"lobby" : {

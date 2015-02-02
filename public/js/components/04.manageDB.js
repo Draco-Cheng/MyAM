@@ -108,7 +108,10 @@ $.uipage.SCOPE = {};
 											}
 
 											_getdbList();	
-										}								
+										}else{
+											var _message = i18n.manageDB[json.code] || json.message;
+											$.uipage.alert(_message.format(database.rename));
+										}
 									}
 								});	
 							}
@@ -171,7 +174,7 @@ $.uipage.SCOPE = {};
 								if($.uipage.storage("MyAM_userDB"))
 									$.uipage.redirect("lobby");
 								else
-									$.uipage.alert(i18n.manageDB.plzSelectDB)
+									$.uipage.alert(i18n.manageDB.plzSelectDB);
 							}
 		}]
 	};
