@@ -27,7 +27,8 @@
 			<span  class="typeMap-check {{data.check(type.tid)?'checked':'unchecked'}}"></span>
 			<span  class="typeMap-check-label">{{type.type_label}}</span>
 		</span>
-	    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub">
+		<div ng-if="!sup_tid && typeMap.sub.list" class="{{typeMap.showSub? 'btn-up' : 'btn-down'}}" ng-click="typeMap.showSub = !typeMap.showSub;"></div>
+	    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub && typeMap.showSub">
 			<if ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = type.tid">
 				<li ng-if="typeMap.data.showInMap"  class="typeMaps-sub-li"  ng-include="'typeMapsTree'"></li>
 			</if>

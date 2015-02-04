@@ -185,6 +185,23 @@ body>.top {
 	background-image: url(../img/down-arrow-icon.png);
 }
 
+.btn-down, .btn-up{
+	height: 16px;
+	background-size: contain;
+	vertical-align: middle;
+	cursor: pointer;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.btn-down{
+	background-image: url(../img/btn-down.png);
+}
+
+.btn-up{
+	background-image: url(../img/btn-up.png);
+}
+
 .content {
 	height: 100%;
 	width: 100%;	
