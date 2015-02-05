@@ -257,7 +257,7 @@ $.uipage.SCOPE = {};
 
 							$scope.typeQuickSelectList = function( cashType ){
 								if(!$scope.types) return;
-								cashType = cashType ? 1 : -1;
+								cashType = cashType == 1 ? 1 : -1;
 
 								return $scope.types.filter(function(data){
 									if(data.cashType!==0  && cashType !== data.cashType)
