@@ -98,7 +98,7 @@
 		</div>
 	</div>
 	<div ng-if="!sup_tid && typeMap.sub.list" class="{{typeMap.showSub? 'btn-up' : 'btn-down'}}" ng-click="typeMap.showSub = !typeMap.showSub;"></div>
-    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub && typeMap.showSub">
+    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub && (sup_tid || typeMap.showSub ) ">
         <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
     </ul>
 </script>
