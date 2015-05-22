@@ -434,7 +434,14 @@ $.uipage.SCOPE = {};
 							}
 
 							$scope.console = function(record){
-									console.log(record)
+								console.log(record)
+							}
+
+
+							$scope.round = function(num, pos){
+								typeof pos == "undefined" && ( pos = 2 );
+								var size = Math.pow(10, pos);
+  								return Math.round(num * size) / size;
 							}
 				        }]
 	};
