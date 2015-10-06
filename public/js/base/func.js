@@ -448,8 +448,8 @@ $.uipage.func = $.uipage.func || {};
 
 		_exchangeList[to_cid].label = currencyId[cid].type;
 		_exchangeList[to_cid].to_label = currencyId[to_cid].type;
-		_exchangeList[to_cid].preciseRate = Math.round(_exchangeList[to_cid].preciseRate*1000)/1000;
-		_exchangeList[to_cid].rate = Math.round(_exchangeList[to_cid].rate*1000)/1000;
+		_exchangeList[to_cid].preciseRate = _exchangeList[to_cid].preciseRate;
+		_exchangeList[to_cid].rate = _exchangeList[to_cid].rate;
 
 		return _exchangeList[to_cid];
 	}

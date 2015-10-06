@@ -89,7 +89,7 @@ $.uipage.SCOPE = {};
 									var _total = {};
 									records.forEach(function(record){
 										if(!record.rid) return;
-
+										
 										var _currencyType = _currencyId[record.cid].type;
 										var _typeList = {};
 										var _totalSUM = _total[_currencyType] = _total[_currencyType] || $.extend({ label : _currencyType }, _defaultSummary);
