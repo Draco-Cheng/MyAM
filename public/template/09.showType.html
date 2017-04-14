@@ -1,104 +1,103 @@
 <div id="showType">
-
-	<div class="addType">
-		<div class="table">
-			<div class="td td-add">
-				<div class="btn-add" ng-click="setType(addData)">
-					<div class="btn-add-word">{{i18n.showType.add}}</div>
-				</div>
-			</div>
-			<div class="td td-type_label {{addData.invalid_type_label?'error':''}}">
-				<input id="type_label" ng-model="addData.type_label" ng-click="removeErrorClass()" type="text" placeholder="{{i18n.showType.label}}" />
-			</div>
-			<div class="td">
-				<select id="cashType" ng-model="addData.cashType">
-					<option value="0">{{i18n.showType.cost_earn}}</option>
-					<option value="-1">{{i18n.showType.cost}}</option>
-					<option value="1">{{i18n.showType.earn}}</option>
-				</select>
-
-			</div>			
-			<div class="td td-checkbox">
-				<div class="wrapper"><input id="quickSelect" ng-model="addData.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
-				<div class="wrapper"><input id="master" ng-model="addData.master" type="checkbox" />{{i18n.showType.master}}</div>
-				<br>
-				<div class="wrapper"><input id="showInMap" ng-model="addData.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
-			</div>
-			<div class="td">
-				<select id="parent_tid" ng-model="addData.parent_tid" ng-options="type.tid as type.type_label for type in types">
-					<option value>{{i18n.showType.parent}}</option>
-				</select>
-				<div class="btn-showTypeMaps" ng-click="showTypeMaps(addData)"></div>
-			</div>
-		</div>
-	</div>
-	
-	<div class="block-loading" ng-if="types===ubdefiend">{{i18n.common.load}}</div>
-	<div class="block-empty" ng-if="types.length===0">{{i18n.common.empty}}</div>
-	<div>
-		<div class="typeMaps-classified_typeMaps">
-			<ul class="typeMaps-Wrapper type-Maps">
-				<li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
-			</ul>
-		</div>
-		<div ng-if="unclassified_typeMaps">
-			<div class="typeMaps-unclassified_typeMaps">
-				<div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
-				<ul class="typeMaps-Wrapper type-Maps">
-					<li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+  <div class="addType">
+    <div class="table">
+      <div class="td td-add">
+        <div class="btn-add" ng-click="setType(addData)">
+          <div class="btn-add-word">{{i18n.showType.add}}</div>
+        </div>
+      </div>
+      <div class="td td-type_label {{addData.invalid_type_label?'error':''}}">
+        <input id="type_label" ng-model="addData.type_label" ng-click="removeErrorClass()" type="text" placeholder="{{i18n.showType.label}}" />
+      </div>
+      <div class="td">
+        <select id="cashType" ng-model="addData.cashType">
+          <option value="0">{{i18n.showType.cost_earn}}</option>
+          <option value="-1">{{i18n.showType.cost}}</option>
+          <option value="1">{{i18n.showType.earn}}</option>
+        </select>
+      </div>
+      <div class="td td-checkbox">
+        <div class="wrapper">
+          <input id="quickSelect" ng-model="addData.quickSelect" type="checkbox" />{{i18n.showType.quickSelect}}</div>
+        <div class="wrapper">
+          <input id="master" ng-model="addData.master" type="checkbox" />{{i18n.showType.master}}</div>
+        <br>
+        <div class="wrapper">
+          <input id="showInMap" ng-model="addData.showInMap" type="checkbox" />{{i18n.showType.showInMap}}</div>
+      </div>
+      <div class="td">
+        <select id="parent_tid" ng-model="addData.parent_tid" ng-options="type.tid as type.type_label for type in types">
+          <option value>{{i18n.showType.parent}}</option>
+        </select>
+        <div class="btn-showTypeMaps" ng-click="showTypeMaps(addData)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="block-loading" ng-if="types===ubdefiend">{{i18n.common.load}}</div>
+  <div class="block-empty" ng-if="types.length===0">{{i18n.common.empty}}</div>
+  <div>
+    <div class="typeMaps-classified_typeMaps">
+      <ul class="typeMaps-Wrapper type-Maps">
+        <li ng-repeat="typeMap in typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+      </ul>
+    </div>
+    <div ng-if="unclassified_typeMaps">
+      <div class="typeMaps-unclassified_typeMaps">
+        <div class="typeMaps-unclassified_typeMaps-title">{{i18n.showType.unclassified_typeMaps}}</div>
+        <ul class="typeMaps-Wrapper type-Maps">
+          <li ng-repeat="typeMap in unclassified_typeMaps" ng-init="typeMap=typeMap" ng-include="'typeTree'"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
-
-
 <script type="text/ng-template" id="typeTree">
-	<div class="table" ng-init="data = typeMap.data;">
-		<div class="td-operate">
-			<div ng-if="!data.isDeleted && !data.doubleCheckDelete">
-				<div ng-if="!sup_tid" class="btn-delete" ng-click="data.doubleCheckDelete = true;"></div>
-				<div ng-if="sup_tid" class="btn-unbind" ng-click="delTypeMaps(sup_tid, data)"></div>
-				<div ng-if="data.isChange" class="btn-save" ng-click="setType(data)"></div>
-								
-			</div>
-			<div ng-if="!data.isDeleted && data.doubleCheckDelete" class="btn-delete-confirm">
-				<div class="btn-delete-cancle" ng-click="data.doubleCheckDelete = false;"></div>
-				<div class="btn-delete-check" ng-click="deleteType(data)"></div>
-			</div>
-			<div ng-if="data.isDeleted">
-				<div class="btn-recover" ng-click="setType(data)"></div>					
-			</div>
-		</div>
-		<div class="td td-tid">
-			<span id="type_id">{{data.tid}}</span>
-		</div>
-		<div class="td {{data.invalid_type_label?'error':''}}">
-			<input id="type_label" ng-change="data.isChange=true;" ng-model="data.type_label" />
-		</div>
-		<div class="td">
-			<select id="cashType" ng-change="data.isChange=true;" ng-model="data.cashType">
-				<option value="0">{{i18n.showType.cost_earn}}</option>
-				<option value="-1">{{i18n.showType.cost}}</option>
-				<option value="1">{{i18n.showType.earn}}</option>
-			</select>
-		</div>
-
-		<div class="td td-checkbox">
-			<div class="wrapper"><input ng-model="data.quickSelect" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.quickSelect}}</div>
-			<div class="wrapper"><input ng-model="data.master" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.master}}</div>
-			<br>
-			<div class="wrapper"><input ng-model="data.showInMap" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.showInMap}}</div>
-		</div>
-		<div class="td">
-			<select id="parent_tid" ng-change="data.isChange=true;" ng-model="data.parent_tid" ng-options="type.tid as type.type_label for type in types">
-				<option value="" disabled>{{i18n.showType.parent}}</option>
-			</select>
-			<div class="btn-showTypeMaps" ng-click="showTypeMaps(data)"></div>
-		</div>
-	</div>
-	<div ng-if="!sup_tid && typeMap.sub.list" class="{{typeMap.showSub? 'btn-up' : 'btn-down'}}" ng-click="typeMap.showSub = !typeMap.showSub;"></div>
-    <ul  class="typeMaps-Wrapper" ng-if="typeMap.sub && (sup_tid || typeMap.showSub ) ">
-        <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
-    </ul>
+  <div class="table" ng-init="data = typeMap.data;">
+    <div class="td-operate">
+      <div ng-if="!data.isDeleted && !data.doubleCheckDelete">
+        <div ng-if="!sup_tid" class="btn-delete" ng-click="data.doubleCheckDelete = true;"></div>
+        <div ng-if="sup_tid" class="btn-unbind" ng-click="delTypeMaps(sup_tid, data)"></div>
+        <div ng-if="data.isChange" class="btn-save" ng-click="setType(data)"></div>
+      </div>
+      <div ng-if="!data.isDeleted && data.doubleCheckDelete" class="btn-delete-confirm">
+        <div class="btn-delete-cancle" ng-click="data.doubleCheckDelete = false;"></div>
+        <div class="btn-delete-check" ng-click="deleteType(data)"></div>
+      </div>
+      <div ng-if="data.isDeleted">
+        <div class="btn-recover" ng-click="setType(data)"></div>
+      </div>
+    </div>
+    <div class="td td-tid">
+      <span id="type_id">{{data.tid}}</span>
+    </div>
+    <div class="td {{data.invalid_type_label?'error':''}}">
+      <input id="type_label" ng-change="data.isChange=true;" ng-model="data.type_label" />
+    </div>
+    <div class="td">
+      <select id="cashType" ng-change="data.isChange=true;" ng-model="data.cashType">
+        <option value="0">{{i18n.showType.cost_earn}}</option>
+        <option value="-1">{{i18n.showType.cost}}</option>
+        <option value="1">{{i18n.showType.earn}}</option>
+      </select>
+    </div>
+    <div class="td td-checkbox">
+      <div class="wrapper">
+        <input ng-model="data.quickSelect" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.quickSelect}}</div>
+      <div class="wrapper">
+        <input ng-model="data.master" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.master}}</div>
+      <br>
+      <div class="wrapper">
+        <input ng-model="data.showInMap" ng-click="data.isChange=true;" type="checkbox" />{{i18n.showType.showInMap}}</div>
+    </div>
+    <div class="td">
+      <select id="parent_tid" ng-change="data.isChange=true;" ng-model="data.parent_tid" ng-options="type.tid as type.type_label for type in types">
+        <option value="" disabled>{{i18n.showType.parent}}</option>
+      </select>
+      <div class="btn-showTypeMaps" ng-click="showTypeMaps(data)"></div>
+    </div>
+  </div>
+  <div ng-if="!sup_tid && typeMap.sub.list" class="{{typeMap.showSub? 'btn-up' : 'btn-down'}}" ng-click="typeMap.showSub = !typeMap.showSub;"></div>
+  <ul class="typeMaps-Wrapper" ng-if="typeMap.sub && (sup_tid || typeMap.showSub ) ">
+    <li ng-repeat="typeMap in typeMap.sub.list" ng-init="sup_tid = data.tid" ng-include="'typeTree'"></li>
+  </ul>
 </script>

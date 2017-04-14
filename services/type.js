@@ -1,4 +1,4 @@
-var Promise =  require("promise");
+var Promise    =  require("promise");
 
 var controller = {
 	dbController : require('../controller/dbController.js'),
@@ -6,7 +6,7 @@ var controller = {
 };
 
 // logger is special function so its not in the controller object
-var logger = require("../controller/logger.js");
+var logger    = require("../controller/logger.js");
 
 var _getTypes = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);

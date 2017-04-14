@@ -1,96 +1,91 @@
 <div id="showCurrency">
-	<div class="addCurrency">
-		<div class="table">
-			<div class="td td-add">
-				<div class="btn-add" ng-click="setCurrency(addData)">
-					<div class="btn-add-word">{{i18n.showCurrency.add}}</div>
-				</div>
-			</div>
-			<div class="td td-type {{addData.invalid_type?'error' : ''}}">
-				<input ng-model="addData.type" ng-change="emptyAddDateRate()" placeholder="{{i18n.showCurrency.type_placeholder}}">
-			</div>
-			<div class="td td-rate {{addData.to_cid? '' : 'whitePlaceholder'}} {{addData.invalid_rate?'error' : ''}}">
-				<input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder(addData)}}">
-			</div>
-			<div class="td td-to_cid">
-				<select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate(); addData.main=!addData.to_cid;" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
-					<option value>{{i18n.showCurrency.mainCurrency}}</option>
-				</select>
-			</div>
-			<div class="td">
-				<input ng-model="addData.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
-			</div>
-			<div class="td">
-				<div class="checkbox-panel">
-					<input type="checkbox" ng-model="addData.quickSelect" ng-checked="addData.quickSelect">
-					<span class="hint">{{i18n.showCurrency.quickSelect}}</span>
-				</div>
-			</div>
-			<div class="td td-date  {{addData.invalid_date?'error' : ''}}">
-				<input class="cell" type="date" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="addData.date" />
-			</div>
-		</div>
-	</div>
-
-	<ul class="currency-Wrapper" id="currency-Maps"><li ng-repeat="currency in currencyMaps" ng-include="'currencyTree'"></li></ul>
+  <div class="addCurrency">
+    <div class="table">
+      <div class="td td-add">
+        <div class="btn-add" ng-click="setCurrency(addData)">
+          <div class="btn-add-word">{{i18n.showCurrency.add}}</div>
+        </div>
+      </div>
+      <div class="td td-type {{addData.invalid_type?'error' : ''}}">
+        <input ng-model="addData.type" ng-change="emptyAddDateRate()" placeholder="{{i18n.showCurrency.type_placeholder}}">
+      </div>
+      <div class="td td-rate {{addData.to_cid? '' : 'whitePlaceholder'}} {{addData.invalid_rate?'error' : ''}}">
+        <input class="input-addrate" ng-model="addData.rate" placeholder="{{str.rate_placeholder(addData)}}">
+      </div>
+      <div class="td td-to_cid">
+        <select id="to_cid" ng-model="addData.to_cid" ng-change="emptyAddDateRate(); addData.main=!addData.to_cid;" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+          <option value>{{i18n.showCurrency.mainCurrency}}</option>
+        </select>
+      </div>
+      <div class="td">
+        <input ng-model="addData.memo" placeholder="{{i18n.showCurrency.momo_placeholder}}">
+      </div>
+      <div class="td">
+        <div class="checkbox-panel">
+          <input type="checkbox" ng-model="addData.quickSelect" ng-checked="addData.quickSelect">
+          <span class="hint">{{i18n.showCurrency.quickSelect}}</span>
+        </div>
+      </div>
+      <div class="td td-date  {{addData.invalid_date?'error' : ''}}">
+        <input class="cell" type="date" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="addData.date" />
+      </div>
+    </div>
+  </div>
+  <ul class="currency-Wrapper" id="currency-Maps">
+    <li ng-repeat="currency in currencyMaps" ng-include="'currencyTree'"></li>
+  </ul>
 </div>
-
-
-
 <script type="text/ng-template" id="currencyTree">
-	<div class="table {{currency.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{currency.data.isDeleted? ' isDeleted' : ''}}">
-		<div class="td-operate">
-			<div ng-if="!currency.data.isDeleted && !currency.data.doubleCheckDelete">
-				<div ng-if="currency.data.to_cid" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
-				<div ng-if="currency.data.isChange" class="btn-save" ng-click="setCurrency(currency.data)"></div>
-			</div>
-			<div ng-if="!currency.data.isDeleted && currency.data.doubleCheckDelete" class="btn-delete-confirm">
-				<div class="btn-delete-cancle" ng-click="currency.data.doubleCheckDelete = false;"></div>
-				<div class="btn-delete-check" ng-click="deleteItem(currency.data)"></div>					
-			</div>
-			<div ng-if="currency.data.isDeleted">
-				<div class="btn-recover" ng-click="setCurrency(currency.data)"></div>					
-			</div>
-		</div>
-		<div class="td td-cid">
-			<span>{{currency.data.cid}}</span>
-		</div>
-		<div class="td td-type {{currency.data.invalid_type?'error' : ''}}">
-			<input ng-model="currency.data.type" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.type_placeholder}}">
-		</div>
-		<div class="td td-rate {{currency.data.invalid_rate?'error' : ''}}">
-			<span ng-if="currency.data.to_cid">
+  <div class="table {{currency.doubleCheckDelete? ' doubleCheckDelete' : ''}}{{currency.data.isDeleted? ' isDeleted' : ''}}">
+    <div class="td-operate">
+      <div ng-if="!currency.data.isDeleted && !currency.data.doubleCheckDelete">
+        <div ng-if="currency.data.to_cid" class="btn-delete" ng-click="currency.data.doubleCheckDelete = true;"></div>
+        <div ng-if="currency.data.isChange" class="btn-save" ng-click="setCurrency(currency.data)"></div>
+      </div>
+      <div ng-if="!currency.data.isDeleted && currency.data.doubleCheckDelete" class="btn-delete-confirm">
+        <div class="btn-delete-cancle" ng-click="currency.data.doubleCheckDelete = false;"></div>
+        <div class="btn-delete-check" ng-click="deleteItem(currency.data)"></div>
+      </div>
+      <div ng-if="currency.data.isDeleted">
+        <div class="btn-recover" ng-click="setCurrency(currency.data)"></div>
+      </div>
+    </div>
+    <div class="td td-cid">
+      <span>{{currency.data.cid}}</span>
+    </div>
+    <div class="td td-type {{currency.data.invalid_type?'error' : ''}}">
+      <input ng-model="currency.data.type" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.type_placeholder}}">
+    </div>
+    <div class="td td-rate {{currency.data.invalid_rate?'error' : ''}}">
+      <span ng-if="currency.data.to_cid">
 				<input ng-model="currency.data.rate" placeholder="{{str.rate_placeholder(currency.data)}}" ng-change="currency.data.isChange=true;" >
 			</span>
-
-			<span ng-if="!currency.data.to_cid">
+      <span ng-if="!currency.data.to_cid">
 				{{currency.data.rate}}
-			</span>	
-		</div>	
-		<div class="td td-to_cid">
-			<select ng-if="!currency.data.main" ng-change="currency.data.isChange=true;" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
-			</select>
-
-			<span ng-if="currency.data.main">
+			</span>
+    </div>
+    <div class="td td-to_cid">
+      <select ng-if="!currency.data.main" ng-change="currency.data.isChange=true;" id="to_cid" ng-model="currency.data.to_cid" ng-options="currency.cid as str.to_cid(currency) for currency in currencies">
+      </select>
+      <span ng-if="currency.data.main">
 				<div ng-if="currency.data.to_cid" class="main-currency-lebel">{{str.to_cid(currencyId[currency.data.to_cid])}}</div>
 				<div class="main-currency-hint">{{i18n.showCurrency.mainCurrency}}</div>
-			</span>				
-		</div>
-		<div class="td">
-			<input ng-model="currency.data.memo" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.momo_placeholder}}">
-		</div>	
-		<div class="td">
-			<div class="checkbox-panel">
-				<input type="checkbox" ng-model="currency.data.quickSelect" ng-click="currency.data.isChange=true;" ng-checked="currency.data.quickSelect">
-				<span class="hint">{{i18n.showCurrency.quickSelect}}</span>
-			</div>
-		</div>
-
-		<div class="td  {{currency.data.invalid_date?'error' : ''}}">
-			<input class="cell" type="date" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="currency.data.date" />
-		</div>
-	</div>
-	<ul class="currency-Wrapper"  ng-if="currency.sub">
-		<li ng-repeat="currency in currency.sub" ng-include="'currencyTree'"></li>
-	</ul>
+			</span>
+    </div>
+    <div class="td">
+      <input ng-model="currency.data.memo" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.momo_placeholder}}">
+    </div>
+    <div class="td">
+      <div class="checkbox-panel">
+        <input type="checkbox" ng-model="currency.data.quickSelect" ng-click="currency.data.isChange=true;" ng-checked="currency.data.quickSelect">
+        <span class="hint">{{i18n.showCurrency.quickSelect}}</span>
+      </div>
+    </div>
+    <div class="td  {{currency.data.invalid_date?'error' : ''}}">
+      <input class="cell" type="date" ng-change="currency.data.isChange=true;" placeholder="{{i18n.showCurrency.date_placeholder}}" ng-model="currency.data.date" />
+    </div>
+  </div>
+  <ul class="currency-Wrapper" ng-if="currency.sub">
+    <li ng-repeat="currency in currency.sub" ng-include="'currencyTree'"></li>
+  </ul>
 </script>
