@@ -1,0 +1,33 @@
+<h1>Records</h1>
+<div class="col-md-12" ng-if="records.length">
+  <div id="records-table" class="table">
+    <div class="table-head">
+      <div class="table-row row">
+        <div class="table-col col-md-1">Option</div>
+        <div class="table-col col-md-2">Price</div>
+        <div class="table-col col-md-2">Type</div>
+        <div class="table-col col-md-5">Memo</div>
+        <div class="table-col col-md-2">Date</div>
+      </div>
+    </div>
+    <div class="table-body">
+      <div class="table-row animate-repeat row records-{{ record.cashType == -1 ? 'cost' : 'earn'}}" *ngFor="let record of records">
+        <div class="table-col col-md-1">DELETE</div>
+        <div class="table-col col-md-2 records-price-col">
+          <input class="records-price-input" [(value)]="record.value" />
+          <select class="records-currency-select" [(value)]="record.cid">
+          	<option *ngFor="let currency of currencies" [value]="currency.cid">{{currency.type}}</option>
+          </select>
+        </div>
+        <div class="table-col col-md-2">
+          <div *ngFor="let types of tidToLabel(record.tids)">
+          	{{types.label}}
+          </div>          
+        </div>
+        <div class="table-col col-md-5">{{record.memo}}</div>
+        <div class="table-col col-md-2">{{record.date}}</div>
+      </div>
+    </div>
+  </div>
+  <div>Query {{records?.length}} records.</div>
+</div>
