@@ -1,0 +1,97 @@
+.records-table {
+  .table-head {
+    .table-row {
+      background: #989898;
+      color: white;
+      font-size: 1.5em;
+      font-weight: 600;
+      line-height: 2;
+    }
+  }
+  .table-body {
+    .table-row:nth-child(2n) {
+      background: #e4e4e4;
+    }
+    .records-removed,
+    .records-removed * {
+      color: white !important;
+      background-color: #9E9E9E !important;
+    }
+    .table-row {
+      .records-option-btn {
+        cursor: pointer;
+        margin: 0px 5px;
+        font-size: 1.5em;
+      }
+      .records-price-input {
+        width: 5em;
+      }
+      .records-memo-input {
+        width: 100%;
+        padding: 5px;
+      }
+      .records-date-input {
+        margin-left: 5px;
+        color: #868686;
+      }
+      input,
+      select {
+        border: 0;
+        background-color: transparent;
+      }
+    }
+    .records-type-label {
+      display: inline-block;
+      color: #9E9E9E;
+      cursor: pointer;
+      border: 1px solid grey;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-right: 5px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      min-width: 100px;
+      text-align: center;
+      &::before {
+        content: "\2718";
+        float: left;
+        border-right: 1px solid grey;
+        padding-right: 5px;
+        margin-right: 5px;
+        color: grey;
+      }
+    }
+    .records-type-add {
+      padding: 2px 10px;
+      font-size: 0.7em;
+      color: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      display: inline-block;
+    }
+    .records-cost {
+      .records-price-col {
+        color: red;
+      }
+    }
+    .records-earn {
+      .records-price-col {
+        color: green;
+      }
+    }
+  }
+  .table-row {
+    padding: 5px 10px;
+    min-height: 50px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .records-table {
+    .table-body {
+      .table-row {
+        align-items: center;
+        display: flex;
+      }
+    }
+  }
+}

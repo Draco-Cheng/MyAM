@@ -60,13 +60,14 @@ var _setRecord = function(data, callback){
 exports.setRecord = Promise.denodeify(_setRecord);
 
 var _setRecordTypes = function(data, callback){
+
 	var _checkDB = controller.dbFile.checkDB(data);
 
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
 			.then(function(data){ return controller.dbController.getRecordTypeMap(data);})
 			.then(function(data){ 
 				//parse what we need to add and what have to delete
-				data.tids_add = JSON.parse(data.tids_json || "[]").map(function(i){return parseInt(i)})
+				data.tids_add = data.tids_json.map(function(i){return parseInt(i)})
 				data.tids_del = [];
 				data.resault.pop().forEach(function(_obj){
 					if( parseInt(_obj.rid) ==  data.rid ){
@@ -88,7 +89,6 @@ var _setRecordTypes = function(data, callback){
 			});
 
 	_checkDB.catch(function(data){
-		console.log(data)
 		callback(data)
 	});
 }
