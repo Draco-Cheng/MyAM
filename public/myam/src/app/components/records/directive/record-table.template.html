@@ -31,7 +31,7 @@
         <div class="records-type-label" *ngFor="let tid of record.tids" (click)="removeTypeInRecord(record, tid)">
           {{tidToLabel(tid)}}
         </div>
-        <div class="records-type-add" *ngIf="!records.showTypeMap" (click)="records.showTypeMap=true">
+        <div class="records-type-add" *ngIf="!record.showTypeMap" (click)="record.showTypeMap=true">
           <span class="glyphicon glyphicon-plus"></span> Type
         </div>
       </div>
@@ -42,8 +42,8 @@
         <input type="date" class="records-date-input" [(ngModel)]="record.date" (change)="recordChange(record)" />
       </div>
 
-      <div class="col-md-12 records-type-map" *ngIf="records.showTypeMap">
-        <div class="records-type-map-title" (click)="records.showTypeMap=false">
+      <div class="col-md-12 records-type-map" *ngIf="record.showTypeMap">
+        <div class="records-type-map-title" (click)="record.showTypeMap=false">
           <span class="glyphicon glyphicon-chevron-up"></span>
           Type Map
         </div>
