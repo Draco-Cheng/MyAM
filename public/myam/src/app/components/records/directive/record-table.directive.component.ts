@@ -20,15 +20,31 @@ import './record-table.style.less';
 export class RecordTableDirectiveComponent {
   @Input() records: any;
 
-  private typeMap = {};
+  private types;
+  private typesFlat = {};
+  private typesMapFlat = null;
   private currencies;
   private currencyMap = {};
 
-  async getTypeMap() {
-    const _types = await this.typeService.get();
-    _types.forEach(element => {
-      this.typeMap[element.tid] = element;
+  constructor(
+    private recordsService: RecordsService,
+    private typeService: TypeService,
+    private currencyService: CurrencyService
+  ) {
+    this.getTypes();
+    this.getCurrencyMap();
+    this.getTypesFlatMap();    
+  };
+
+  async getTypes() {
+    this.types = await this.typeService.get();
+    this.types.forEach(element => {
+      this.typesFlat[element.tid] = element;
     });
+  };
+
+  async getTypesFlatMap() {
+    this.typesMapFlat = await this.typeService.getFlatMap();
   };
 
   async getCurrencyMap() {
@@ -38,32 +54,33 @@ export class RecordTableDirectiveComponent {
     });
   };
 
-  tidToLabel(tidStrArr: string) {
-    const tids = tidStrArr ? tidStrArr.split(/,/g) : [];
-    let types = [];
-
-    tids.forEach(tid => {
-      types.push({
-        'tid': tid,
-        'label': this.typeMap[tid].type_label
-      });
-    });
-
-    return types;
+  tidToLabel(tid: string) {
+    return this.typesFlat[tid].type_label;
   }
 
   cidToLabel(cid: any) {
     return this.currencyMap[cid].type;
   }
 
-  removeTypeInRecord(record, type) {
-    let _tidArr = record.tids.split(',');
-    record.tids = _tidArr.filter(tid => tid != type.tid).join(',');
+  removeTypeInRecord(record, tid) {
+    record.tids = record.tids.filter(_tid => tid != _tid);
     this.recordChange(record);
   }
 
   recordChange(record) {
     record.isChange = true;
+  }
+
+  getRecordTypeMapSwitch(record) {
+    let _self = this;
+    return ( tid ) => {
+      if(record.tids.indexOf(tid) == -1)
+        record.tids.push(tid);
+      else
+        record.tids = record.tids.filter(_tid => _tid != tid);
+
+      _self.recordChange(record);
+    };
   }
 
   async saveRecord(record) {
@@ -93,12 +110,5 @@ export class RecordTableDirectiveComponent {
     }
   }
 
-  constructor(
-    private recordsService: RecordsService,
-    private typeService: TypeService,
-    private currencyService: CurrencyService
-  ) {
-    this.getTypeMap();
-    this.getCurrencyMap();
-  };
+
 }

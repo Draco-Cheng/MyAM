@@ -1,0 +1,12 @@
+<ul class="record-type-map-ul record-type-map-{{ currentNode ? 'child' : 'root'}}">
+  <li class="record-type-map-checkbox {{isChecked(currentNode) ? 'checked': ''}}" *ngIf="typesFlat[currentNode]">
+  	<input id="checkbox-{{currentNode}}" type="checkbox" [checked]="isChecked(currentNode)" (change)="recordTidSwitch(currentNode)">
+    <label for="checkbox-{{currentNode}}">
+        {{ typesFlat[currentNode].type_label }}
+    </label>
+  </li>
+  <li *ngFor="let node of getChildNode()">
+    <record-type-map [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="recordTids" [recordTidSwitch]="recordTidSwitch">
+    </record-type-map>
+  </li>
+</ul>

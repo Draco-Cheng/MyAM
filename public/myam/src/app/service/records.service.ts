@@ -16,7 +16,13 @@ var config = require('../config.json');
       limit: 10
     };
 
-    return this.request.post(_url, _data);
+    let res = await this.request.post(_url, _data);
+
+    res.forEach( record => {
+      record.tids = record.tids ? record.tids.split(",") : [];
+    });
+
+    return res;
 
   }
 
@@ -38,7 +44,7 @@ var config = require('../config.json');
     const _url = this.endpoint + '/setTypes';
     const _data = {
       rid: recordObj.rid,
-      tids_json: recordObj.tids ? recordObj.tids.split(',') : []
+      tids_json: recordObj.tids
     };
 
     return this.request.post(_url, _data);

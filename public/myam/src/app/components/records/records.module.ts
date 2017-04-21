@@ -6,6 +6,7 @@ import { RecordsComponent } from './records.component';
 import { ChildRoutingModule } from './records.routing';
 
 import { RecordTableDirectiveComponent } from './directive/record-table.directive.component';
+import { RecordTypeMapDirectiveComponent } from './directive/record-type-map.directive.component';
 
 @NgModule({
   imports: [
@@ -15,7 +16,9 @@ import { RecordTableDirectiveComponent } from './directive/record-table.directiv
   ],
   declarations: [
     RecordsComponent,
-    RecordTableDirectiveComponent
+    
+    RecordTableDirectiveComponent,
+    RecordTypeMapDirectiveComponent
   ],
   providers: []
 })
