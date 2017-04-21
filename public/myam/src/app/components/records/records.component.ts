@@ -11,8 +11,11 @@ import './records.style.less';
     RecordsService
   ]
 })
+
 export class RecordsComponent {
+
   private records;
+
   async getRecord() {
     this.records = await this.recordsService.get();
   };

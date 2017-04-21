@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions } from '@angular/http';
+
+import { RequestHandler } from '../handler/request.handler';
+
 import {
   CanActivate,
   Router,
