@@ -18,6 +18,9 @@ export class RecordTypeMapDirectiveComponent {
   @Input() recordTids: number[];
   @Input() recordTidSwitch: Function;
 
+  private unclassifiedNodes = [];
+  private childNode = [];
+
   constructor(
     private typeService: TypeService
   ) {};
@@ -25,6 +28,7 @@ export class RecordTypeMapDirectiveComponent {
   ngOnInit() {
     this.parentNodes = this.parentNodes || "";
     this.currentNode && (this.parentNodes += this.currentNode + ',');
+    this.getChildNode();
   }
 
   getChildNode() {
@@ -32,23 +36,30 @@ export class RecordTypeMapDirectiveComponent {
     const _currentNode = this.currentNode;
     const _typesFlat = this.typesFlat;
     const _typesMapFlat = this.typesMapFlat;
-
-    let _childNodes = [];
+    const _unclassifiedNodes = this.unclassifiedNodes;
+    const _childNodes = this.childNode;
 
     if (_currentNode) {
       const _list = Object.keys(_typesMapFlat[_currentNode] || {});
 
       _list.forEach(tid => {
-        _parentNodes.indexOf(tid) == -1 && _childNodes.push(tid);
+        _typesFlat[tid].showInMap && _parentNodes.indexOf(tid) == -1 && _childNodes.push(tid);
       })
 
     } else {
-      for (let key in _typesFlat) {
-        if (_typesFlat[key].master)
-          _childNodes.push(key);
+      let _listOfChild = [];
+      for ( let _key in _typesMapFlat ) {
+        Object.keys(_typesMapFlat[_key]).forEach( tid => _listOfChild.push(tid));
+      }
+
+      for (let _tid in _typesFlat) {
+        if (_typesFlat[_tid].master)
+          _typesFlat[_tid].showInMap && _childNodes.push(_tid);
+        else {
+          _listOfChild.indexOf(_tid) == -1 && _typesFlat[_tid].showInMap && _unclassifiedNodes.push(_tid);
+        }
       }
     }
-    return _childNodes;
   }
 
   isChecked(node) {
