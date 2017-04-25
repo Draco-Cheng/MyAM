@@ -28,7 +28,7 @@
     </div>
   </div>
   <div class="col-sm-12">
-    <div class="col-md-12 records-type-title" (click)="newRecord.showTypeMap=!newRecord.showTypeMap">
+    <div class="col-md-12 records-type-title" (click)="showTypeMap=!showTypeMap">
       <span class="glyphicon glyphicon-th-list"></span> Type Map
     </div>
     <div class="col-md-12 records-type-quick-map">
@@ -38,10 +38,10 @@
       <record-type-quick-list class="col-md-8 col-md-offset-2" [types]="types" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-quick-list>
     </div>
     <div class="col-md-12 records-type-map">
-      <div class="col-md-12 records-type-map-title" (click)="newRecord.showTypeMap=!newRecord.showTypeMap">
+      <div class="col-md-12 records-type-map-title" (click)="showTypeMap=!showTypeMap">
         <span class="glyphicon glyphicon-option-vertical"></span> More Types
       </div>
-      <record-type-map class="col-md-12 record-type-map-panel" *ngIf="newRecord.showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-map>
+      <record-type-map class="col-md-12 record-type-map-panel" *ngIf="showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-map>
     </div>
   </div>
 </div>
