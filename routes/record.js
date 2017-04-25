@@ -90,8 +90,7 @@ routes.get = function(req, res, next) {
 	data.cashType = req.body.cashType;
 	data.type_query_set = req.body.type_query_set;
 
-	try{data.orderBy = JSON.parse(req.body.orderBy);}catch(e){};
-	
+	data.orderBy = req.body.orderBy instanceof Array ? req.body.orderBy : null;
 
 	services.record.getRecord(data)
 		.nodeify(function(err, data){
