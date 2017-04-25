@@ -4,7 +4,8 @@ import { RequestHandler } from '../handler/request.handler';
 var config = require('../config.json');
 
 let cache = {
-  'typeFlatMap' : null
+  'type': null,
+  'typeFlatMap': null
 };
 
 @Injectable() export class TypeService {
@@ -13,30 +14,37 @@ let cache = {
 
   constructor(private request: RequestHandler) {};
 
+  wipe() {
+    for (let _key in cache) {
+      delete cache[_key];
+    }
+  }
+
   async get(formObj ? : any) {
-  	const _url = this.endpoint + '/get'
-    return this.request.post(_url);
+
+    if (cache['type'])
+      return cache['type'];
+
+    const _url = this.endpoint + '/get'
+
+    return cache['type'] = this.request.post(_url);
   }
 
   async getFlatMap(formObj ? : any) {
-    const _formObj = formObj || {};
 
-    console.log(cache['typeFlatMap'])
-  	if( !_formObj.force &&  cache['typeFlatMap'])
-  		return cache['typeFlatMap'];
+    if (cache['typeFlatMap'])
+      return cache['typeFlatMap'];
 
     let _reObj = {};
-  	const _url = this.endpoint + '/getMaps'
-  	const _res = await this.request.post(_url);
+    const _formObj = formObj || {};
+    const _url = this.endpoint + '/getMaps'
+    const _res = await this.request.post(_url);
 
-    _res.forEach( ele => {
+    _res.forEach(ele => {
       _reObj[ele.tid] = _reObj[ele.tid] || {};
       _reObj[ele.tid][ele.sub_tid] = ele.sequence;
     });
 
-    
-    cache['typeFlatMap'] = _reObj;
-
-    return  _reObj;
+    return cache['typeFlatMap'] = _reObj;
   }
 }

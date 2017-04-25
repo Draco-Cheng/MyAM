@@ -15,9 +15,9 @@ export class RecordTypeMapDirectiveComponent {
   @Input() typesMapFlat: any;
   @Input() parentNodes ? : string;
   @Input() currentNode ? : number;
-  @Input() recordTids: number[];
+  @Input() recordTids: any;
   @Input() recordTidSwitch: Function;
-
+  
   private unclassifiedNodes = [];
   private childNode = [];
 
@@ -63,6 +63,6 @@ export class RecordTypeMapDirectiveComponent {
   }
 
   isChecked(node) {
-    return this.recordTids.indexOf(node) != -1;
+    return this.recordTids[node];
   }
 }

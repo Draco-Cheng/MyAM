@@ -1,5 +1,5 @@
 <h1>Records</h1>
-<div class="col-md-12" ng-if="records.length">
+<div *ngIf="isReady" class="col-md-12" >
   <records-table [records]="records"></records-table>
   <div>Query {{records?.length}} records.</div>
 </div>

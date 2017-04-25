@@ -1,4 +1,5 @@
 {
 	"server_domain" : "http://127.0.0.1:8000",
-	"database": "Draco.db"
+	"database": "Draco.db",
+	"cid" : "1470795764669"
 }

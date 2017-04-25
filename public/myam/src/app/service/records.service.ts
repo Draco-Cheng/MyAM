@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RequestHandler } from '../handler/request.handler';
 
-var config = require('../config.json');
+const config = require('../config.json');
 
 @Injectable() export class RecordsService {
 
@@ -11,14 +11,19 @@ var config = require('../config.json');
 
   async get(formObj ? : any) {
     const _url = this.endpoint + '/get';
+    const _formObj = formObj;
     const _data = {
-      orderBy: ["rid", "DESC"],
+      orderBy: ['rid', 'DESC'],
       limit: 10
     };
 
+    if (_formObj) {
+      _formObj.orderBy && (_data.orderBy = _formObj.orderBy);
+    }
+
     let res = await this.request.post(_url, _data);
 
-    res.forEach( record => {
+    res.forEach(record => {
       record.tids = record.tids ? record.tids.split(",") : [];
     });
 

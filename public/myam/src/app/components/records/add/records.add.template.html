@@ -1,0 +1,54 @@
+<h1>Add Records</h1>
+<div *ngIf="isReady" class="record-add-panel record-{{ newRecord.cashType == -1 ? 'cost' : 'earn'}}">
+  <div class="col-sm-1 record-add-option">
+    <span class="glyphicon glyphicon-{{newRecord.cashType == 1 ? 'plus' : 'minus'}} record-add-btn" (click)="addRecord()"></span>
+    <span class="glyphicon glyphicon-triangle-bottom" (click)="newRecord.cashType = newRecord.cashType == 1 ? -1 : 1"></span>
+  </div>
+  <div class="col-sm-10">
+    <div class="col-md-3 col-sm-5">
+      <div class="record-add-input-block">
+        <div class="record-add-input-col record-add-price-block">
+          <select class="records-currency-select" [(ngModel)]="newRecord.cid">
+            <option *ngFor="let currency of currencies" [value]="currency.cid">{{currency.type}}</option>
+          </select>
+          <input type="number" class="records-price-input" [(ngModel)]="newRecord.value" />
+        </div>
+        <div class="record-add-input-col">
+          <input type="text" class="records-memo-input" [(ngModel)]="newRecord.memo" placeholder="No memo" />
+        </div>
+        <div class="record-add-input-col">
+          <input type="date" class="records-date-input" [(ngModel)]="newRecord.date" />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7 col-sm-7">
+      <div class="records-type-label" *ngFor="let tid of getRecordTidsArr()" (click)="removeTypeInRecord(tid)">
+        {{tidToLabel(tid)}}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12">
+    <div class="col-md-12 records-type-title" (click)="newRecord.showTypeMap=!newRecord.showTypeMap">
+      <span class="glyphicon glyphicon-th-list"></span> Type Map
+    </div>
+    <div class="col-md-12 records-type-quick-map">
+      <div class="col-md-12 records-type-quick-map-title">
+        <span class="glyphicon glyphicon-record"></span> Quick Map
+      </div>
+      <record-type-quick-list class="col-md-8 col-md-offset-2" [types]="types" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-quick-list>
+    </div>
+    <div class="col-md-12 records-type-map">
+      <div class="col-md-12 records-type-map-title" (click)="newRecord.showTypeMap=!newRecord.showTypeMap">
+        <span class="glyphicon glyphicon-option-vertical"></span> More Types
+      </div>
+      <record-type-map class="col-md-12 record-type-map-panel" *ngIf="newRecord.showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-map>
+    </div>
+  </div>
+</div>
+<div *ngIf="isReady" class="col-sm-12 records-recent-table">
+  <div class="col-md-12 records-recent-title">
+    <h1>Recent Add</h1>
+  </div>
+  <records-table class="col-md-12 " [records]="records"></records-table>
+  <div>Query {{records?.length}} records.</div>
+</div>

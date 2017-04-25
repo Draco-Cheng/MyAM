@@ -19,7 +19,8 @@ import './record-table.style.less';
 
 export class RecordTableDirectiveComponent {
   @Input() records: any;
-
+  
+  private isReady = false;
   private types;
   private typesFlat = {};
   private typesMapFlat = null;
@@ -30,11 +31,14 @@ export class RecordTableDirectiveComponent {
     private recordsService: RecordsService,
     private typeService: TypeService,
     private currencyService: CurrencyService
-  ) {
-    this.getTypes();
-    this.getCurrencyMap();
-    this.getTypesFlatMap();    
-  };
+  ) {};
+
+  async ngOnInit(){
+    await this.getTypes();
+    await this.getCurrencyMap();
+    await this.getTypesFlatMap();
+    this.isReady = true;
+  }
 
   async getTypes() {
     this.types = await this.typeService.get();

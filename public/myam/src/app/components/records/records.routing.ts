@@ -3,12 +3,21 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from '../../service/auth.service';
 
-import { RecordsComponent } from './records.component';
+import { RecordsViewComponent } from './view/records.view.component';
+import { RecordsAddComponent } from './add/records.add.component';
 
 const routes: Routes = [{
   canActivate: [AuthGuard],
   path: 'records',
-  component: RecordsComponent
+
+  children: [{
+    path: '',
+    component: RecordsViewComponent
+  }, {
+    path: 'add',
+    component: RecordsAddComponent
+  }]
+  
 }];
 
 

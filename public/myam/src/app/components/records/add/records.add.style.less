@@ -1,0 +1,77 @@
+records-content {
+  .record-add-panel {
+    input,
+    select {
+      border: none;
+      font-size: 1.3em;
+    }
+    .records-currency-cashType {
+      width: 1em;
+    }
+    &.record-earn {
+      .record-add-btn {
+        color: darkolivegreen;
+      }
+      .record-add-price-block {
+        input,
+        select {
+          color: darkolivegreen;
+        }
+      }
+    }
+    &.record-cost {
+      .record-add-btn {
+        color: red;
+      }
+      .record-add-price-block {
+        input,
+        select {
+          color: red;
+        }
+      }
+    }
+    .record-add-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 104px;
+    }
+    .record-add-btn {
+      font-size: 2.5em;
+      cursor: pointer;
+      padding: 5px;
+      text-align: center;
+    }
+    .record-add-input-block {
+      display: inline-block;
+    }
+    .record-add-input-col {
+      margin: 5px 0px;
+    }
+    .records-price-input {
+      width: 125px;
+    }
+  }
+  .records-type-title {
+    text-align: center;
+    font-size: 2em;
+    cursor: pointer;
+  }
+  .records-type-quick-map {
+    text-align: center;
+  }
+  .records-type-quick-map-title {
+    font-size: 1.3em;
+    color: grey;
+  }
+  .records-type-map-title {
+    text-align: center;
+    color: grey;
+    cursor: pointer;
+    font-size: 1.3em;
+  }
+  .records-recent-table {
+    margin-top: 30px;
+    border-top: 1px solid rgba(128, 128, 128, 0.22);
+  }
+}
