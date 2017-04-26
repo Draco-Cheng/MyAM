@@ -1,16 +1,18 @@
-<ul class="record-type-map-ul record-type-map-{{ currentNode ? 'child' : 'root'}}">
-  <li class="record-type-map-checkbox {{isChecked(currentNode) ? 'checked': ''}}" *ngIf="typesFlat[currentNode]">
-    <input id="checkbox-{{currentNode}}" type="checkbox" [checked]="isChecked(currentNode)" (change)="recordTidSwitch(currentNode)">
-    <label for="checkbox-{{currentNode}}">
-      {{ typesFlat[currentNode].type_label }}
-    </label>
-  </li>
-  <li *ngFor="let node of childNode">
-    <record-type-map [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="recordTids" [recordTidSwitch]="recordTidSwitch">
-    </record-type-map>
-  </li>
-  <li *ngIf="!currentNode">
-    <record-type-map *ngFor="let node of unclassifiedNodes" [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="recordTids" [recordTidSwitch]="recordTidSwitch">
-    </record-type-map>
+<div *ngIf="!currentNode">
+  <div *ngFor="let node of childNode" class="verticalTree record-type-map-block">
+    <ul>
+      <li record-type-map [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="recordTids" [recordTidSwitch]="recordTidSwitch"></li>
+    </ul>
+  </div>
+</div>
+
+<a *ngIf="currentNode =='_unclassified'" class="record-type-map-checkbox unclassified"
+  >Unclassified</a>
+<a *ngIf="currentNode && currentNode !='_unclassified'" class="record-type-map-checkbox {{isChecked(currentNode) ? 'checked': ''}}" (click)="recordTidSwitch(currentNode)"
+  >{{ typesFlat[currentNode].type_label }}</a>
+
+
+<ul *ngIf="currentNode && childNode.length ">
+  <li *ngFor="let node of childNode " record-type-map [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlat]="typesMapFlat " [recordTids]="recordTids " [recordTidSwitch]="recordTidSwitch ">    
   </li>
 </ul>

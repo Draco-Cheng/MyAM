@@ -1,0 +1,134 @@
+/************************/
+/* initial **************/
+.verticalTree,
+.verticalTree * {
+  margin: 0;
+  padding: 0;
+}
+
+/************************/
+/* color ****************/
+.verticalTree ul::before,
+.verticalTree ul::after,
+.verticalTree li::before,
+.verticalTree li::after,
+.verticalTree li a,
+.verticalTree>ul>li>ul {
+  border-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.verticalTree li a:hover,
+.verticalTree li a:hover+ul li>a {
+  background: #c8e4f8;
+  color: #000;
+  border: 1px solid #94a0b4;
+}
+
+/************************/
+/* ul, li styling *******/
+.verticalTree>ul {
+  display: inline-block;
+}
+
+.verticalTree ul {
+  position: relative;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+
+.verticalTree li {
+  text-align: left;
+  list-style-type: none;
+  position: relative;
+  padding: 20px 0px 0px 5px;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+
+.verticalTree>ul>li:first-child::after {
+  display: none;
+}
+
+.verticalTree li::before,
+.verticalTree li::after {
+  content: '';
+  position: absolute;
+  height: 20px;
+  top: 0;
+}
+
+.verticalTree li::after {
+  left: 25px;
+  border-left: 1px solid;
+}
+
+/************************/
+/* sub-ul style *********/
+.verticalTree>ul>li>ul {
+  margin-left: 20px;
+  border-left: 1px solid;
+}
+
+.verticalTree li ul::before {
+  content: '';
+  border-left: 1px solid;
+  margin-left: 20px;
+}
+
+.verticalTree li:last-child>ul {
+  border-left: 0;
+}
+
+/************************/
+/* sublist style ********/
+.verticalTree li ul li {
+  margin-left: 25px;
+  padding-top: 0px;
+  padding-bottom: 10px;
+}
+
+.verticalTree li ul li::before {
+  left: -5px;
+  height: 100%;
+  border-left: 1px solid;
+}
+
+.verticalTree li ul li:last-child::before {
+  height: 13px;
+}
+
+.verticalTree li ul li::after {
+  border-top: 1px solid;
+  border-left: 0;
+  top: 13px;
+  left: -5px;
+  width: 10px;
+}
+
+/************************/
+/* option block *********/
+.verticalTree li a {
+  border: 1px solid;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #666;
+  font-family: arial, verdana, tahoma;
+  font-size: 11px;
+  display: inline-block;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  margin-bottom: 15px;
+
+  min-width: 60px;
+  text-align: center; 
+}
+
+.verticalTree li a:first-child {
+  margin-bottom: 0px;
+}

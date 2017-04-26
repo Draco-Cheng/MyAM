@@ -92,12 +92,14 @@ export class RecordsAddComponent {
 
   async addRecord() {
     let _record = cloneObj(this.newRecord);
-    _record.tids = Object.keys(_record.tids);
+    let _tids = _record.tids;
+    _record.tids = Object.keys(_tids);
     const _resault = await this.recordsService.set(_record);
     _record.rid = _resault[0].rid;
     const _resault2 = await this.recordsService.setType(_record);
 
     if(_resault){
+      _record.tids = _tids;
       this.records.unshift(_record);
 
       this.newRecord.value = 0;

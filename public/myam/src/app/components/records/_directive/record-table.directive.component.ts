@@ -37,6 +37,8 @@ export class RecordTableDirectiveComponent {
     await this.getTypes();
     await this.getCurrencyMap();
     await this.getTypesFlatMap();
+
+    this.adjustRecordData();
     this.isReady = true;
   }
 
@@ -58,6 +60,18 @@ export class RecordTableDirectiveComponent {
     });
   };
 
+  ObjKey (obj) {
+    return Object.keys(obj);
+  }
+
+  adjustRecordData() {
+    this.records.forEach( record => {
+      let _map = {};
+      record.tids.forEach( tid => _map[tid] = true );
+      record.tids = _map;
+    })
+  }
+
   tidToLabel(tid: string) {
     return this.typesFlat[tid].type_label;
   }
@@ -67,7 +81,7 @@ export class RecordTableDirectiveComponent {
   }
 
   removeTypeInRecord(record, tid) {
-    record.tids = record.tids.filter(_tid => tid != _tid);
+    delete record.tids[tid];
     this.recordChange(record);
   }
 
@@ -78,10 +92,10 @@ export class RecordTableDirectiveComponent {
   getRecordTypeMapSwitch(record) {
     let _self = this;
     return ( tid ) => {
-      if(record.tids.indexOf(tid) == -1)
-        record.tids.push(tid);
+      if(record.tids[tid])
+        delete record.tids[tid];
       else
-        record.tids = record.tids.filter(_tid => _tid != tid);
+        record.tids[tid] = true;
 
       _self.recordChange(record);
     };

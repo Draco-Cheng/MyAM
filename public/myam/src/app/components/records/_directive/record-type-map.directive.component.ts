@@ -5,7 +5,7 @@ import { TypeService } from '../../../service/type.service';
 import './record-type-map.style.less';
 
 @Component({
-  selector: 'record-type-map',
+  selector: '[record-type-map]',
   template: require('./record-type-map.template.html'),
   providers: [TypeService]
 })
@@ -18,7 +18,6 @@ export class RecordTypeMapDirectiveComponent {
   @Input() recordTids: any;
   @Input() recordTidSwitch: Function;
   
-  private unclassifiedNodes = [];
   private childNode = [];
 
   constructor(
@@ -36,7 +35,6 @@ export class RecordTypeMapDirectiveComponent {
     const _currentNode = this.currentNode;
     const _typesFlat = this.typesFlat;
     const _typesMapFlat = this.typesMapFlat;
-    const _unclassifiedNodes = this.unclassifiedNodes;
     const _childNodes = this.childNode;
 
     if (_currentNode) {
@@ -45,10 +43,12 @@ export class RecordTypeMapDirectiveComponent {
       _list.forEach(tid => {
         _typesFlat[tid].showInMap && _parentNodes.indexOf(tid) == -1 && _childNodes.push(tid);
       })
-
     } else {
+      let _unclassifiedNodes = {};
       let _listOfChild = [];
+
       for ( let _key in _typesMapFlat ) {
+        if( _key != '_unclassified' )
         Object.keys(_typesMapFlat[_key]).forEach( tid => _listOfChild.push(tid));
       }
 
@@ -56,8 +56,14 @@ export class RecordTypeMapDirectiveComponent {
         if (_typesFlat[_tid].master)
           _typesFlat[_tid].showInMap && _childNodes.push(_tid);
         else {
-          _listOfChild.indexOf(_tid) == -1 && _typesFlat[_tid].showInMap && _unclassifiedNodes.push(_tid);
+
+          _listOfChild.indexOf(_tid) == -1 && _typesFlat[_tid].showInMap && ( _unclassifiedNodes[_tid] = null );
         }
+      }      
+
+      if(Object.keys(_unclassifiedNodes).length){
+        _typesMapFlat['_unclassified'] = _unclassifiedNodes;
+        _childNodes.push('_unclassified');
       }
     }
   }

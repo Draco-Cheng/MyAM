@@ -41,7 +41,7 @@
       <div class="col-md-12 records-type-map-title" (click)="showTypeMap=!showTypeMap">
         <span class="glyphicon glyphicon-option-vertical"></span> More Types
       </div>
-      <record-type-map class="col-md-12 record-type-map-panel" *ngIf="showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-map>
+      <div record-type-map class="col-md-12 record-type-map-panel" *ngIf="showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></div>
     </div>
   </div>
 </div>

@@ -1,31 +1,17 @@
-.record-type-map-ul {
-  list-style: none;
+.record-type-map-block {
+  display: inline-block;
+  float: left;
 }
-
-.record-type-map-root {
-  display: flex;
-  flex-flow: wrap;
-  justify-content: space-between;
-  padding-left: 0;
-  &>li {
-    border-top: 1px solid rgba(0, 0, 0, 0.45);
-    margin-bottom: 20px;
-    padding-top: 5px;
-  }
-}
-
-.record-type-map-child {
-  padding-left: 15px;
-}
-
-.record-type-map-panel {}
 
 .record-type-map-checkbox {
-	input, label {
-		cursor: pointer;
-	}
-
-	&.checked {
-		background: rgba(0, 0, 0, 0.1);
-	}
+  cursor: pointer;
+  
+  &.checked {
+    background-color: #2196F3 !important;
+    color: white !important;
+  }
+  &.unclassified {
+    background-color: grey !important;
+    color: white !important;
+  }
 }

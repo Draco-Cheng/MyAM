@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { CommonModule } from '@angular/common';
 
 // Handler
 import { RequestHandler } from '../handler/request.handler';
@@ -21,6 +22,7 @@ import { AboutModule } from './about/about.module';
 @NgModule({
   imports: [
     BrowserModule,
+    CommonModule,
     NavModule,
     AppRoutingModule,
     HttpModule,

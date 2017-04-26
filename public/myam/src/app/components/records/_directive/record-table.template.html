@@ -28,7 +28,7 @@
         <input type="number" class="records-price-input" [(ngModel)]="record.value" (change)="recordChange(record)" />
       </div>
       <div class="table-col col-md-2">
-        <div class="records-type-label" *ngFor="let tid of record.tids" (click)="removeTypeInRecord(record, tid)">
+        <div class="records-type-label" *ngFor="let tid of ObjKey(record.tids)" (click)="removeTypeInRecord(record, tid)">
           {{tidToLabel(tid)}}
         </div>
         <div class="records-type-add" *ngIf="!record.showTypeMap" (click)="record.showTypeMap=true">
@@ -47,7 +47,7 @@
           <span class="glyphicon glyphicon-chevron-up"></span>
           Type Map
         </div>
-        <record-type-map class="col-md-12 record-type-map-panel" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="record.tids" [recordTidSwitch]="getRecordTypeMapSwitch(record)"></record-type-map>        
+        <div record-type-map class="col-md-12 record-type-map-panel" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="record.tids" [recordTidSwitch]="getRecordTypeMapSwitch(record)"></div>        
       </div>
 
     </div>
