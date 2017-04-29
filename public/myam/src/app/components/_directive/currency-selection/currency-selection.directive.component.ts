@@ -52,7 +52,7 @@ export class CurrencySelectionDirectiveComponent {
 
     var _quickSelectList = [];
     for (let _key in this.currencyFlatMap) {
-      this.currencyFlatMap[_key].main && _quickSelectList.push(this.currencyFlatMap[_key]);
+      this.currencyFlatMap[_key].quickSelect && _quickSelectList.push(this.currencyFlatMap[_key]);
     }
     this.quickSelectList = _quickSelectList;
   };
