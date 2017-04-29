@@ -13,7 +13,9 @@ import './records.view.style.less';
 })
 
 export class RecordsViewComponent {
-  private isReady = false;
+  private __isInit = false;
+  private __meta = {};
+
   private records;
   private qureyCondition = {
     cashType: 0,
@@ -34,10 +36,13 @@ export class RecordsViewComponent {
 
   async ngOnInit(){
     await this.getRecord();
-    this.isReady = true;   
+    this.__isInit = true;   
   };
 
+  async __checkDataUpToDate(){}
+
   async getRecord() {
-    this.records = await this.recordsService.get(this.qureyCondition);
+    this.__meta['records'] = await this.recordsService.get(this.qureyCondition);
+    this.records = this.__meta['records']['data'];
   };
 }

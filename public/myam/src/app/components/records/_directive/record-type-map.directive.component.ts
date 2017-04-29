@@ -1,13 +1,11 @@
 import { Component, Input } from '@angular/core';
 
-import { TypeService } from '../../../service/type.service';
-
 import './record-type-map.style.less';
 
 @Component({
   selector: '[record-type-map]',
   template: require('./record-type-map.template.html'),
-  providers: [TypeService]
+  providers: []
 })
 
 export class RecordTypeMapDirectiveComponent {
@@ -20,9 +18,7 @@ export class RecordTypeMapDirectiveComponent {
   
   private childNode = [];
 
-  constructor(
-    private typeService: TypeService
-  ) {};
+  constructor() {};
 
   ngOnInit() {
     this.parentNodes = this.parentNodes || "";

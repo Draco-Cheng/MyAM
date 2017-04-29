@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
 
-import { TypeService } from '../../../service/type.service';
-
 import './record-type-quick-list.style.less';
 
 @Component({
@@ -17,7 +15,7 @@ export class RecordQuickListDirectiveComponent {
 
   private typeQuickList;
 
-  constructor(private typeService: TypeService) {};
+  constructor() {};
 
   ngOnInit() {
     this.typeQuickList = this.types.filter(type => type.quickSelect);

@@ -1,5 +1,5 @@
 <h1>Add Records</h1>
-<div *ngIf="isReady" class="record-add-panel record-{{ newRecord.cashType == -1 ? 'cost' : 'earn'}}">
+<div *ngIf="__isInit && __checkDataUpToDate()" class="record-add-panel record-{{ newRecord.cashType == -1 ? 'cost' : 'earn'}}">
   <div class="col-sm-1 record-add-option">
     <span class="glyphicon glyphicon-{{newRecord.cashType == 1 ? 'plus' : 'minus'}} record-add-btn" (click)="addRecord()"></span>
     <span class="glyphicon glyphicon-triangle-bottom" (click)="newRecord.cashType = newRecord.cashType == 1 ? -1 : 1"></span>
@@ -8,9 +8,7 @@
     <div class="col-md-3 col-sm-5">
       <div class="record-add-input-block">
         <div class="record-add-input-col record-add-price-block">
-          <select class="records-currency-select" [(ngModel)]="newRecord.cid">
-            <option *ngFor="let currency of currencies" [value]="currency.cid">{{currency.type}}</option>
-          </select>
+          <span currency-selection [inputCid]="newRecord.cid" [callback]="getSelectionCallback(newRecord)" ></span>
           <input type="number" class="records-price-input" [(ngModel)]="newRecord.value" />
         </div>
         <div class="record-add-input-col">
@@ -45,7 +43,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="isReady" class="col-sm-12 records-recent-table">
+<div *ngIf="__isInit" class="col-sm-12 records-recent-table">
   <div class="col-md-12 records-recent-title">
     <h1>Recent Add</h1>
   </div>

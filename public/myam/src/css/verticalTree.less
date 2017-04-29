@@ -1,13 +1,20 @@
 /************************/
+
+
 /* initial **************/
+
 .verticalTree,
 .verticalTree * {
   margin: 0;
   padding: 0;
 }
 
+
 /************************/
+
+
 /* color ****************/
+
 .verticalTree ul::before,
 .verticalTree ul::after,
 .verticalTree li::before,
@@ -24,11 +31,11 @@
   border: 1px solid #94a0b4;
 }
 
+
 /************************/
+
+
 /* ul, li styling *******/
-.verticalTree>ul {
-  display: inline-block;
-}
 
 .verticalTree ul {
   position: relative;
@@ -47,10 +54,6 @@
   -moz-transition: all 0.5s;
 }
 
-.verticalTree>ul>li:first-child::after {
-  display: none;
-}
-
 .verticalTree li::before,
 .verticalTree li::after {
   content: '';
@@ -64,11 +67,52 @@
   border-left: 1px solid;
 }
 
+
+/* left col */
+
+.verticalTree>ul {
+  display: inline-block !important;
+}
+
+.verticalTree>ul::before {
+  content: none !important;
+}
+
+.verticalTree>ul>li {
+  margin-left: 0px !important;
+  padding-top: 20px !important;
+  padding-bottom: 0px !important;
+}
+
+.verticalTree>ul>li::before {
+  left: 0 !important;
+  height: auto !important;
+  border-left: none !important;
+}
+
+.verticalTree>ul>li:first-child::after {
+  display: none !important;
+}
+
+.verticalTree>ul>li::after {
+  border-top: 0 !important;
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
+  top: 0 !important;
+  left: 25px !important;
+  width: auto !important;
+}
+
+
 /************************/
+
+
 /* sub-ul style *********/
+
 .verticalTree>ul>li>ul {
-  margin-left: 20px;
-  border-left: 1px solid;
+  margin-left: 20px !important;
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
 }
 
 .verticalTree li ul::before {
@@ -78,11 +122,15 @@
 }
 
 .verticalTree li:last-child>ul {
-  border-left: 0;
+  border-left: 0 !important;
 }
 
+
 /************************/
+
+
 /* sublist style ********/
+
 .verticalTree li ul li {
   margin-left: 25px;
   padding-top: 0px;
@@ -107,8 +155,12 @@
   width: 10px;
 }
 
+
 /************************/
+
+
 /* option block *********/
+
 .verticalTree li a {
   border: 1px solid;
   padding: 5px 10px;
@@ -124,9 +176,8 @@
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   margin-bottom: 15px;
-
   min-width: 60px;
-  text-align: center; 
+  text-align: center;
 }
 
 .verticalTree li a:first-child {

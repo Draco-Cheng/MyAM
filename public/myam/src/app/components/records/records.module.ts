@@ -9,10 +9,14 @@ import { ChildRoutingModule } from './records.routing';
 import { RecordsViewComponent } from './view/records.view.component';
 import { RecordsAddComponent } from './add/records.add.component';
 
-// directives
+// Directive Component
 import { RecordTableDirectiveComponent } from './_directive/record-table.directive.component';
 import { RecordTypeMapDirectiveComponent } from './_directive/record-type-map.directive.component';
 import { RecordQuickListDirectiveComponent } from './_directive/record-type-quick-list.directive.component';
+
+// Global Directive Module
+import { CurrencySelectionDirectiveModule } from '../_directive/currency-selection/module';
+
 
 // style
 import './records.style.less';
@@ -21,11 +25,14 @@ import './records.style.less';
   imports: [
     CommonModule,
     ChildRoutingModule,
-    FormsModule
+    FormsModule,
+    CurrencySelectionDirectiveModule
   ],
   declarations: [
     RecordsViewComponent,
     RecordsAddComponent,
+
+
     
     RecordTableDirectiveComponent,
     RecordTypeMapDirectiveComponent,

@@ -4,4 +4,9 @@ import { Component } from '@angular/core';
   selector: 'navView',
   template: require('./nav.template.html')
 })
-export class NavComponent { name = 'MyAM'; }
+export class NavComponent { 
+	private name = 'MyAM';
+
+	currencySelect(tid) {
+	}
+}

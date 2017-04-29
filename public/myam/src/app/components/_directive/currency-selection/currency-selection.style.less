@@ -1,0 +1,41 @@
+.currency-selection {
+  width: 45px;
+  font-family: monospace;
+  font-weight: 800;
+}
+
+.currency-sel-type-map-full-screen {
+  position: fixed;
+  top: 0;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  left: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  .currency-sel-type-map-close-btn {
+    float: right;
+    color: #a0a0a0;
+    font-size: 2em;
+    cursor: pointer;
+  }
+  .currency-sel-type-map-panel {
+    background: white;
+    color: black;
+    display: inline-block;
+    overflow: auto;
+    padding: 20px 0px;
+    border: 3px double grey;
+    border-radius: 10px;
+    &>.currency-sel-type-map-head,
+    &>.currency-sel-type-map-content {
+      padding: 0px 50px;
+    }
+    &>.currency-sel-type-map-content {
+      height: ~'calc( 100vh - 150px)';
+      overflow: auto;
+    }
+  }
+}

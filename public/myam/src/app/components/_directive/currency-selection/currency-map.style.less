@@ -1,0 +1,24 @@
+.currency-map {
+  &>ul>li {
+    a {
+      cursor: pointer;
+      &.isSelected {
+        background-color: #b9b9b9;
+        color: white;
+      }
+    }
+    &>a {
+      border: 2px double !important;
+    }
+    &:first-child>a {
+      background-color: grey;
+      color: white;
+    }
+    .currency-map-col {
+      margin-left: 5px;
+      &:first-child {
+        margin-left: 0px;
+      }
+    }
+  }
+}

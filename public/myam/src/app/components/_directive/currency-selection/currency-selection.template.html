@@ -1,0 +1,29 @@
+<select #currencySelectInput *ngIf="__isInit && __checkDataUpToDate()" class="currency-selection" [(ngModel)]="cid" (change)="onSelect(cid)">
+  <option *ngIf="!inputCid" value=null>---</option>
+  <optgroup *ngIf="inputCid && inputCid != -1" label="Current Selection">
+    <option [value]="inputCid">
+      {{currencyFlatMap[inputCid].type}} {{currencyFlatMap[inputCid].date}} {{currencyFlatMap[inputCid].memo}}
+    </option>
+  </optgroup>
+  <optgroup label="Quick Select List">
+    <option *ngFor="let currency of quickSelectList" [value]="currency.cid">
+      {{currency.type}} {{currency.date}} {{currency.memo}}
+    </option>
+  </optgroup>
+  <optgroup label="More">
+    <option value="-1">
+      Show Currency Map
+    </option>
+  </optgroup>
+</select>
+
+<div class="currency-sel-type-map-full-screen" *ngIf="showCurrencyMap">
+  <div class="currency-sel-type-map-panel">
+    <div class="currency-sel-type-map-head">
+      <span class="glyphicon glyphicon-remove currency-sel-type-map-close-btn" (click)="typMapCallcak()"></span>
+      <h1>Currency Map</h1>      
+    </div>
+
+    <div class="currency-sel-type-map-content" currency-map [callback]="typMapCallcak" [inputCid]="inputCid" [currencyFlatMap]="currencyFlatMap" [currencyStructureMap]="currencyStructureMap"></div>
+  </div>
+</div>

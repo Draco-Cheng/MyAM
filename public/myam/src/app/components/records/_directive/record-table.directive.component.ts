@@ -1,8 +1,7 @@
-import { Component , Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
-import { CurrencyService } from '../../../service/currency.service';
 
 import './record-table.style.less';
 
@@ -11,73 +10,71 @@ import './record-table.style.less';
   template: require('./record-table.template.html'),
   providers: [
     RecordsService,
-    TypeService,
-    CurrencyService
+    TypeService
   ]
 })
 
 
 export class RecordTableDirectiveComponent {
   @Input() records: any;
-  
-  private isReady = false;
+
+  private __isInit = false;
+  private __meta = {};
+
   private types;
   private typesFlat = {};
   private typesMapFlat = null;
-  private currencies;
-  private currencyMap = {};
 
   constructor(
     private recordsService: RecordsService,
-    private typeService: TypeService,
-    private currencyService: CurrencyService
+    private typeService: TypeService
   ) {};
 
-  async ngOnInit(){
+  async ngOnInit() {
     await this.getTypes();
-    await this.getCurrencyMap();
     await this.getTypesFlatMap();
 
     this.adjustRecordData();
-    this.isReady = true;
+    this.__isInit = true;
+  }
+  
+  async __checkDataUpToDate(){
+    if(this.__meta['types']['legacy']){
+      await this.getTypes();
+    }
+    if(this.__meta['typesMapFlat']['legacy']){
+      await this.getTypes();
+    }
   }
 
   async getTypes() {
-    this.types = await this.typeService.get();
+    this.__meta['types'] = await this.typeService.get();
+    this.types = this.__meta['types']['data'];
+
     this.types.forEach(element => {
       this.typesFlat[element.tid] = element;
     });
   };
 
   async getTypesFlatMap() {
-    this.typesMapFlat = await this.typeService.getFlatMap();
+    this.__meta['typesMapFlat'] = await this.typeService.getFlatMap();
+    this.typesMapFlat = this.__meta['typesMapFlat']['data'];
   };
 
-  async getCurrencyMap() {
-    this.currencies = await this.currencyService.get();
-    this.currencies.forEach(element => {
-      this.currencyMap[element.cid] = element;
-    });
-  };
-
-  ObjKey (obj) {
+  ObjKey(obj) {
     return Object.keys(obj);
   }
 
   adjustRecordData() {
-    this.records.forEach( record => {
+    this.records.forEach(record => {
       let _map = {};
-      record.tids.forEach( tid => _map[tid] = true );
+      record.tids.forEach(tid => _map[tid] = true);
       record.tids = _map;
     })
   }
 
   tidToLabel(tid: string) {
     return this.typesFlat[tid].type_label;
-  }
-
-  cidToLabel(cid: any) {
-    return this.currencyMap[cid].type;
   }
 
   removeTypeInRecord(record, tid) {
@@ -91,8 +88,8 @@ export class RecordTableDirectiveComponent {
 
   getRecordTypeMapSwitch(record) {
     let _self = this;
-    return ( tid ) => {
-      if(record.tids[tid])
+    return (tid) => {
+      if (record.tids[tid])
         delete record.tids[tid];
       else
         record.tids[tid] = true;
@@ -101,17 +98,25 @@ export class RecordTableDirectiveComponent {
     };
   }
 
-  async saveRecord(record) {
-    const _resault1 = await this.recordsService.set(record);
-    const _resault2 = await this.recordsService.setType(record);
+  getSelectionCallback(record) {
+    return cid => {
+      record.cid = cid;
+      this.recordChange(record);
+    }
+  }
 
-    if (_resault1 && _resault2)
+  async saveRecord(record) {
+
+    const _resault1 = await this.recordsService.set(record);
+    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tids));
+
+    if (_resault1['data'] && _resault2['data'])
       record.isChange = false;
   }
 
   async delRecord(record) {
     const _resault = await this.recordsService.del(record);
-    if (_resault) {
+    if (_resault['data']) {
       record.status = 'removed';
       record.isChange = false;
       record.rid = null;
@@ -120,9 +125,9 @@ export class RecordTableDirectiveComponent {
 
   async reAdd(record) {
     const _resault = await this.recordsService.set(record);
-    record.rid = _resault[0].rid;
-    const _resault2 = await this.recordsService.setType(record);
-    if (_resault) {
+    record.rid = _resault['data'][0].rid;
+    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tids));
+    if (_resault['data']) {
       record.status = '';
       record.isChange = false;
     }

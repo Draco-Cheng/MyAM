@@ -1,0 +1,43 @@
+<h1>Currency</h1>
+<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12">
+  <div class="currency-add-panel col-md-offset-1 col-lg-offset-2">
+    <div class="currency-add-col currency-add-option">
+      <span class="currency-add-btn glyphicon glyphicon-plus currency-add-submit" (click)="save(newCurrency)"></span>
+      <span class="currency-add-btn glyphicon glyphicon-sort-by-attributes-alt currency-add-checkbox {{ newCurrency.quickSelect ? 'checked' : '' }}" (click)="newCurrency.quickSelect = !newCurrency.quickSelect; newCurrency.isChange=true; "></span>
+      <div class="currency-add-main-block pull-right">
+        <input id="currency-add-main-checkbox" type="checkbox" [(ngModel)]="newCurrency.main">
+        <label for="currency-add-main-checkbox">Is Main Currency</label>
+      </div>
+    </div>
+    <div class="currency-add-col" *ngIf="!newCurrency.main">
+      <select [(ngModel)]="newCurrency.type">
+        <option value="">---</option>
+        <option [value]="currency" *ngFor="let currency of currencyList">{{currency}}</option>
+      </select>
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <input class="currency-add-rate-input" [(ngModel)]="newCurrency.rate" type="number"><span currency-selection [inputCid]="newCurrency.to_cid" [callback]="getSelectionCallback(newCurrency)" ></span>
+    </div>
+    <div class="currency-add-col" *ngIf="newCurrency.main">
+      {{ getCurrentMainType() }}
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <input class="currency-add-rate-input" [(ngModel)]="newCurrency.rate" type="number">
+      <select [(ngModel)]="newCurrency.type">
+        <option value="">---</option>
+        <option [value]="currency" *ngFor="let currency of currencyList">{{currency}}</option>
+      </select>
+    </div>
+    <div class="currency-add-col">
+      <input class="currency-add-memo" [(ngModel)]="newCurrency.memo" placeholder="No Memo" type="text">
+    </div>
+    <div class="currency-add-col">
+      <input [(ngModel)]="newCurrency.date" type="date">
+    </div>
+    <div class="currency-add-main-notice" *ngIf="newCurrency.main">
+      <b>Notice:</b>
+      Your are trying to add main currency!
+      <br>
+      You can't remove after you add.
+    </div>
+  </div>
+  <div class="col-md-offset-1 col-lg-offset-2" currency-edit-map [currencyStructureMap]="currencyStructureMap" [currencyFlatMap]="currencyFlatMap"></div>
+</div>

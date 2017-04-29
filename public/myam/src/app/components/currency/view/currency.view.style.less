@@ -1,0 +1,49 @@
+.currency-add-panel {
+  display: inline-block;
+  min-width: 300px;
+  border: 1px solid grey;
+  padding: 15px 40px;
+  box-sizing: content-box;
+  border-radius: 5px;
+  select,
+  input {
+    border: 0;
+  }
+  .currency-add-option {
+    margin-bottom: 10px;
+    .currency-add-btn {
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    .currency-add-submit {
+      background-color: #2196F3;
+      color: white;
+      border: 3px double;
+      padding: 3px 15px;
+      border-radius: 15px;
+      margin-right: 15px;
+      vertical-align: middle;
+    }
+    .currency-add-main-block {
+      display: inline-block;
+    }
+    .currency-add-checkbox {
+      color: #d1d1d1;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: color 0.5s;
+      -webkit-transition: color 0.5s;
+      -moz-transition: color 0.5s;
+      &.checked {
+        color: green;
+      }
+    }
+  }
+  .currency-add-main-notice {
+    color: red;
+  }
+  .currency-add-rate-input {
+    width: 55px;
+    text-align: right;
+  }
+}

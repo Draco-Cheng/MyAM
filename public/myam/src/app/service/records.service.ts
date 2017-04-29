@@ -21,14 +21,13 @@ const config = require('../config.json');
       _formObj.orderBy && (_data.orderBy = _formObj.orderBy);
     }
 
-    let res = await this.request.post(_url, _data);
+    let _resault = await this.request.post(_url, _data);
 
-    res.forEach(record => {
+    _resault.forEach(record => {
       record.tids = record.tids ? record.tids.split(",") : [];
     });
 
-    return res;
-
+    return { data: _resault };
   }
 
   async set(recordObj ? : any) {
@@ -42,17 +41,19 @@ const config = require('../config.json');
       date: recordObj.date
     };
 
-    return this.request.post(_url, _data);
+    const _resault = await this.request.post(_url, _data);
+    return { data: _resault };
   };
 
-  async setType(recordObj ? : any) {
+  async setType(rid: string , tids) {
     const _url = this.endpoint + '/setTypes';
     const _data = {
-      rid: recordObj.rid,
-      tids_json: recordObj.tids
+      rid: rid,
+      tids_json: tids
     };
 
-    return this.request.post(_url, _data);
+    const _resault = await this.request.post(_url, _data);
+    return { data: _resault };
   };
 
   async del(recordObj ? : any) {
@@ -61,6 +62,7 @@ const config = require('../config.json');
       rid: recordObj.rid
     };
 
-    return this.request.post(_url, _data);
+    const _resault = await this.request.post(_url, _data);
+    return { data: _resault };
   };
 }

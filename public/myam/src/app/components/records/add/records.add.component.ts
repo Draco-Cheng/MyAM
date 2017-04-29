@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { RecordsService } from '../../../service/records.service';
 
 import { TypeService } from '../../../service/type.service';
-import { CurrencyService } from '../../../service/currency.service';
 
 import './records.add.style.less';
 
@@ -39,67 +38,67 @@ let newRecord = {
   template: require('./records.add.template.html'),
   providers: [
     RecordsService,
-    TypeService,
-    CurrencyService
+    TypeService
   ]
 })
 
 export class RecordsAddComponent {
-  private isReady = false;
+  private __isInit = false;
+  private __meta = {};
+
   private newRecord = newRecord;
   private records;
   private types;
   private typesFlat = {};
-  private typesMapFlat = null;
-  private currencies;
-  private currencyMap = {};
+  private typesMapFlat = null;  
 
   constructor(
     private recordsService: RecordsService,
-    private typeService: TypeService,
-    private currencyService: CurrencyService
+    private typeService: TypeService
   ) {};
 
   async ngOnInit(){
     await this.getRecord();
     await this.getTypes();
-    await this.getCurrencyMap();
     await this.getTypesFlatMap();
-    this.isReady = true;   
+    
+    this.__isInit = true;   
   };
 
+  async __checkDataUpToDate(){
+    if(this.__meta['types']['lagacy']) {
+      await this.getTypes();
+    }
+    if(this.__meta['typesMapFlat']['lagacy']) {
+      await this.getTypesFlatMap();
+    }
+  }
+
   async getRecord() {
-    this.records = await this.recordsService.get();
+    this.__meta['records'] = await this.recordsService.get();
+    this.records = this.__meta['records']['data'];
   };
 
   async getTypes() {
-    this.types = await this.typeService.get();
+    this.__meta['types'] = await this.typeService.get();
+    this.types = this.__meta['types']['data'];
     this.types.forEach(element => {
       this.typesFlat[element.tid] = element;
     });
   };
 
   async getTypesFlatMap() {
-    this.typesMapFlat = await this.typeService.getFlatMap();
-  };
-
-  async getCurrencyMap() {
-    this.currencies = await this.currencyService.get();
-    this.currencies.forEach(element => {
-      this.currencyMap[element.cid] = element;
-    });
+    this.__meta['typesMapFlat'] = await this.typeService.getFlatMap();
+    this.typesMapFlat = this.__meta['typesMapFlat']['data'];
   };
 
   async addRecord() {
     let _record = cloneObj(this.newRecord);
-    let _tids = _record.tids;
-    _record.tids = Object.keys(_tids);
     const _resault = await this.recordsService.set(_record);
-    _record.rid = _resault[0].rid;
-    const _resault2 = await this.recordsService.setType(_record);
+    _record.rid = _resault['data'][0].rid;
+    const _resault2 = await this.recordsService.setType(_record.rid, Object.keys(_record.tids));
 
     if(_resault){
-      _record.tids = _tids;
       this.records.unshift(_record);
 
       this.newRecord.value = 0;
@@ -128,5 +127,11 @@ export class RecordsAddComponent {
 
   getRecordTidsArr(){
     return Object.keys(this.newRecord.tids);
+  }
+
+  getSelectionCallback(record){
+    return cid => {
+      record.cid = cid;
+    }
   }
 }
