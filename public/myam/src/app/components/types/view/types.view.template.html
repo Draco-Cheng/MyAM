@@ -1,0 +1,4 @@
+<div *ngIf="__isInit && __checkDataUpToDate()" >	
+	<div type-map-edit class="type-map-edit" [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta"></div>
+</div>
+<div (click)="reload()">Reload</div>

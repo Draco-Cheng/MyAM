@@ -14,8 +14,16 @@ import './currency-selection.style.less';
 })
 
 export class CurrencySelectionDirectiveComponent {
+  //*************************************
+  // Note for who want to use this module
+  //-------------------------------------
+  // neceesary input
+  @Input() callback: Function;
+  //*************************************
+  // optional input
   @Input() inputCid ? : any;
-  @Input() callback;
+  //*************************************
+
 
   @ViewChild('currencySelectInput') currencySelectInput: ElementRef;
 

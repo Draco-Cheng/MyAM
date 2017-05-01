@@ -1,0 +1,55 @@
+<div *ngIf="!currentNode && __checkDataUpToDate()">
+  <div *ngFor="let node of childNode" class="verticalTree type-map-edit-block">
+    <ul>
+      <li type-map-edit [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta"></li>
+    </ul>
+  </div>
+</div>
+<a *ngIf="currentNode =='_unclassified' && __checkDataUpToDate()" class="type-map-edit-label unclassified">Unclassified</a>
+<a *ngIf="currentNode && currentNode !='_unclassified' && __checkDataUpToDate() && typesFlat[currentNode] as node" class="type-map-edit-label">
+  <div class="type-map-edit-col">
+    <div class="type-map-edit-option-block">
+      <span class="type-map-edit-option-btn glyphicon glyphicon-trash" *ngIf="!node.status" (click)="node.status='removing'"></span>
+      <span class="type-map-edit-option-btn glyphicon glyphicon-floppy-saved" *ngIf="!node.status && node.isChange" (click)="save(node)"></span>
+      <div class="type-map-edit-del-confirm-block" *ngIf="node.status=='removing'">
+        <span class="type-map-edit-option-btn glyphicon glyphicon-triangle-left" (click)="node.status=''"></span>
+        <span class="type-map-edit-option-btn glyphicon glyphicon-floppy-remove" (click)="del(node)"></span>
+      </div>
+    </div>
+  </div>
+  <div class="type-map-edit-col">
+    <input type="input" class="type-map-edit-input" [(ngModel)]="node.type_label" (change)="node.isChange = true;" />
+  </div>
+  <div class="type-map-edit-col">
+    <select [(ngModel)]="node.cashType" (change)="node.isChange = true;">
+      <option value="0">Both</option>
+      <option value="-1">Cost</option>
+      <option value="1">Income</option>
+    </select>
+  </div>
+  <div class="type-map-edit-col">
+    <div class="btn {{node.master? 'btn-success' : 'btn-default'}} type-map-edit-btn" (click)="node.master =! node.master; node.isChange = true;">
+      Master
+    </div>
+  </div>
+  <div class="type-map-edit-col">
+    <div class="btn {{node.showInMap? 'btn-success' : 'btn-default'}} type-map-edit-btn" (click)="node.showInMap =! node.showInMap; node.isChange = true;">
+      Show In Map
+    </div>
+  </div>
+  <div class="type-map-edit-col">
+    <span class="glyphicon glyphicon-sort-by-attributes-alt type-map-edit-quickSelect {{ node.quickSelect ? 'checked' : '' }}" (click)="node.quickSelect = !node.quickSelect; node.isChange=true; "></span>
+  </div>
+  <div class="type-map-edit-parents-panel">
+    <div class="type-map-edit-parents-head">Parents</div>
+    <div class="type-map-edit-parents-content">
+      <span class="type-map-edit-parents-label" *ngFor="let parent of getNodeParents(currentNode)" (click)="unlinkParant(parent.tid)"> {{parent.type_label}} </span>
+    </div>
+    <div class="type-map-edit-parents-more" (click)="showParentSelectPopOut= true">+ New parent</div>
+  </div>
+  <div *ngIf="showParentSelectPopOut" type-map-panel-pop-out [callback]="getTypeMapCallback()" [selectedTids]="getNodeParentsMap()"></div>
+</a>
+<ul *ngIf="currentNode && childNode.length ">
+  <li *ngFor="let node of childNode " type-map-edit [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlatMeta]="typesMapFlatMeta ">
+  </li>
+</ul>

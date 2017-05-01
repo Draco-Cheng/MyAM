@@ -1,0 +1,18 @@
+<div *ngIf="!currentNode">
+  <div *ngFor="let node of childNode" class="verticalTree type-map-fragment-block">
+    <ul>
+      <li type-map-fragment [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [selectedTids]="selectedTids" [callback]="callback"></li>
+    </ul>
+  </div>
+</div>
+
+<a *ngIf="currentNode =='_unclassified'" class="type-map-fragment-checkbox unclassified"
+  >Unclassified</a>
+<a *ngIf="currentNode && currentNode !='_unclassified'" class="type-map-fragment-checkbox {{isChecked(currentNode) ? 'checked': ''}}" (click)="onSelect(currentNode)"
+  >{{ typesFlat[currentNode].type_label }}</a>
+
+
+<ul *ngIf="currentNode && childNode.length ">
+  <li *ngFor="let node of childNode " type-map-fragment [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlat]="typesMapFlat " [selectedTids]="selectedTids " [callback]="callback ">    
+  </li>
+</ul>

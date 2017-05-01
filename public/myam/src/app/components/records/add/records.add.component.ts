@@ -60,17 +60,12 @@ export class RecordsAddComponent {
   async ngOnInit(){
     await this.getRecord();
     await this.getTypes();
-    await this.getTypesFlatMap();
-    
     this.__isInit = true;   
   };
 
   async __checkDataUpToDate(){
-    if(this.__meta['types']['lagacy']) {
+    if(this.__meta['types']['legacy']) {
       await this.getTypes();
-    }
-    if(this.__meta['typesMapFlat']['lagacy']) {
-      await this.getTypesFlatMap();
     }
   }
 
@@ -78,18 +73,13 @@ export class RecordsAddComponent {
     this.__meta['records'] = await this.recordsService.get();
     this.records = this.__meta['records']['data'];
   };
-
+  
   async getTypes() {
     this.__meta['types'] = await this.typeService.get();
     this.types = this.__meta['types']['data'];
     this.types.forEach(element => {
       this.typesFlat[element.tid] = element;
     });
-  };
-
-  async getTypesFlatMap() {
-    this.__meta['typesMapFlat'] = await this.typeService.getFlatMap();
-    this.typesMapFlat = this.__meta['typesMapFlat']['data'];
   };
 
   async addRecord() {

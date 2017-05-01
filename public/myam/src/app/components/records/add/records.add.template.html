@@ -33,13 +33,13 @@
       <div class="col-md-12 records-type-quick-map-title">
         <span class="glyphicon glyphicon-record"></span> Quick Map
       </div>
-      <record-type-quick-list class="col-md-8 col-md-offset-2" [types]="types" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></record-type-quick-list>
+      <type-quick-list class="col-md-8 col-md-offset-2" [selectedTids]="newRecord.tids" [callback]="getRecordTypeMapSwitch(newRecord)"></type-quick-list>
     </div>
     <div class="col-md-12 records-type-map">
       <div class="col-md-12 records-type-map-title" (click)="showTypeMap=!showTypeMap">
         <span class="glyphicon glyphicon-option-vertical"></span> More Types
       </div>
-      <div record-type-map class="col-md-12 record-type-map-panel" *ngIf="showTypeMap" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="newRecord.tids" [recordTidSwitch]="getRecordTypeMapSwitch(newRecord)"></div>
+      <div type-map-panel class="col-md-12 record-type-map-panel" *ngIf="showTypeMap" [selectedTids]="newRecord.tids" [callback]="getRecordTypeMapSwitch(newRecord)"></div>
     </div>
   </div>
 </div>

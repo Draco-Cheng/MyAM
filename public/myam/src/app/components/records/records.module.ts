@@ -11,11 +11,11 @@ import { RecordsAddComponent } from './add/records.add.component';
 
 // Directive Component
 import { RecordTableDirectiveComponent } from './_directive/record-table.directive.component';
-import { RecordTypeMapDirectiveComponent } from './_directive/record-type-map.directive.component';
-import { RecordQuickListDirectiveComponent } from './_directive/record-type-quick-list.directive.component';
 
 // Global Directive Module
 import { CurrencySelectionDirectiveModule } from '../_directive/currency-selection/module';
+import { TypeMapPanelDirectiveModule } from '../_directive/type-map-panel/module';
+import { TypeQuickListDirectiveModule } from '../_directive/type-quick-list/module';
 
 
 // style
@@ -26,17 +26,15 @@ import './records.style.less';
     CommonModule,
     ChildRoutingModule,
     FormsModule,
-    CurrencySelectionDirectiveModule
+    CurrencySelectionDirectiveModule,
+    TypeMapPanelDirectiveModule,
+    TypeQuickListDirectiveModule
   ],
   declarations: [
     RecordsViewComponent,
     RecordsAddComponent,
-
-
     
-    RecordTableDirectiveComponent,
-    RecordTypeMapDirectiveComponent,
-    RecordQuickListDirectiveComponent
+    RecordTableDirectiveComponent
   ],
   providers: []
 })

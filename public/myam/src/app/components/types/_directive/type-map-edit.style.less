@@ -1,0 +1,98 @@
+.type-map-edit-block {
+  display: inline-block;
+  float: left;
+  margin: 10px 5px;
+  &>ul>li>a {
+    border: 2px double !important;
+  }
+}
+
+.type-map-edit-label {
+  &.checked {
+    background-color: #2196F3 !important;
+    color: white !important;
+  }
+  &.unclassified {
+    background-color: grey !important;
+    color: white !important;
+    width: 200px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.type-map-edit-col {
+  display: inline-block;
+  margin-left: 2px;
+  margin-right: 2px;
+  input,
+  select {
+    border: 0;
+  }
+  .type-map-edit-input {
+    width: 100px;
+  }
+  .type-map-edit-btn {
+    padding: 0px 10px;
+  }
+  .type-map-edit-btn.btn-default {
+    color: lightgrey;
+  }
+  .type-map-edit-option-btn {
+    font-size: 1.5em;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .type-map-edit-quickSelect {
+    font-size: 1.5em;
+    vertical-align: middle;
+    color: lightgrey;
+    cursor: pointer;
+  }
+  .type-map-edit-quickSelect.checked {
+    color: green;
+  }
+}
+
+.type-map-edit-parents-panel {
+  .type-map-edit-parents-head {
+    font-weight: 800;
+  }
+  .type-map-edit-parents-more {
+    color: grey;
+    cursor: pointer;
+  }
+}
+
+.type-map-edit-parents-label {
+  display: inline-block;
+  color: #9E9E9E;
+  cursor: pointer;
+  border: 1px solid grey;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  min-width: 100px;
+  text-align: center;
+  &::before {
+    font-family: 'Glyphicons Halflings';
+    content: "\e014";
+    float: left;
+    border-right: 1px solid;
+    padding-right: 5px;
+    margin-right: 5px;
+    color: grey;
+  }
+  &.checked {
+    color: green;
+    &::before {
+      content: "\e013";
+      color: green;
+      border-color: green;
+    }
+  }
+}

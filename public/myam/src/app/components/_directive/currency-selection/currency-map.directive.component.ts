@@ -10,16 +10,25 @@ import './currency-map.style.less';
 })
 
 export class CurrencyMapDirectiveComponent {
-  @Input() currentNode ? : any;
-  @Input() currencyStructureMap ? : any;
-  @Input() currencyFlatMap ? : any;
-  @Input() callback: any;
+  //*************************************
+  // Note for who want to use this module
+  //-------------------------------------
+  // neceesary input
+  @Input() callback: Function;
+  @Input() currencyStructureMap ? : Object;
+  @Input() currencyFlatMap ? : Object;
+  //*************************************
+  // optional input
   @Input() inputCid ? : any;
+  //*************************************
+  // internal input
+  @Input() currentNode ? : any;
+  //*************************************
 
   constructor() {};
 
   select() {
-    if(this.currentNode.cid != this.inputCid) {
+    if (this.currentNode.cid != this.inputCid) {
       this.callback(this.currentNode.cid);
       this.inputCid = this.currentNode.cid;
     }

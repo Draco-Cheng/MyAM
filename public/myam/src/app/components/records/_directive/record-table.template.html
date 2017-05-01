@@ -45,7 +45,7 @@
           <span class="glyphicon glyphicon-chevron-up"></span>
           Type Map
         </div>
-        <div record-type-map class="col-md-12 record-type-map-panel" [typesFlat]="typesFlat" [typesMapFlat]="typesMapFlat" [recordTids]="record.tids" [recordTidSwitch]="getRecordTypeMapSwitch(record)"></div>        
+        <div type-map-panel class="record-type-map-panel" [selectedTids]="record.tids" [callback]="getRecordTypeMapSwitch(record)"></div>        
       </div>
 
     </div>

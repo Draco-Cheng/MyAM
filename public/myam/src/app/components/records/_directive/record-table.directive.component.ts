@@ -23,7 +23,6 @@ export class RecordTableDirectiveComponent {
 
   private types;
   private typesFlat = {};
-  private typesMapFlat = null;
 
   constructor(
     private recordsService: RecordsService,
@@ -32,7 +31,6 @@ export class RecordTableDirectiveComponent {
 
   async ngOnInit() {
     await this.getTypes();
-    await this.getTypesFlatMap();
 
     this.adjustRecordData();
     this.__isInit = true;
@@ -40,9 +38,6 @@ export class RecordTableDirectiveComponent {
   
   async __checkDataUpToDate(){
     if(this.__meta['types']['legacy']){
-      await this.getTypes();
-    }
-    if(this.__meta['typesMapFlat']['legacy']){
       await this.getTypes();
     }
   }
@@ -54,11 +49,6 @@ export class RecordTableDirectiveComponent {
     this.types.forEach(element => {
       this.typesFlat[element.tid] = element;
     });
-  };
-
-  async getTypesFlatMap() {
-    this.__meta['typesMapFlat'] = await this.typeService.getFlatMap();
-    this.typesMapFlat = this.__meta['typesMapFlat']['data'];
   };
 
   ObjKey(obj) {
