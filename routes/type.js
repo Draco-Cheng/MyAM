@@ -36,7 +36,7 @@ routes.set = function(req, res, next) {
 	data.showInMap 	= req.body.showInMap;
 	data.quickSelect= req.body.quickSelect;
 
-	if(!data.dbFile || !data.tid && ( !data.type_label || !data.cashType ))
+	if(!data.dbFile || !data.tid && ( !data.type_label || data.cashType === undefined ))
 		return responseHandler(406, req, res);
 
 	services.type.setTypes(data)
