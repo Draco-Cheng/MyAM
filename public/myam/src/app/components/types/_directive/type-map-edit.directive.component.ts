@@ -58,7 +58,7 @@ export class TypeMapEditDirectiveComponent {
       if (_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['childs']) {
         const _list = Object.keys(_typesMapFlat[_currentNode]['childs']);
         _list.forEach(tid => {
-          _typesFlat[tid].showInMap && _parentNodes.indexOf(tid) == -1 && _childNodes.push(tid);
+          !_typesFlat[tid].isRemoved && _parentNodes.indexOf(tid) == -1 && _childNodes.push(tid);
         });
       }
     } else {
@@ -71,10 +71,11 @@ export class TypeMapEditDirectiveComponent {
       }
 
       for (let _tid in _typesFlat) {
+        if(_typesFlat[_tid].isRemoved)
+          continue;
         if (_typesFlat[_tid].master)
           _childNodes.push(_tid);
         else {
-
           _listOfChild.indexOf(_tid) == -1 && (_unclassifiedNodes[_tid] = null);
         }
       }
@@ -149,5 +150,6 @@ export class TypeMapEditDirectiveComponent {
 
   async del() {
     let _resault = await this.typeService.del(this.currentNode);
+    this.typesFlat[this.currentNode].isRemoved = true;
   }
 }
