@@ -119,7 +119,7 @@ let cache = {
       del_tid: del_tid
     };
     const _resault = await this.request.post(_url, _data);
-
+    
     _resault && this.wipe();
     return { data: _resault };
   }

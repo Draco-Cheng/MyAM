@@ -1,0 +1,34 @@
+.navbar-static-top {
+  margin-bottom: 19px;
+}
+
+
+/* bs3: mobile navbar without js custom
+ * ------------------------------------
+ * show the collapse when navbar toggle is checked */
+
+#navbar-toggle-cbox:checked ~ .collapse {
+  display: block;
+}
+
+
+/* the checkbox used only internally; don't display it */
+
+#navbar-toggle-cbox {
+  display: none
+}
+
+.navbar-nav .dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+nav .container {
+	width: initial;
+}
+@media screen and (max-width: 768px) {
+  .navbar-nav .dropdown .dropdown-menu {
+    display: block;
+    position: initial;
+    float: inherit;
+  }
+}

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import './nav.style.less';
+
 @Component({
   selector: 'navView',
   template: require('./nav.template.html')

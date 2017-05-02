@@ -1,5 +1,5 @@
-<h1>Add Records</h1>
-<div *ngIf="__isInit && __checkDataUpToDate()" class="record-add-panel record-{{ newRecord.cashType == -1 ? 'cost' : 'earn'}}">
+<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12 record-add-panel record-{{ newRecord.cashType == -1 ? 'cost' : 'earn'}}">
+  <h1>Add Records</h1>
   <div class="col-sm-1 record-add-option">
     <span class="glyphicon glyphicon-{{newRecord.cashType == 1 ? 'plus' : 'minus'}} record-add-btn" (click)="addRecord()"></span>
     <span class="glyphicon glyphicon-triangle-bottom" (click)="newRecord.cashType = newRecord.cashType == 1 ? -1 : 1"></span>
