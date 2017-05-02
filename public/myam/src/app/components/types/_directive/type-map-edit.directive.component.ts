@@ -7,7 +7,7 @@ import './type-map-edit.style.less';
 @Component({
   selector: '[type-map-edit]',
   template: require('./type-map-edit.template.html'),
-  providers: [ TypeService ]
+  providers: [TypeService]
 })
 
 export class TypeMapEditDirectiveComponent {
@@ -15,18 +15,18 @@ export class TypeMapEditDirectiveComponent {
   // Note for who want to use this module
   //-------------------------------------
   // neceesary input
-  @Input() typesFlat ?: Object;
-  @Input() typesMapFlatMeta ?: Object;
+  @Input() typesFlat ? : Object;
+  @Input() typesMapFlatMeta ? : Object;
   //*************************************
   // internal input
   @Input() parentNodes ? : string;
   @Input() currentNode ? : number;
   //*************************************
 
-
   private childNode;
-  private _typesMapFlatMeta;
   private showParentSelectPopOut;
+  private disabledTids = {};
+  private _typesMapFlatMeta;
 
   constructor(
     private typeService: TypeService
@@ -36,6 +36,7 @@ export class TypeMapEditDirectiveComponent {
     this.parentNodes = this.parentNodes || "";
     this.currentNode && (this.parentNodes += this.currentNode + ',');
     this._typesMapFlatMeta = this.typesMapFlatMeta;
+    this.disabledTids[this.currentNode] = true;
     this.getChildNode();
   }
   __checkDataUpToDate() {
@@ -53,8 +54,6 @@ export class TypeMapEditDirectiveComponent {
     const _typesMapFlat = this._typesMapFlatMeta['data'];
     const _childNodes = this.childNode = [];
 
-
-
     if (_currentNode) {
       if (_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['childs']) {
         const _list = Object.keys(_typesMapFlat[_currentNode]['childs']);
@@ -66,9 +65,9 @@ export class TypeMapEditDirectiveComponent {
       let _unclassifiedNodes = {};
       let _listOfChild = [];
 
-      for ( let _key in _typesMapFlat ) {
-        if( _key != '_unclassified' )
-        Object.keys(_typesMapFlat[_key]['childs']).forEach( tid => _listOfChild.push(tid));
+      for (let _key in _typesMapFlat) {
+        if (_key != '_unclassified')
+          Object.keys(_typesMapFlat[_key]['childs']).forEach(tid => _listOfChild.push(tid));
       }
 
       for (let _tid in _typesFlat) {
@@ -76,58 +75,58 @@ export class TypeMapEditDirectiveComponent {
           _childNodes.push(_tid);
         else {
 
-          _listOfChild.indexOf(_tid) == -1 && ( _unclassifiedNodes[_tid] = null );
+          _listOfChild.indexOf(_tid) == -1 && (_unclassifiedNodes[_tid] = null);
         }
       }
 
-      if(Object.keys(_unclassifiedNodes).length){
+      if (Object.keys(_unclassifiedNodes).length) {
         _typesMapFlat['_unclassified'] = { 'childs': _unclassifiedNodes };
         _childNodes.push('_unclassified');
       }
     }
   }
 
-  getNodeParents(currentNode){
+  getNodeParents(currentNode) {
     const _typesFlat = this.typesFlat;
     const _typesMapFlat = this._typesMapFlatMeta['data'];
     let _list = [];
 
-    if(_typesMapFlat[currentNode] && _typesMapFlat[currentNode]['parents']) {
-      Object.keys(_typesMapFlat[currentNode]['parents']).forEach( _pNode => {
+    if (_typesMapFlat[currentNode] && _typesMapFlat[currentNode]['parents']) {
+      Object.keys(_typesMapFlat[currentNode]['parents']).forEach(_pNode => {
         _list.push(_typesFlat[_pNode]);
       });
     }
     return _list;
   }
 
-  getNodeParentsMap(){
+  getNodeParentsMap() {
     const _typesFlat = this.typesFlat;
     const _typesMapFlat = this._typesMapFlatMeta['data'];
     const _currentNode = this.currentNode;
 
-    if(_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['parents']) {
+    if (_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['parents']) {
       return _typesMapFlat[_currentNode]['parents'];
     } else {
       return {};
     }
   }
 
-  getTypeMapCallback(){
-    var _self = this;
+  getTypeMapCallback() {
+    const _self = this;
+    const _typesMapFlat = _self._typesMapFlatMeta['data'];
+    const _currentNode = _self.currentNode;
+    const _typesFlat = _self.typesFlat;
+    const _node = _typesFlat[_currentNode];
+
     return async tid => {
-      const _typesMapFlat = _self._typesMapFlatMeta['data'];
-      const _currentNode = _self.currentNode;
-      const _typesFlat = _self.typesFlat;
-      const _node = _typesFlat[_currentNode]
+      if (!tid)
+        return _self.showParentSelectPopOut = false;
 
-      if(!tid)
-          return _self.showParentSelectPopOut = false;
-
-      if(_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['parents'].hasOwnProperty(tid)) {
+      if (_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['parents'].hasOwnProperty(tid)) {
         await _self.unlinkParant(tid);
       } else {
-        await _self.linkParant(tid);      
-      }      
+        await _self.linkParant(tid);
+      }
     }
   }
 
@@ -137,13 +136,13 @@ export class TypeMapEditDirectiveComponent {
   }
 
   async unlinkParant(p_tid) {
-    if(p_tid != this.currentNode){
+    if (p_tid != this.currentNode) {
       let _resault = await this.typeService.unlinkParant(p_tid, this.currentNode);
     }
   }
 
   async linkParant(p_tid) {
-    if(p_tid != this.currentNode){
+    if (p_tid != this.currentNode) {
       let _resault = await this.typeService.linkParant(p_tid, this.currentNode);
     }
   }

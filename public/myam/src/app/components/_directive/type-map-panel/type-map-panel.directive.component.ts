@@ -17,6 +17,7 @@ export class TypeMapPanelDirectiveComponent {
   //-------------------------------------
   // neceesary input
   @Input() selectedTids: Object;
+  @Input() disabledTids ? : Object;
   @Input() callback: Function;
   //*************************************
   // optional input
@@ -27,7 +28,7 @@ export class TypeMapPanelDirectiveComponent {
 
   private types;
   private typesFlat = {};
-  private typesMapFlat;
+  private typesMapFlatMeta;
 
   constructor(
     private typeService: TypeService,
@@ -59,7 +60,7 @@ export class TypeMapPanelDirectiveComponent {
 
   async getTypesFlatMap() {
     this.__meta['typesMapFlat'] = await this.typeService.getFlatMap();
-    this.typesMapFlat = this.__meta['typesMapFlat']['data'];
+    this.typesMapFlatMeta = this.__meta['typesMapFlat'];
   };
 
 }

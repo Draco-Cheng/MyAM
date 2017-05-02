@@ -14,31 +14,42 @@ export class TypeMapFragmentDirectiveComponent {
   //-------------------------------------
   // neceesary input
   @Input() typesFlat: any;
-  @Input() typesMapFlat: any;
+  @Input() typesMapFlatMeta: any;
   @Input() callback: Function;
   @Input() selectedTids: Object;
+  @Input() disabledTids ? : Object;
   //*************************************
   // internal input
   @Input() parentNodes ? : string;
   @Input() currentNode ? : number;
   //*************************************
 
-  private childNode = [];
+  private childNode;
+  private _typesMapFlatMeta;
 
   constructor() {};
 
   ngOnInit() {
     this.parentNodes = this.parentNodes || "";
     this.currentNode && (this.parentNodes += this.currentNode + ',');
+    this._typesMapFlatMeta = this.typesMapFlatMeta;
     this.getChildNode();
   }
+  
+  __checkDataUpToDate() {
+    if (this._typesMapFlatMeta['legacy']) {
+      this._typesMapFlatMeta = this.typesMapFlatMeta;
+      this.getChildNode();
+    }
+    return true;
+  };
 
   getChildNode() {
     const _parentNodes = this.parentNodes;
     const _currentNode = this.currentNode;
     const _typesFlat = this.typesFlat;
-    const _typesMapFlat = this.typesMapFlat;
-    const _childNodes = this.childNode;
+    const _typesMapFlat = this._typesMapFlatMeta['data'];
+    const _childNodes = this.childNode = [];
 
     if (_currentNode) {
       if (_typesMapFlat[_currentNode] && _typesMapFlat[_currentNode]['childs']) {
@@ -76,7 +87,14 @@ export class TypeMapFragmentDirectiveComponent {
     this.callback(node);
   }
 
-  isChecked(node) {
-    return this.selectedTids[node];
+  classCheck(node) {
+    if (this.disabledTids && this.disabledTids[node]) {
+      return 'disabled';
+    }
+    if (this.selectedTids[node]) {
+      return 'checked';
+    }
+
+    return '';
   }
 }

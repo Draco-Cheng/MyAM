@@ -14,6 +14,7 @@ export class TypeMapPanelPopOutDirectiveComponent {
   //-------------------------------------
   // neceesary input
   @Input() selectedTids: Object;
+  @Input() disabledTids ? : Object;
   @Input() callback: Function;
   //*************************************
   // optional input

@@ -80,7 +80,7 @@ let cache = {
     };
     const _resault = await this.request.post(_url, _data);
 
-    _resault && this.wipe('type');
+    _resault && this.wipe();
     return { data: _resault };
   }
 

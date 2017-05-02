@@ -47,9 +47,9 @@
     </div>
     <div class="type-map-edit-parents-more" (click)="showParentSelectPopOut= true">+ New parent</div>
   </div>
-  <div *ngIf="showParentSelectPopOut" type-map-panel-pop-out [callback]="getTypeMapCallback()" [selectedTids]="getNodeParentsMap()"></div>
+  <div *ngIf="showParentSelectPopOut" type-map-panel-pop-out [callback]="getTypeMapCallback()" [selectedTids]="getNodeParentsMap()" [disabledTids]="disabledTids"></div>
 </a>
 <ul *ngIf="currentNode && childNode.length ">
-  <li *ngFor="let node of childNode " type-map-edit [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlatMeta]="typesMapFlatMeta ">
+  <li *ngFor="let node of childNode " type-map-edit [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlatMeta]="typesMapFlatMeta">
   </li>
 </ul>
