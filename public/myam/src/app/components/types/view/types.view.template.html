@@ -1,3 +1,45 @@
-<div *ngIf="__isInit && __checkDataUpToDate()" >	
-	<div type-map-edit class="type-map-edit" [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta"></div>
+<h1>Types</h1>
+<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12">
+  <div class="type-add-panel">
+    <div class="type-add-col type-add-option-col">
+      <div class="type-add-option-block">
+        <span class="type-add-option-btn glyphicon glyphicon-plus record-add-btn" (click)="add()"></span>
+      </div>
+    </div>
+    <div class="type-add-col">
+      <input type="input" class="type-add-input" [(ngModel)]="newType.type_label" placeholder="Input Type" />
+    </div>
+    <div class="type-add-col">
+      <select [(ngModel)]="newType.cashType">
+        <option value="0">Both</option>
+        <option value="-1">Cost</option>
+        <option value="1">Income</option>
+      </select>
+    </div>
+    <div class="type-add-col">
+      <div class="btn {{newType.master? 'btn-success' : 'btn-default'}} type-add-btn" (click)="newType.master =! newType.master;">
+        Master
+      </div>
+    </div>
+    <div class="type-add-col">
+      <div class="btn {{newType.showInMap? 'btn-success' : 'btn-default'}} type-add-btn" (click)="newType.showInMap =! newType.showInMap;">
+        Show In Map
+      </div>
+    </div>
+    <div class="type-add-col">
+      <span class="glyphicon glyphicon-sort-by-attributes-alt type-add-quickSelect {{ newType.quickSelect ? 'checked' : '' }}" (click)="newType.quickSelect = !newType.quickSelect;"></span>
+    </div>
+    <div class="type-map-add-parents-panel">
+      <div class="type-map-add-parents-head">Parents</div>
+      <div class="type-map-add-parents-content">
+        <span class="type-map-add-parents-label" *ngFor="let p_tid of getParents()" (click)="unlinkParant(p_tid)"> {{typesFlat[p_tid].type_label}} </span>
+      </div>
+      <div class="type-map-add-parents-more" (click)="showParentSelectPopOut= true">+ New parent</div>
+      <div *ngIf="showParentSelectPopOut" type-map-panel-pop-out [callback]="getTypeMapCallback()" [selectedTids]="newType.parents"></div>
+    </div>
+  </div>
+  <div class="type-map-add-edit-panel">
+    <h1>Type Map</h1>
+    <div type-map-edit  [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta"></div>
+  </div>  
 </div>

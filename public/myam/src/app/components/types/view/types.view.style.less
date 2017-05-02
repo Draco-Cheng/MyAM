@@ -1,0 +1,88 @@
+.type-add-panel {
+  border: 2px solid grey;
+  display: inline-block;
+  padding: 15px 25px;
+  border-radius: 5px;
+  text-align: center;
+  .type-add-col {
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 2px;
+    input,
+    select {
+      border: 0;
+    }
+    .type-add-input {
+      width: 100px;
+    }
+    .type-add-btn {
+      padding: 0px 10px;
+    }
+    .type-add-btn.btn-default {
+      color: lightgrey;
+    }
+    .type-add-option-btn {
+      font-size: 2em;
+      vertical-align: middle;
+      cursor: pointer;
+      color: green;
+      margin-right: 10px;
+    }
+    .type-add-quickSelect {
+      font-size: 1.5em;
+      vertical-align: middle;
+      color: lightgrey;
+      cursor: pointer;
+    }
+    .type-add-quickSelect.checked {
+      color: green;
+    }
+  }
+}
+
+.type-map-add-parents-panel {
+  .type-map-add-parents-head {
+    font-weight: 800;
+  }
+  .type-map-add-parents-more {
+    color: grey;
+    cursor: pointer;
+  }
+}
+
+
+.type-map-add-parents-label {
+  display: inline-block;
+  color: #9E9E9E;
+  cursor: pointer;
+  border: 1px solid grey;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  min-width: 100px;
+  text-align: center;
+  &::before {
+    font-family: 'Glyphicons Halflings';
+    content: "\e014";
+    float: left;
+    border-right: 1px solid;
+    padding-right: 5px;
+    margin-right: 5px;
+    color: grey;
+  }
+  &.checked {
+    color: green;
+    &::before {
+      content: "\e013";
+      color: green;
+      border-color: green;
+    }
+  }
+}
+
+.type-map-add-edit-panel {
+    margin-top: 30px;
+    border-top: 1px solid rgba(128, 128, 128, 0.22);
+}

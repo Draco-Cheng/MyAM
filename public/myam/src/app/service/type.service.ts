@@ -84,12 +84,53 @@ let cache = {
     return { data: _resault };
   }
 
+  async add(formObj ? : any) {
+    const _urlSet = this.endpoint + '/set';
+    const _urlSetMap = this.endpoint + '/setMaps';
+    const _parentsArr = Object.keys(formObj.parents);
+
+    const _dataSet = {
+      tid: formObj.tid,
+      type_label: formObj.type_label,
+      cashType: formObj.cashType,
+      master: formObj.master ? 1 : 0,
+      quickSelect: formObj.quickSelect ? 1 : 0,
+      showInMap: formObj.showInMap ? 1 : 0
+    };
+    const _resault = await this.request.post(_urlSet, _dataSet);
+    const _tid = _resault[0]['tid'];
+
+    for (let _i = 0; _i < _parentsArr.length; _i++) {
+      const _ptid = _parentsArr[_i];
+      const _dataSetMap = {
+        tid: _ptid,
+        sub_tid: _tid
+      };
+      await this.request.post(_urlSetMap, _dataSetMap);
+    }
+
+    _resault && this.wipe();
+    return { data: _resault };
+  }
+
+  async del(del_tid) {
+    const _url = this.endpoint + '/del'
+    const _data = {
+      del_tid: del_tid
+    };
+    const _resault = await this.request.post(_url, _data);
+
+    _resault && this.wipe();
+    return { data: _resault };
+  }
+
+
   async unlinkParant(p_tid, c_tid) {
     const _url = this.endpoint + '/delMaps'
     const _data = {
       del_tid: p_tid,
       del_sub_tid: c_tid
-    }  
+    }
     const _resault = await this.request.post(_url, _data);
     _resault && this.wipe('type.flatmap');
     return { data: _resault };
@@ -100,7 +141,7 @@ let cache = {
     const _data = {
       tid: p_tid,
       sub_tid: c_tid
-    }  
+    }
     const _resault = await this.request.post(_url, _data);
     _resault && this.wipe('type.flatmap');
     return { data: _resault };

@@ -13,12 +13,12 @@
       <span class="type-map-edit-option-btn glyphicon glyphicon-floppy-saved" *ngIf="!node.status && node.isChange" (click)="save(node)"></span>
       <div class="type-map-edit-del-confirm-block" *ngIf="node.status=='removing'">
         <span class="type-map-edit-option-btn glyphicon glyphicon-triangle-left" (click)="node.status=''"></span>
-        <span class="type-map-edit-option-btn glyphicon glyphicon-floppy-remove" (click)="del(node)"></span>
+        <span class="type-map-edit-option-btn glyphicon glyphicon-floppy-remove" (click)="del()"></span>
       </div>
     </div>
   </div>
   <div class="type-map-edit-col">
-    <input type="input" class="type-map-edit-input" [(ngModel)]="node.type_label" (change)="node.isChange = true;" />
+    <input type="input" class="type-map-edit-input" [(ngModel)]="node.type_label" (change)="node.isChange = true;" placeholder="Input Type"/>
   </div>
   <div class="type-map-edit-col">
     <select [(ngModel)]="node.cashType" (change)="node.isChange = true;">

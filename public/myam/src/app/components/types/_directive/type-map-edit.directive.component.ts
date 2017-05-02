@@ -146,4 +146,8 @@ export class TypeMapEditDirectiveComponent {
       let _resault = await this.typeService.linkParant(p_tid, this.currentNode);
     }
   }
+
+  async del() {
+    let _resault = await this.typeService.del(this.currentNode);
+  }
 }

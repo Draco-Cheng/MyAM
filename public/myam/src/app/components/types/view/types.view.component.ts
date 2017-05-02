@@ -23,6 +23,17 @@ export class TypesViewComponent {
   private typesFlat = {};
   private typesMapFlatMeta;
 
+  private showParentSelectPopOut;
+  private newTypeParents = {};
+  private newType = {
+    type_label: '',
+    cashType: 0,
+    master: false,
+    showInMap: true,
+    quickSelect: true,
+    parents: {}
+  };
+
   constructor(
     private typeService: TypeService
   ) {};
@@ -56,9 +67,35 @@ export class TypesViewComponent {
     this.typesMapFlatMeta = this.__meta['typesMapFlat'];
   };
 
+  getParents() {
+    return Object.keys(this.newType.parents);
+  }
 
-  reload () {
-    this.__isInit =false;
-    setTimeout(()=> {this.__isInit = true;}, 10)
+  unlinkParant(p_tid) {
+    delete this.newType.parents[p_tid];
+  }
+
+  getTypeMapCallback() {
+    const _self = this;
+    const _newTypeParents = _self.newType.parents;
+
+    return async tid => {
+      if (!tid)
+        return _self.showParentSelectPopOut = false;
+
+      if (_newTypeParents.hasOwnProperty(tid)) {
+        delete _self.newType.parents[tid];
+      } else {
+        _self.newType.parents[tid] = true;
+      }
+    }
+  }
+
+  async add(node) {
+    const _resault = await this.typeService.add(this.newType);
+    if (_resault) {
+      this.newType.type_label = '';
+      this.newType.parents = {};
+    }
   }
 }
