@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 // Handler
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
+import { CryptHandler } from '../handler/crypt.handler';
 
 // APP Module
 import { AppRoutingModule } from './app.routing';
@@ -46,7 +47,8 @@ import { AboutModule } from './about/about.module';
   bootstrap: [AppComponent],
   providers: [
     RequestHandler,
-    CacheHandler
+    CacheHandler,
+    CryptHandler
   ],
   exports: []
 })
