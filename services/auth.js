@@ -97,7 +97,7 @@ exports.loginByToken = async(data) => {
   let _salt = _meta['salt'];
   let _keep = _meta['keep'];
 
-  data['dbFile'] = config['dbFolder'] + 'sys.db'
+  data['dbFile'] = config['dbFolder'] + 'sys.db';
 
   // connect databse
   await controller.dbFile.checkDB(data);
@@ -152,4 +152,23 @@ exports.loginByToken = async(data) => {
   }
 
   return data;
+}
+
+exports.logout = async(data) => {
+  const _uid = data['uid'];
+
+  data['dbFile'] = config['dbFolder'] + 'sys.db';
+
+  // connect databse
+  await controller.dbFile.checkDB(data);
+  await controller.dbController.connectDB(data);
+
+  // update login status in database
+  data['meta'] = {};
+  data['meta']['uid'] = _uid;
+  data['meta']['keep_login_info'] = null;
+
+  await controller.dbController.setUser(data);
+
+  delete authCache[_uid];
 }

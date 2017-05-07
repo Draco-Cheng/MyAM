@@ -22,7 +22,7 @@ routes.index = function(req, res, next) {
     headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Auth-UID, Auth-Salt, Auth-Token";
     res.writeHead(200, headers);
     res.end();
-  } else if (req.url.indexOf('/auth/') == 0) {
+  } else if (req.url.indexOf('/auth/login') == 0) {
     // Cross domain header
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");

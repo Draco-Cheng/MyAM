@@ -44,4 +44,20 @@ routes.login = async(req, res, next) => {
 }
 router.all('/login', routes.login);
 
+
+routes.logout = async(req, res, next) => {
+  var data = tools.createData(req);
+
+  data['error'] = null;
+
+  await authServ.logout(data);
+
+  if (data['error']) {
+    return responseHandler(403, req, res);
+  }
+
+  return responseHandler(200, req, res);
+}
+router.all('/logout', routes.logout);
+
 module.exports = router;
