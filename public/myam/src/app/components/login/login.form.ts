@@ -1,6 +1,6 @@
 export class LoginForm {
   constructor(
-    public uid: string,
+    public acc: string,
     public pwd: string
   ) {}
 }

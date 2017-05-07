@@ -17,7 +17,7 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  form = new LoginForm("Test", "test");
+  form = new LoginForm("admin", "admin");
 
   onSubmit() {
     this.authService.login(this.form)

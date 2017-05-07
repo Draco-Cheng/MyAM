@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 // Handler
+import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { CryptHandler } from '../handler/crypt.handler';
@@ -46,6 +47,7 @@ import { AboutModule } from './about/about.module';
   ],
   bootstrap: [AppComponent],
   providers: [
+    ConfigHandler,
     RequestHandler,
     CacheHandler,
     CryptHandler

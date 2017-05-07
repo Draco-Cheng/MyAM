@@ -4,9 +4,6 @@ import { TypeService } from '../../../service/type.service';
 
 import './types.view.style.less';
 
-const config = require('../../../config.json');
-
-
 @Component({
   selector: 'currency-content',
   template: require('./types.view.template.html'),

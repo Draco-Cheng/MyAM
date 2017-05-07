@@ -5,7 +5,6 @@ import { CurrencyService } from '../../../service/currency.service';
 import './currency.view.style.less';
 
 const currencyList = require('../currency.list.json');
-const config = require('../../../config.json');
 
 function formatDate(date) {
   var d = new Date(date),
@@ -19,15 +18,6 @@ function formatDate(date) {
   return [year, month, day].join('-');
 }
 
-let newCurrency = {
-  type: '',
-  rate: 1,
-  to_cid: config.cid,
-  memo: '',
-  main: false,
-  quickSelect: true,
-  date: formatDate(Date.now()),
-};
 
 @Component({
   selector: 'currency-content',
@@ -43,8 +33,18 @@ export class CurrencyViewComponent {
   
   private currencyFlatMap;
   private currencyStructureMap;
-  private newCurrency = newCurrency;
   private currencyList = currencyList;
+
+  private newCurrency = {
+    type: '',
+    rate: 1,
+    to_cid: this.currencyService.getDefaultCid(),
+    memo: '',
+    main: false,
+    quickSelect: true,
+    date: formatDate(Date.now()),
+  };
+
 
   constructor(
     private currencyService: CurrencyService

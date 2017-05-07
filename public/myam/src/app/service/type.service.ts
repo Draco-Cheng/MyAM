@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+
+import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 
@@ -11,11 +13,12 @@ let cache = {
 
 @Injectable() export class TypeService {
 
-  private endpoint = config.server_domain + '/type';
+  private endpoint = this.config.get('server_domain') + '/type';
 
   constructor(
     private request: RequestHandler,
-    private cacheHandler: CacheHandler
+    private cacheHandler: CacheHandler,
+    private config: ConfigHandler
   ) {};
 
   wipe(id ? : String) {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { RequestHandler } from '../handler/request.handler';
+import { ConfigHandler } from '../handler/config.handler';
 
 import {
   CanActivate,
@@ -10,33 +11,55 @@ import {
 } from '@angular/router';
 
 
-var config = require('../config.json');
-
-var User = {
-  isLogin: true
-};
-
 @Injectable() export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router) {};
+  constructor(
+    private router: Router,
+    private config: ConfigHandler,
+    private request: RequestHandler
+  ) {};
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log('AuthGuard#canActivate called');
     return new Promise((resolve: Function, reject: Function) => {
-      !User.isLogin && this.router.navigate(['/login']);
-      resolve(User.isLogin);
+      !this.config.get('isLogin') && this.router.navigate(['/login']);
+      resolve(this.config.get('isLogin'));
     });
   }
 }
 
-export class AuthService {
-  login(formObj: any) {
+@Injectable() export class AuthService {
 
+  private endpoint = this.config.get('server_domain') + '/auth';
+
+  constructor(
+    private router: Router,
+    private config: ConfigHandler,
+    private request: RequestHandler
+  ) {};
+
+  async setConfigUserDb(userProfile) {
+    this.config.set('user', userProfile);
+    this.config.set('uid', userProfile['uid']);
+    this.config.set('isLogin', true);
+
+    let _uid = userProfile['uid'];
+    let _dbList = userProfile['dbList'];
+
+    if (_dbList.length) {
+      this.config.set('database', localStorage.getItem(_uid + '.db') || _dbList[0]);
+    }
+  }
+
+  async login(formObj: any) {
+    const _url = this.endpoint + '/login';
     console.log("[AuthService] login:", formObj);
 
-    return new Promise(resolve => {
-      User.isLogin = true;
-      setTimeout(resolve, 3000);
-    });
+    let _res = await this.request.login(_url, formObj);
+
+    if (_res) {
+      await this.setConfigUserDb(_res);
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

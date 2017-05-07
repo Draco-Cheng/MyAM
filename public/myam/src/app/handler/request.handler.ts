@@ -1,36 +1,75 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
-import { Md5 } from 'ts-md5/dist/md5';
+import { ConfigHandler } from './config.handler';
+import { CryptHandler } from './crypt.handler';
 
-var config = require('../config.json');
+
 
 @Injectable() export class RequestHandler {
-  constructor(public http: Http) {};
+  private encrypt;
+  private authTokenBase;
 
+  constructor(
+    public http: Http,
+    private config: ConfigHandler,
+    private cryptHandler: CryptHandler
+  ) {
+    this.encrypt = cryptHandler.encrypt;
+  };
 
   headers = new Headers({
     'Content-Type': 'application/json'
   });
 
-  encryptMD5(str){
-    str = str.split("");
-    var _tempStr = <string> Md5.hashStr("");
-    for (var i = 0; i < str.length; i++)
-      _tempStr = <string> Md5.hashStr(_tempStr + Md5.hashStr(str[i]));
-    return Md5.hashStr(_tempStr);
-  }
-
   async post(url: string, formObj ? : any) {
     let _data = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
+    let _salt = Date.now().toString();
 
-    _data.db = config.database;
+    _data['db'] = this.config.get('database');
+
+    this.headers.set('Auth-Salt', _salt );
+    this.headers.set('Auth-Token', this.encrypt(this.authTokenBase + _salt) );
 
     // <any[]> predefine resolve return value type
     return new Promise < any[] > ((resolve, reject) => {
       this.http.post(url, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
-            resolve(data.status == 200 ? data.json() : null);
+            resolve(data['status'] == 200 ? data.json() : null);
+          }
+        );
+    });
+  };
+
+  async login(url: string, formObj: any) {
+    let _data = {};
+    let _salt = Date.now();
+    let _formObj = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
+
+    _data['acc'] = _formObj['acc'];
+    _data['salt'] = _salt;
+    _data['token'] = this.encrypt(this.encrypt(_formObj['pwd']) + _salt);
+    _data['keep'] = _formObj['keep'];
+
+    // <any[]> predefine resolve return value type
+    return new Promise < any[] > ((resolve, reject) => {
+      this.http.post(url, JSON.stringify(_data), { headers: this.headers })
+        .subscribe(
+          data => {
+            if (data.status == 200) {
+              let _data = data.json();
+              this.authTokenBase = this.encrypt(_salt + this.encrypt(_formObj['pwd']));
+
+              if (_formObj['keep']) {
+                localStorage.setItem('token', this.encrypt(_salt + this.authTokenBase));
+              }
+
+              this.headers.set('Auth-UID', _data['uid']);
+
+              resolve(_data);
+            } else {
+              resolve(null);
+            }
           }
         );
     });

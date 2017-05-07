@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { RequestHandler } from '../handler/request.handler';
 
-const config = require('../config.json');
+import { ConfigHandler } from '../handler/config.handler';
+import { RequestHandler } from '../handler/request.handler';
 
 @Injectable() export class RecordsService {
 
-  constructor(private request: RequestHandler) {};
+  constructor(
+    private request: RequestHandler,
+    private config: ConfigHandler
+  ) {};
 
-  private endpoint = config.server_domain + '/record'; // URL to web API
+  private endpoint = this.config.get('server_domain') + '/record'; // URL to web API
 
   async get(formObj ? : any) {
     const _url = this.endpoint + '/get';
