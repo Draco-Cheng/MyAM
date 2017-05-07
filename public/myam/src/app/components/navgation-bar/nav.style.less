@@ -23,12 +23,27 @@
 }
 
 nav .container {
-	width: initial;
+  width: initial;
 }
+
+#navbar-right {
+  float: right;
+  .dropdown-menu {
+    right: 0;
+    left: inherit;
+  }
+  a {
+    cursor: pointer
+  }
+}
+
 @media screen and (max-width: 768px) {
   .navbar-nav .dropdown .dropdown-menu {
     display: block;
     position: initial;
+    float: inherit;
+  }
+  #navbar-right {
     float: inherit;
   }
 }

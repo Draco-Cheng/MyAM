@@ -5,9 +5,11 @@ import { FormsModule } from '@angular/forms';
 
 import { NavComponent } from './nav.component';
 
-
 @NgModule({
-  imports: [CommonModule, FormsModule],
+  imports: [
+  	CommonModule,
+  	FormsModule
+  ],
   declarations: [
     NavComponent
   ],

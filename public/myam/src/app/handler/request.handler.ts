@@ -64,6 +64,8 @@ import { CryptHandler } from './crypt.handler';
 
               if (_formObj['keep']) {
                 localStorage.setItem('token', _uid + ',' + this.encrypt(_salt + _salt + this.encrypt(_formObj['pwd'])));
+              } else {
+                localStorage.removeItem('token');
               }
 
               this.headers.set('Auth-UID', _data['uid']);

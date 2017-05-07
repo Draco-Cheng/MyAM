@@ -80,7 +80,7 @@ import { ConfigHandler } from '../handler/config.handler';
           _flatMap[cur.to_cid].childs.push(cur);
         }
       });
-
+      
       // set config cid 
       this.setConfigCid(_rootCid, _flatMap);
 

@@ -56,6 +56,17 @@ import {
 
     return !!_res;
   }
+
+  async logout() {
+    const _url = this.endpoint + '/logout';
+    console.log("[AuthService] logout");
+
+    let _res = await this.request.post(_url);
+
+    if (_res) {
+      localStorage.removeItem('token');
+    }
+  }
 }
 
 @Injectable() export class AuthGuard implements CanActivate {
@@ -78,7 +89,7 @@ import {
       if (localStorage.getItem('token') && await this.authService.loginByToken()) {
         return resolve(true);
       }
-      
+
       this.router.navigate(['/login']);
       resolve(false);
 

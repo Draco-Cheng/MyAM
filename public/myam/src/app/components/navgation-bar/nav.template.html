@@ -17,6 +17,19 @@
       <!-- customization ends here -->
       <a class="navbar-brand" href="#/dashboard">{{name}}</a>
     </div>
+    <div *ngIf="getUserProfile() as user" id="navbar-right" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user.name}} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">{{user.mail}}</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#/profile">Set Profile</a></li>
+            <li><a (click)="logout()">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">

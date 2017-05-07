@@ -4,8 +4,6 @@ import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 
-var config = require('../config.json');
-
 let cache = {
   'type': null,
   'typeFlatMap': null
