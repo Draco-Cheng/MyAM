@@ -28,7 +28,10 @@ var _valHandler = function(val) {
 }
 
 var _dbLogger = function(data, str) {
-  logger.dbLog(data.reqId, ("[" + data.db.filename + " ," + data.db.mode + "] ").grey + str);
+  if(data.db)
+    logger.dbLog(data.reqId, ("[" + data.db.filename + " ," + data.db.mode + "] ").grey + str);
+  else
+    logger.dbLog(data.reqId, ("[" + data.dbFile + "] ").grey + str);
 }
 
 var _connectDB = function(data, callback) {
@@ -760,3 +763,51 @@ var _setRecordTypeMap = function(data, callback) {
   })
 };
 exports.setRecordTypeMap = Promise.denodeify(_setRecordTypeMap);
+
+
+//********************************************
+// User *************************************
+
+exports.getUser = async data => {
+  let _meta = data.meta;
+  let _sql = 'SELECT * FROM user';
+  let _conditions = [];
+  _meta.uid !== undefined && _conditions.push('tid=$tid');
+  _meta.acc !== undefined && _conditions.push('account=$acc');
+  
+  if(_conditions.length) {
+    _sql += ' WHERE ' + _conditions.join(' OR ');
+  }
+  const _data = await _allSQL(data, _sql, { $uid: _meta.uid, $acc: _meta.acc });
+  return data;
+};
+
+exports.setUser = async data => {
+  var _param = [];
+  var _val = [];
+  let _meta = data.meta;
+
+  ['token', 'name', 'permission', 'status', 'mail', 'last_login_info', 'keep_login_info', 'breakpoint'].forEach(function(each) {
+    if (_meta[each] !== undefined) {
+      _param.push(each);
+      _val.push(_valHandler(_meta[each]));
+    }
+  });
+
+  if (_meta.uid) {
+    _val.push(_meta.uid);
+    var _sql = "UPDATE user SET " + _param.map(function(e, n) {
+      return e + " = ? " }) + "WHERE uid = ?;";
+  } else {
+    _meta.uid = Date.now();
+    _param.unshift("uid");
+    _val.unshift(_meta.uid);
+    var _sql = "INSERT INTO user (" + _param.join(",") + ") VALUES(" + _param.map(function() {
+      return "?" }).join(",") + ");";
+  }
+
+  await _prepareSQL(data, _sql, [_val]);
+  data.resault = [];
+  data.resault.push([{ uid: _meta.uid }]);
+  return data;
+};

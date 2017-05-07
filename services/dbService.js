@@ -1,26 +1,31 @@
-var Promise    = require("promise");
+var Promise = require("promise");
 var controller = {
   dbFile: require('../controller/dbFile.js')
 };
-var fs         = require('fs');
+var fs = require('fs');
 var dateFormat = require('dateformat');
 // logger is special function so its not in the controller object
-var logger     = require("../controller/logger.js");
-var config     = require("../config.js");
+var logger = require('../controller/logger.js');
+var config = require('../config.js');
 
 
-var _dbList = function(data, callback) {
-  data = data || {};
-  logger.debug(data.reqId, "Check Database Folder" + data.path + " exist or not...");
+exports.dbList = async data => {
+  logger.debug(data.reqId, 'Check Database Folder' + (data['uid'] || 'All') + ' exist or not...');
+  let _meta = data['meta'];
+  let _resMeta = data['resMeta'];
 
-  controller.dbFile.readdir(data)
-    .then(function(data) {
-      callback && callback(null, data);
-    })
-    .catch(console.error);
+  _meta['path'] = config.dbFolder + 'users/' + (_meta['uid'] ? _meta['uid'] + '/' : '');
 
+  let _pool = [];
+
+  let _list = await controller.dbFile.readdir(data);
+  _list.forEach(ele => {
+    ele.isDir && _pool.push(ele.name);
+  })
+  _resMeta['dbList'] = _pool;
+
+  return data;
 }
-exports.dbList = Promise.denodeify(_dbList);
 
 
 var _backupDB = function(data, callback) {

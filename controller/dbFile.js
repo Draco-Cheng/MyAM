@@ -1,6 +1,5 @@
 var fs         = require("fs");
 var logger     = require("./logger.js");
-var Promise    = require("promise");
 var formidable = require("formidable");
 var dateFormat = require('dateformat');
 var config     = require("../config.js");
@@ -9,10 +8,12 @@ var _checkFile = function(data, callback) {
   fs.exists(data.checkFile, function(exists) {
     // handle result
     data.fileExists = exists;
-    callback(null, data);
+    callback(data);
   });
+
+  return new Promise(resolve => callback = resolve);
 };
-exports.checkFile = Promise.denodeify(_checkFile);
+exports.checkFile = _checkFile;
 //exports.check = _check;
 
 var _checkDB = function(data) {
@@ -21,7 +22,6 @@ var _checkDB = function(data) {
     logger.debug(data.reqId, "Check Database " + data.checkFile + " exist or not...");
 
     exports.checkFile(data).then(function(data) {
-
       if (!data.fileExists) {
         var _msg = "Database " + data.checkFile + " not exist...";
         logger.warn(data.reqId, _msg);
@@ -45,50 +45,52 @@ var _createFile = function(data, callback) {
   fs.writeFile(data.createFile, '', function(err) {
     if (err) logger.error(err);
     else logger.info(data.reqId, 'create file ' + data.createFile);
-    if (callback) callback(err, data);
+    if (callback) callback(data);
   });
+
+  return new Promise(resolve => callback = resolve);
 }
-exports.createFile = Promise.denodeify(_createFile);
+exports.createFile = _createFile;
 //exports.createFile = _createFile;
 
 var _unlinkFile = function(data, callback) {
   fs.unlink(data.dbFile, function(err) {
     if (err) logger.error(data.reqId, err);
     else logger.info(data.reqId, 'unlink file ' + data.dbFile);
-    if (callback) callback(err, data);
+    if (callback) callback(data);
   });
+
+  return new Promise(resolve => callback = resolve);
 }
-exports.unlinkFile = Promise.denodeify(_unlinkFile);
+exports.unlinkFile = _unlinkFile;
 //exports.unlinkFile = _unlinkFile;
 
-var _isDirectory = function(data, callback) {
+exports.isDirectory = async function isDirectory(data, dirList) {
+  var _resolve;
   var _pool = [];
-  var _list = data.fileList;
-  var _path = data.path ? (data.path.substr(-1, 1) == "/" ? data.path : data.path + "/") : "";
-  logger.debug(data.reqId, "get stat:" + _path);
+  var _path = data['meta']['path'] ? (data['meta']['path'].substr(-1, 1) == '/' ? data['meta']['path'] : data['meta']['path'] + '/') : '';
+  logger.debug(data.reqId, 'get stat:' + _path);
 
-  _list.forEach(function(dir) {
+  dirList.forEach(function(dir) {
     fs.stat(_path + dir, function(err, stats) {
       _pool.push({ name: dir, isDir: stats.isDirectory(), stats: stats });
-      if (_list.length == _pool.length) {
-        data.fileList = _pool;
-        callback(null, data)
+      if (dirList.length == _pool.length) {
+        _resolve(_pool)
       }
     })
-  })
-}
-exports.isDirectory = Promise.denodeify(_isDirectory);
-
-var _readdir = function(data, callback) {
-  logger.debug(data.reqId, "readdir : " + data.path);
-  fs.readdir(data.path, function(err, dir) {
-    // handle result
-
-    data.fileList = dir;
-    _isDirectory(data, callback);
   });
+
+  return new Promise(resolve => _resolve = resolve);
 }
-exports.readdir = Promise.denodeify(_readdir);
+
+exports.readdir = data => {
+  var _resolve;
+  logger.debug(data.reqId, "readdir : " + data['meta']['path']);
+  let _dir = fs.readdir(data['meta']['path'], async (err, dir) => {
+    _resolve( await exports.isDirectory(data, dir) );
+  });
+  return new Promise(resolve => _resolve = resolve);
+}
 
 
 var _upload = function(data, callback) {
@@ -146,7 +148,7 @@ var _upload = function(data, callback) {
 
           setTimeout(function() {
             if (data.DBList.length >= _numFlag)
-              callback(null, data);
+              callback(data);
           });
         }
 
@@ -170,8 +172,10 @@ var _upload = function(data, callback) {
       });
     }
   });
+
+  return new Promise(resolve => callback = resolve);
 }
-exports.upload = Promise.denodeify(_upload);
+exports.upload = _upload;
 
 var _unlink = function(data, callback) {
   var _path = data.deleteFile;
@@ -190,8 +194,9 @@ var _unlink = function(data, callback) {
   }
   _delete();
 
+  return new Promise(resolve => callback = resolve);
 }
-exports.unlink = Promise.denodeify(_unlink);
+exports.unlink = _unlink;
 
 var _createFolder = function(folder, callback) {
   try {
