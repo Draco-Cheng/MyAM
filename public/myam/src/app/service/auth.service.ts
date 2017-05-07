@@ -11,23 +11,6 @@ import {
 } from '@angular/router';
 
 
-@Injectable() export class AuthGuard implements CanActivate {
-
-  constructor(
-    private router: Router,
-    private config: ConfigHandler,
-    private request: RequestHandler
-  ) {};
-
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    console.log('AuthGuard#canActivate called');
-    return new Promise((resolve: Function, reject: Function) => {
-      !this.config.get('isLogin') && this.router.navigate(['/login']);
-      resolve(this.config.get('isLogin'));
-    });
-  }
-}
-
 @Injectable() export class AuthService {
 
   private endpoint = this.config.get('server_domain') + '/auth';
@@ -61,5 +44,44 @@ import {
       await this.setConfigUserDb(_res);
       this.router.navigate(['/dashboard']);
     }
+  }
+
+  async loginByToken() {
+    const _url = this.endpoint + '/login';
+    const _loginInfo = localStorage.getItem('token').split(',');
+    let _res = await this.request.loginByToken(_url, { uid: _loginInfo[0], token: _loginInfo[1] });
+
+    if (_res)
+      await this.setConfigUserDb(_res);
+
+    return !!_res;
+  }
+}
+
+@Injectable() export class AuthGuard implements CanActivate {
+  private endpoint = this.config.get('server_domain') + '/auth';
+
+  constructor(
+    private router: Router,
+    private config: ConfigHandler,
+    private request: RequestHandler,
+    private authService: AuthService
+  ) {};
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    console.log('AuthGuard#canActivate called');
+    return new Promise(async(resolve: Function, reject: Function) => {
+      if (this.config.get('isLogin')) {
+        return resolve(true);
+      }
+
+      if (localStorage.getItem('token') && await this.authService.loginByToken()) {
+        return resolve(true);
+      }
+      
+      this.router.navigate(['/login']);
+      resolve(false);
+
+    });
   }
 }
