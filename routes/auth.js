@@ -17,17 +17,22 @@ routes.login = async(req, res, next) => {
   data['resMeta'] = {};
   data['error'] = null;
 
-  const _loginMeta = {
-    'acc': req.body.acc,
-    'token': req.body.token,
-    'salt': req.body.salt,
-    'keep': req.body.keep
-  };
-  data['meta'] = _loginMeta;
-  await authServ.login(data);
+  const _loginMeta = {};
+  ['acc', 'uid', 'token', 'salt', 'keep'].forEach(key => {
+    if (req['body'][key] !== null && req['body'][key] !== undefined)
+      _loginMeta[key] = req['body'][key];
+  });
 
-  if (data['error'])
+  data['meta'] = _loginMeta;
+
+  if(data['meta']['uid'])
+    await authServ.loginByToken(data);
+  else
+    await authServ.login(data);
+
+  if (data['error']) {
     return responseHandler(403, req, res);
+  }
 
   const _getDbListMeta = {
     'uid': data.uid

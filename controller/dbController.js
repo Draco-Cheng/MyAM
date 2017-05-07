@@ -772,7 +772,7 @@ exports.getUser = async data => {
   let _meta = data.meta;
   let _sql = 'SELECT * FROM user';
   let _conditions = [];
-  _meta.uid !== undefined && _conditions.push('tid=$tid');
+  _meta.uid !== undefined && _conditions.push('uid=$uid');
   _meta.acc !== undefined && _conditions.push('account=$acc');
   
   if(_conditions.length) {

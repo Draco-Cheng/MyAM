@@ -105,7 +105,6 @@ var _getRecordTypes = function(data, callback){
 			});
 
 	_checkDB.catch(function(data){
-		console.log(data)
 		callback(data)
 	});
 }
