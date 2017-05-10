@@ -88,11 +88,13 @@ import { CryptHandler } from './crypt.handler';
     _data['salt'] = _salt;
     _data['token'] = this.encrypt(_formObj['token'] + _salt);
 
+
     // <any[]> predefine resolve return value type
     return new Promise < any[] > ((resolve, reject) => {
       this.http.post(url, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
+
             if (data.status == 200) {
               let _data = data.json();
               let _uid = _data['uid'];
@@ -107,7 +109,9 @@ import { CryptHandler } from './crypt.handler';
               resolve(null);
             }
           }
-        );
+        , error => {
+          resolve(null);
+        });
     });
   };
 };

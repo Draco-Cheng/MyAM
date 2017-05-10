@@ -1,0 +1,11 @@
+{
+  "status": {
+    "20": "Normal",
+    "0": "Waiting Verify"
+  },
+  "permission": {
+    "9999": "Administrator",
+    "999": "Superme",
+    "20": "Ragular User"
+  }
+}

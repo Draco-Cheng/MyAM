@@ -5,8 +5,6 @@ import { CurrencyService } from '../../../service/currency.service';
 
 import './currency-edit-map.style.less';
 
-const currencyList = require('../currency.list.json');
-
 @Component({
   selector: '[currency-edit-map]',
   template: require('./currency-edit-map.template.html'),
@@ -18,11 +16,13 @@ export class CurrencyEditMapDirectiveComponent {
   @Input() currencyStructureMap ? : any;
   @Input() currencyFlatMap ? : any;
 
-  private currencyList = currencyList;
+  private currencyList;
 
   constructor(
     private currencyService: CurrencyService
-  ) {};
+  ) {
+    this.currencyList = this.currencyService.getCurrencyList();
+  };
 
   objKeys(obj) {
     return Object.keys(obj);

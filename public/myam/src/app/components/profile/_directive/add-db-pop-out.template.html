@@ -1,0 +1,33 @@
+<div class="add-db-pop-out-full-screen">
+  <div class="add-db-pop-out-panel">
+    <div class="add-db-pop-out-head">
+      <span class="glyphicon glyphicon-remove add-db-pop-out-close-btn" (click)="callback()"></span>
+      <h1>Add New Database</h1>     
+    </div>
+    <div class="add-db-pop-out-content">
+      <div class="add-db-pop-out-row">
+        <div class="add-db-pop-out-col-name">
+          Database Name
+        </div>
+        <div class="add-db-pop-out-col-val">
+          <input type="text" placeholder="Name">
+        </div>
+      </div>
+      <div class="add-db-pop-out-row">
+        <div class="add-db-pop-out-col-name">
+          Default Currency
+        </div>
+        <div class="add-db-pop-out-col-val">
+          <select>
+            <option *ngFor="let type of currencyList" value="type">{{type}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="add-db-pop-out-submit-row">
+        <div class="add-db-pop-out-create-btn">
+          Create
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

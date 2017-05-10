@@ -22,6 +22,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { RecordsModule } from './records/records.module';
 import { CurrencyModule } from './currency/currency.module';
 import { TypesModule } from './types/types.module';
+import { ProfileModule } from './profile/profile.module';
 import { AboutModule } from './about/about.module';
 
 @NgModule({
@@ -40,7 +41,8 @@ import { AboutModule } from './about/about.module';
     AboutModule,
     CurrencyModule,
     TypesModule,
-    RecordsModule
+    RecordsModule,
+    ProfileModule
   ],
   declarations: [
     AppComponent

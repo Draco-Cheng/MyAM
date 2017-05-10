@@ -1,0 +1,136 @@
+<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12 profile-view-panel">
+  <div id="profile-view-user">
+    <h1>Profile</h1>
+    <div>
+      <div class="profile-view-col-title">
+        Name
+      </div>
+      <div class="profile-view-col-value">
+        <input type="text" [(ngModel)]="user.name" />
+      </div>
+    </div>
+    <div>
+      <div class="profile-view-col-title">
+        Permission
+      </div>
+      <div class="profile-view-col-value">
+        {{profileMap['permission'][user.permission]}}
+      </div>
+    </div>
+    <div>
+      <div class="profile-view-col-title">
+        Status
+      </div>
+      <div class="profile-view-col-value">
+        {{profileMap['status'][user.status]}}
+      </div>
+    </div>
+    <div>
+      <div class="profile-view-col-title">
+        Register Date
+      </div>
+      <div class="profile-view-col-value">
+        {{ formatDate(user.date) }}
+      </div>
+    </div>
+    <div>
+      <div class="profile-view-col-title">
+        Auto backup cycle
+      </div>
+      <div class="profile-view-col-value">
+        <select [(ngModel)]="user.breakpoint">
+          <option value=null>No Backup</option>
+          <option value="7">1 Week</option>
+          <option value="14">2 Weeks</option>
+          <option value="30">1 Month</option>
+          <option value="90">3 Months</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <div class="profile-view-col-title">
+        E-mail
+      </div>
+      <div class="profile-view-col-value">
+        <input type="text" [(ngModel)]="user.mail" />
+      </div>
+    </div>
+    <div class="profile-view-reset-pwd-panel">
+      <div class="profile-view-reset-pwd-show-btn" (click)="resetPassword = !resetPassword;">
+        <span *ngIf="resetPassword" class="glyphicon glyphicon-chevron-up"></span>
+        <span *ngIf="!resetPassword" class="glyphicon glyphicon-chevron-down"></span> Reset password
+      </div>
+      <br>
+      <div class="profile-view-reset-pwd-input-panel" *ngIf="resetPassword">
+        <div>Original Password</div>
+        <div>
+          <input type="password" />
+        </div>
+        <div>New Password</div>
+        <div>
+          <input type="password" />
+        </div>
+        <div>Confirm Password</div>
+        <div>
+          <input type="password" />
+        </div>
+      </div>
+    </div>
+    <div class="profile-view-submit-btn">Submit</div>
+  </div>
+  <hr>
+  <div id="profile-view-database">
+    <h1>Databse</h1>
+    <div class="profile-view-select-db">
+      Database:
+      <select [(ngModel)]="selectedDb">
+        <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
+      </select>
+    </div>
+    <div class="profile-view-add-db" (click)="openAddDbPopOut()">
+      <span class="glyphicon glyphicon-plus"></span> New Database
+    </div>
+    <div class="profile-view-db-ctr-bar">
+      <div class="profile-view-db-col">
+        <div class="profile-view-db-col-name">Name</div>
+        <div class="profile-view-db-col-val">
+          <input type="text" (change)="changeName=true" value="{{selectedDb}}" />
+          <div class="profile-view-db-col-input-check">
+            <span class="glyphicon glyphicon-ok" *ngIf="changeName"></span>
+          </div>
+          
+        </div>
+      </div>
+      <div *ngIf="currentDatabase == selectedDb" class="profile-view-db-btn actived">
+        <span class="glyphicon glyphicon-flash"></span> Actived
+      </div>
+      <div *ngIf="currentDatabase != selectedDb" class="profile-view-db-btn deactived">
+        <span class="glyphicon glyphicon-stop"></span> Deactivated
+      </div>
+      <div class="profile-view-db-btn delete">
+        <span class="glyphicon glyphicon-trash"></span> Delete
+      </div>
+    </div>
+    <h4>
+      Backup List
+    </h4>
+    <div class="profile-view-bdb-block">
+      <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
+        <div class="profile-view-bdb-save">
+          <span class="glyphicon glyphicon-save"></span>
+        </div>
+        <div class="profile-view-bdb-name">
+          {{dbObj.dbName}}
+        </div>
+        <div class="profile-view-bdb-option">
+          <span class="profile-view-bdb-option-btn glyphicon glyphicon-trash" *ngIf="!dbObj.status" (click)="dbObj.status='removing'"></span>
+          <div class="profile-view-bdb-del-confirm-block" *ngIf="dbObj.status=='removing'">
+            <span class="profile-view-bdb-option-btn glyphicon glyphicon-triangle-left" (click)="dbObj.status=''"></span>
+            <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="del()"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="popOutAddDb" add-db-pop-out [callback]="closeAddDbPopOut"></div>
+  </div>
+</div>

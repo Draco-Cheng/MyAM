@@ -4,8 +4,6 @@ import { CurrencyService } from '../../../service/currency.service';
 
 import './currency.view.style.less';
 
-const currencyList = require('../currency.list.json');
-
 function formatDate(date) {
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -33,7 +31,7 @@ export class CurrencyViewComponent {
   
   private currencyFlatMap;
   private currencyStructureMap;
-  private currencyList = currencyList;
+  private currencyList;
 
   private newCurrency = {
     type: '',
@@ -48,7 +46,9 @@ export class CurrencyViewComponent {
 
   constructor(
     private currencyService: CurrencyService
-  ) {};
+  ) {
+    this.currencyList = this.currencyService.getCurrencyList();
+  };
 
 
   async ngOnInit() {

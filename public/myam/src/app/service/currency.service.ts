@@ -4,9 +4,12 @@ import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { ConfigHandler } from '../handler/config.handler';
 
+const currencyList = require('./currency.list.json');
+
 
 @Injectable() export class CurrencyService {
 
+  private currencyList = currencyList;
   private endpoint = this.config.get('server_domain') + '/currency';
 
   constructor(
@@ -33,6 +36,10 @@ import { ConfigHandler } from '../handler/config.handler';
 
   getDefaultCid() {
     return this.config.get('cid')
+  }
+
+  getCurrencyList(){
+    return this.currencyList;
   }
 
   async get(formObj ? : any) {

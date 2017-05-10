@@ -90,6 +90,8 @@ import {
         return resolve(true);
       }
 
+      localStorage.removeItem('token');
+
       this.router.navigate(['/login']);
       resolve(false);
 

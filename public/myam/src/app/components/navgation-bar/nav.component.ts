@@ -29,6 +29,10 @@ export class NavComponent {
     return this.profileService.getUserDatabase();
   }
 
+  isLogin() {
+  	return this.profileService.isLogin();
+  }
+
   async logout() {
     await this.authService.logout();
     location.href = '';
