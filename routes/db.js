@@ -152,6 +152,32 @@ routes.download = function(req, res, next) {
 }
 router.all('/download'	, routes.download);
 
+routes.breakpointList = function(req, res, next) {
+	var data = tools.createData(req);
+	let _meta = data['meta'] = {};
+	data['resMeta'] = {};
+
+	if(req.body.uid != data.uid){
+		// permission check
+	}
+
+	_meta['uid'] = req.body.uid;
+	_meta['database'] = req.body.db;
+
+	services.dbService.breackPointDbList(data)
+		.then(function(data){
+			var _list = data['resMeta']['dbList'].filter(function(ele){
+			  if(!ele.isDir)
+			  	return true;
+			}).map(function(ele){
+				return ele;
+			});
+
+			responseHandler(200,_list, req, res);
+		})
+}
+router.all('/breakpoint/list'	, routes.breakpointList);
+
 module.exports = router;
 
 

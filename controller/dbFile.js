@@ -1,8 +1,8 @@
-var fs         = require("fs");
-var logger     = require("./logger.js");
+var fs = require("fs");
+var logger = require("./logger.js");
 var formidable = require("formidable");
 var dateFormat = require('dateformat');
-var config     = require("../config.js");
+var config = require("../config.js");
 
 var _checkFile = function(data, callback) {
   fs.exists(data.checkFile, function(exists) {
@@ -86,8 +86,8 @@ exports.isDirectory = async function isDirectory(data, dirList) {
 exports.readdir = data => {
   var _resolve;
   logger.debug(data.reqId, "readdir : " + data['meta']['path']);
-  let _dir = fs.readdir(data['meta']['path'], async (err, dir) => {
-    _resolve( await exports.isDirectory(data, dir) );
+  let _dir = fs.readdir(data['meta']['path'], async(err, dir) => {
+    _resolve(await exports.isDirectory(data, dir));
   });
   return new Promise(resolve => _resolve = resolve);
 }

@@ -10,7 +10,7 @@ var config = require('../config.js');
 
 
 exports.dbList = async data => {
-  logger.debug(data.reqId, 'Check Database Folder' + (data['uid'] || 'All') + ' exist or not...');
+  logger.debug(data.reqId, 'Check Database Folder ' + (data['uid'] || 'All') + ' exist or not...');
   let _meta = data['meta'];
   let _resMeta = data['resMeta'];
 
@@ -21,6 +21,26 @@ exports.dbList = async data => {
   let _list = await controller.dbFile.readdir(data);
   _list.forEach(ele => {
     ele.isDir && _pool.push(ele.name);
+  })
+  _resMeta['dbList'] = _pool;
+
+  return data;
+}
+
+exports.breackPointDbList = async data => {
+  logger.debug(data.reqId, 'Check breackPointDbList Database Folder' + (data['uid'] || 'All') + ' exist or not...');
+  let _meta = data['meta'];
+  let _resMeta = data['resMeta'];
+
+  _meta['path'] = config.dbFolder + 'users/' + _meta['uid'] + '/' + _meta['database'] + '/breackpoint/';
+
+
+  let _pool = [];
+
+  let _list = await controller.dbFile.readdir(data);
+
+  _list.forEach(ele => {
+    !ele.isDir && _pool.push(ele.name);
   })
   _resMeta['dbList'] = _pool;
 
