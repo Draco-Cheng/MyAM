@@ -17,13 +17,21 @@ import './add-db-pop-out.style.less';
 
 export class AddDbPopOutDirectiveComponent {
   @Input() callback;
-  
+
   private currencyList;
+  private dbName;
+  private currencyType;
 
   constructor(
     private profileService: ProfileService,
     private currencyService: CurrencyService
   ) {
     this.currencyList = this.currencyService.getCurrencyList();
+    this.currencyType = 'USD';
   };
+
+  async createDB() {
+    await this.profileService.createDB(this.dbName, this.currencyType);
+    this.callback(this.dbName);
+  }
 }

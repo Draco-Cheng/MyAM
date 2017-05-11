@@ -25,7 +25,7 @@ import { CryptHandler } from './crypt.handler';
     let _data = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
     let _salt = Date.now().toString();
 
-    _data['db'] = this.config.get('database');
+    _data['db'] = (formObj && formObj['db']) || this.config.get('database');
 
     this.headers.set('Auth-Salt', _salt);
     this.headers.set('Auth-Token', this.encrypt(this.authTokenBase + _salt));
@@ -40,6 +40,50 @@ import { CryptHandler } from './crypt.handler';
         );
     });
   };
+
+  downloadFile(fileName, data) {
+    var blob = new Blob([data], { type: 'multipart/form-data' });
+    var url = window.URL.createObjectURL(data);
+    var a = document.createElement("a");
+
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  async download(url: string, formObj: {}) {
+    let _salt = Date.now().toString();
+
+    formObj['db'] = formObj['db'] || this.config.get('database');
+
+    // <any[]> predefine resolve return value type
+    return new Promise < any[] > ((resolve, reject) => {
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", url, true);
+      xhttp.responseType = "blob";
+      xhttp.onreadystatechange = () => {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          this.downloadFile(xhttp.getResponseHeader('x-filename'), xhttp.response)
+        }
+      };
+
+      xhttp.setRequestHeader('Auth-UID', this.headers.get('Auth-UID'));
+      xhttp.setRequestHeader('Auth-Salt', _salt);
+      xhttp.setRequestHeader('Auth-Token', this.encrypt(this.authTokenBase + _salt));
+      xhttp.setRequestHeader('Content-Type', 'application/json');
+
+      xhttp.send(JSON.stringify(formObj));
+      // this.http.post(url, JSON.stringify(_data), { headers: this.headers })
+      //   .subscribe(res => {
+      //     //this.downloadFile(res['_body']);
+      //     var contentDisposition = res.headers.get('Content-Disposition');
+      //     console.log('contentDisposition', window['a'] = res)
+      //   });
+    });
+  }
+
 
   async login(url: string, formObj: any) {
     let _data = {};
@@ -108,10 +152,10 @@ import { CryptHandler } from './crypt.handler';
             } else {
               resolve(null);
             }
-          }
-        , error => {
-          resolve(null);
-        });
+          }, error => {
+            resolve(null);
+          });
     });
-  };
+  }
+
 };

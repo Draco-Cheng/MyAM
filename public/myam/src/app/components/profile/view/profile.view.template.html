@@ -83,7 +83,7 @@
     <h1>Databse</h1>
     <div class="profile-view-select-db">
       Database:
-      <select [(ngModel)]="selectedDb">
+      <select [(ngModel)]="selectedDb" (change)="getBreakpointDbList()">
         <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
       </select>
     </div>
@@ -98,16 +98,18 @@
           <div class="profile-view-db-col-input-check">
             <span class="glyphicon glyphicon-ok" *ngIf="changeName"></span>
           </div>
-          
         </div>
       </div>
-      <div *ngIf="currentDatabase == selectedDb" class="profile-view-db-btn actived">
+      <div class="profile-view-db-save-btn" (click)="downloadDb()">
+        <span class="glyphicon glyphicon-save"></span>
+      </div>
+      <div *ngIf="activedDb == selectedDb" class="profile-view-db-btn actived">
         <span class="glyphicon glyphicon-flash"></span> Actived
       </div>
-      <div *ngIf="currentDatabase != selectedDb" class="profile-view-db-btn deactived">
+      <div *ngIf="activedDb != selectedDb" class="profile-view-db-btn deactived" (click)="setActiveDb()">
         <span class="glyphicon glyphicon-stop"></span> Deactivated
       </div>
-      <div class="profile-view-db-btn delete">
+      <div class="profile-view-db-btn delete" (click)="delDB(selectedDb)">
         <span class="glyphicon glyphicon-trash"></span> Delete
       </div>
     </div>
@@ -115,6 +117,9 @@
       Backup List
     </h4>
     <div class="profile-view-bdb-block">
+      <div *ngIf="!breakpointDbList.length">
+        <h5>There is no backup files!</h5>
+      </div>
       <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
         <div class="profile-view-bdb-save">
           <span class="glyphicon glyphicon-save"></span>

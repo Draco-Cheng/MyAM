@@ -21,7 +21,7 @@ export class ProfileViewComponent {
   private __meta = {};
 
   private user;
-  private currentDatabase;
+  private activedDb;
   private selectedDb;
   private breakpointDbList;
   private profileMap = profileMap;
@@ -37,6 +37,10 @@ export class ProfileViewComponent {
     this.getUserProfile();
     this.getDatabaseName();
     await this.getBreakpointDbList();
+
+    if(!this.user['dbList'].length)
+      this.openAddDbPopOut();
+
     this.__isInit = true;
   };
 
@@ -47,7 +51,7 @@ export class ProfileViewComponent {
   }
 
   getDatabaseName() {
-    this.selectedDb = this.currentDatabase = this.profileService.getUserDatabase();
+    this.selectedDb = this.activedDb = this.profileService.getUserDatabase();
   }
 
   formatDate(date) {
@@ -55,18 +59,47 @@ export class ProfileViewComponent {
   }
 
   async getBreakpointDbList() {
-    if (this.currentDatabase) {
-      var _res = await this.profileService.getBreakpointDbList(this.user.uid, this.currentDatabase);
+    if (this.selectedDb) {
+      var _res = await this.profileService.getBreakpointDbList(this.user.uid, this.selectedDb);
       this.breakpointDbList = [];
       _res['data'].forEach(name => this.breakpointDbList.push({ 'dbName': name }));
     }
   }
 
-  closeAddDbPopOut = () => {
+  async delDB(dbName) {
+    let _msg = `Are you sure, you want to delete database: ${dbName}?\nPlease Enter: "${dbName}" to confirm!`;
+    if (prompt(_msg) == dbName) {
+      await this.profileService.delDB(dbName);
+      this.getUserProfile();
+
+      this.selectedDb = this.user['dbList'][0];
+      this.getBreakpointDbList();
+      if (dbName == this.activedDb) {
+        this.setActiveDb();
+      }
+    }
+  }
+
+  closeAddDbPopOut = (dbName?) => {
+    if(dbName){
+      this.getUserProfile();
+      this.selectedDb = dbName;
+      this.getBreakpointDbList();
+    }
+    
     this.popOutAddDb = false;
-  };
+  }
 
   openAddDbPopOut() {
     this.popOutAddDb = true;
+  }
+
+  setActiveDb() {
+    this.profileService.setActiveDb(this.selectedDb);
+    this.activedDb = this.selectedDb;
+  }
+
+  downloadDb(){
+    this.profileService.downloadDb(this.selectedDb);   
   }
 }
