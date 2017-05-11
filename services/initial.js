@@ -1,43 +1,53 @@
-var Promise    =  require("promise");
+var Promise = require("promise");
 
 var controller = {
-	dbFile : require('../controller/dbFile.js'),
-	dbController : require('../controller/dbController.js')	
+  dbFile: require('../controller/dbFile.js'),
+  dbController: require('../controller/dbController.js')
 };
 
 // logger is special function so its not in the controller object
-var logger   = require("../controller/logger.js");
+var logger = require("../controller/logger.js");
 
-var _checkDB = function(data){
-	return controller.dbFile.checkDB(data);
+var _checkDB = function(data) {
+  return controller.dbFile.checkDB(data);
 }
 exports.checkDB = _checkDB;
 
-var _checkAndCreate = function(data, callback){
-	var _checkDB = controller.dbFile.checkDB(data);
-	_checkDB.catch(function(data){
-			delete data.code;
-			return controller.dbController.connectDB(data)
-		})
-		.then(function(data){return controller.dbController.initialDatabase(data);})
-		.then(function(data){ return controller.dbController.closeDB(data); })
-		.then(function(data){
-			logger.debug(data.reqId, "finish initial Database!!");
-			callback(null, data);
-		});
+exports.checkAndCreate = async data => {
+  try {
 
-	_checkDB.then(function(data){
-		data.code = 409; 
-		callback(null, data);
-	});
+    await controller.dbFile.checkDB(data);
 
+    if (data['resault']['isExist']) {
+      data['error'] = {
+        'code': 409,
+        'message': 'DB_NAME_CONFLICT'
+      };
+    } else {
+      data['meta'] = { path: data['dbPath'] };
+      await controller.dbFile.createdir(data);
+      await controller.dbController.connectDB(data);
+      await controller.dbController.initialDatabase(data);
+      await controller.dbController.closeDB(data);
+
+      logger.debug(data.reqId, "finish initial Database!!");
+    }
+
+    return data;
+  } catch (e) {
+    console.log('!!!!!!!!!!!!!!!!!!!!!', e)
+  }
 }
-exports.checkAndCreate = Promise.denodeify(_checkAndCreate);
 
-var _uploadDB = function(data, callback){
-	controller.dbFile.upload(data)
-		.then(function(data){ return controller.dbController.checkDBisCorrect(data); })
-		.then(function(data){ callback(null ,data); })
-		.catch(function(err){ logger.error(data.reqId, err); callback(null, data); });
+var _uploadDB = function(data, callback) {
+  controller.dbFile.upload(data)
+    .then(function(data) {
+      return controller.dbController.checkDBisCorrect(data);
+    })
+    .then(function(data) { callback(null, data); })
+    .catch(function(err) {
+      logger.error(data.reqId, err);
+      callback(null, data);
+    });
 }
 exports.uploadDB = Promise.denodeify(_uploadDB);

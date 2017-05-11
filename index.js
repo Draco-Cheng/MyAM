@@ -13,6 +13,8 @@ if (config.uploadTempDir &&
   })
 }
 
+global.ROOT_PATH = __dirname;
+
 if (!require('fs').existsSync(config.dbFolder))
   require('fs').mkdirSync(config.dbFolder);
 if (!require('fs').existsSync(config.backupFolder))

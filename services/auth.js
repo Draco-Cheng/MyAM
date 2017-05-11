@@ -38,10 +38,20 @@ exports.login = async(data) => {
 
   // connect databse
   await controller.dbFile.checkDB(data);
+
+  if(!data['resault']['isExist']) {
+    data['error'] = {
+      code: 500,
+      message: 'SYS_DB_NOT_FOUND'
+    }
+    return data;
+  }
+
   await controller.dbController.connectDB(data);
 
   // get user profile 
   await controller.dbController.getUser(data);
+  
   let _resault = data['resault'][0] ? data['resault'][0][0] : null;
 
   if (_resault && controller.encrypt(_resault['token'] + _salt) == _token) {
@@ -84,7 +94,6 @@ exports.login = async(data) => {
     // login fail ------------------------------------------------
     await controller.dbController.closeDB(data);
   }
-
 
   return data;
 }

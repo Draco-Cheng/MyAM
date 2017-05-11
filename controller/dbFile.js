@@ -1,4 +1,5 @@
 var fs = require("fs");
+var rimraf = require('rimraf');
 var logger = require("./logger.js");
 var formidable = require("formidable");
 var dateFormat = require('dateformat');
@@ -25,17 +26,15 @@ var _checkDB = function(data) {
       if (!data.fileExists) {
         var _msg = "Database " + data.checkFile + " not exist...";
         logger.warn(data.reqId, _msg);
-        data.message = _msg;
-        data.code = 412;
-        reject(data)
+        data['resault'] = { isExist: false };
       } else {
         var _msg = "Database " + data.checkFile + " exist...";
         logger.warn(data.reqId, _msg);
-        data.message = _msg;
-        resolve(data);
+        data['resault'] = { isExist: true };
       }
 
       delete data.checkFile;
+      resolve(data);
     });
   });
 }
@@ -87,7 +86,16 @@ exports.readdir = data => {
   var _resolve;
   logger.debug(data.reqId, "readdir : " + data['meta']['path']);
   let _dir = fs.readdir(data['meta']['path'], async(err, dir) => {
-    _resolve(await exports.isDirectory(data, dir));
+    _resolve(dir ? await exports.isDirectory(data, dir) : []);
+  });
+  return new Promise(resolve => _resolve = resolve);
+}
+
+exports.createdir = data => {
+  var _resolve;
+  logger.debug(data.reqId, "readdir : " + data['meta']['path']);
+  let _dir = fs.mkdir(data['meta']['path'], async(err, dir) => {
+    _resolve(data['resault'] = 200);
   });
   return new Promise(resolve => _resolve = resolve);
 }
@@ -236,3 +244,17 @@ var _renameFile = function(source, target) {
   }
 }
 exports.renameFile = _renameFile;
+
+
+
+exports.removeFolder = async data => {
+  const _meta = data['meta'];
+  const _path = _meta['delPath'];
+  let _resolve;
+
+  rimraf(_path, () => {
+    _resolve();
+  });
+
+  return new Promise(resolve => _resolve = resolve);
+}

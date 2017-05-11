@@ -94,32 +94,42 @@ var _renameDB = function(data, callback) {
 exports.renameDB = Promise.denodeify(_renameDB);
 
 
-var _delDB = function(data, callback) {
-  data = data || {};
-  logger.debug(data.reqId, "Check Database Folder" + data.path + " exist or not...");
+exports.delDB = async data => {
+  logger.debug(data['reqId'], 'Check Database Folder ' + data['dbPath'] + ' exist or not...');
 
-  if (!fs.existsSync(config.dbFolder + data.dbFileName)) {
-    data.code = 412;
-    return callback(data)
+  if (!fs.existsSync(data['dbPath'])) {
+    data['error'] = {
+      code: 412,
+      message: 'DB_NOT_FOUND'
+    };
+    return data;
   }
 
+  data['meta'] = {
+    'delPath': data['dbPath']
+  };
 
-  if (controller.dbFile.createFolder(config.backupFolder + data.dbFileName))
-    controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-delete-" + data.dbFileName)
-    .then(function() {
-      setTimeout(function() {
-        controller.dbFile.renameFile(config.backupFolder + data.dbFileName, config.backupFolder + "[legecy-" + Date.now() + "]" + data.dbFileName);
-        fs.unlinkSync(config.dbFolder + data.dbFileName);
-        callback();
-      })
-    });
+  await controller.dbFile.removeFolder(data);
+
+  return data;
+
+  /*
+      if (controller.dbFile.createFolder(config.backupFolder + data.dbFileName))
+      controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-delete-" + data.dbFileName)
+      .then(function() {
+        setTimeout(function() {
+          controller.dbFile.renameFile(config.backupFolder + data.dbFileName, config.backupFolder + "[legecy-" + Date.now() + "]" + data.dbFileName);
+          fs.unlinkSync(config.dbFolder + data.dbFileName);
+          callback();
+        })
+      });
+  */
 }
-exports.delDB = Promise.denodeify(_delDB);
 
-var _downloadDB = function(data, callback) {
+/*var _downloadDB = function(data, callback) {
   data = data || {};
 
-  if (!fs.existsSync(config.dbFolder + data.dbFileName)) {
+  if (!fs.existsSync(data.dbFileName)) {
     data.code = 412;
     return callback(data)
   }
@@ -136,7 +146,15 @@ var _downloadDB = function(data, callback) {
     });
 
 }
-exports.downloadDB = Promise.denodeify(_downloadDB);
+exports.downloadDB = Promise.denodeify(_downloadDB);*/
+
+exports.checkFileExist = async data => {
+  const _path = data['meta']['path'];
+
+  data['resault'] = !!fs.existsSync(data['dbPath']);
+  return data;
+
+}
 
 //***************************** syncDB *****************************
 var _syncTimeout = {};

@@ -58,7 +58,7 @@ var _runSQL = function(data, sql, value) {
   return new Promise(function(resolve, reject) {
     var _pool = [];
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data.resault = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][run] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -91,11 +91,12 @@ var _allSQL = function(data, sql, value) {
 
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data['resault'] = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][all] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
       data.db.all(sql, value, function(err, row) {
+
         if (err) {
           _dbLogger(data, "[SQL]".bgRed + ("[" + _stamp + "] ").red + err);
           return reject(err)
@@ -639,7 +640,10 @@ var _getRecord = function(data, callback) {
     _val.$limit = data.limit;
   }
 
-  _allSQL(data, _sql, _val).then(function(data) { callback(null, data); })
+  _allSQL(data, _sql, _val)
+    .then(function(data) { callback(null, data); })
+    .catch(function(err){ callback(err, data);  });
+
 
 };
 exports.getRecord = Promise.denodeify(_getRecord);
