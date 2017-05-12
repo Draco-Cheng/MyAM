@@ -1,8 +1,8 @@
 {
-  "name": "angular-io-example",
+  "name": "myam-ng4",
   "version": "1.0.0",
   "private": true,
-  "description": "Example project from an angular.io guide.",
+  "description": "MyAM Frontend Page",
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server --hot --inline"
