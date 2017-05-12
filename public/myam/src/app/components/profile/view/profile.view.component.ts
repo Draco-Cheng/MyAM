@@ -27,6 +27,10 @@ export class ProfileViewComponent {
   private profileMap = profileMap;
   private popOutAddDb;
 
+  private pwd_original;
+  private pwd_new;
+  private pwd_confirm;
+
 
   constructor(
     private profileService: ProfileService
@@ -38,7 +42,7 @@ export class ProfileViewComponent {
     this.getDatabaseName();
     await this.getBreakpointDbList();
 
-    if(!this.user['dbList'].length)
+    if (!this.user['dbList'].length)
       this.openAddDbPopOut();
 
     this.__isInit = true;
@@ -60,7 +64,7 @@ export class ProfileViewComponent {
 
   async getBreakpointDbList() {
     if (this.selectedDb) {
-      var _res = await this.profileService.getBreakpointDbList( this.selectedDb);
+      var _res = await this.profileService.getBreakpointDbList(this.selectedDb);
       this.breakpointDbList = [];
       _res['data'].forEach(name => this.breakpointDbList.push({ 'dbName': name }));
     }
@@ -82,18 +86,18 @@ export class ProfileViewComponent {
 
   async delBreakpointDb(breakpointDb) {
     if (this.selectedDb) {
-      var _res = await this.profileService.delBreakpointDb( this.selectedDb, breakpointDb);
+      var _res = await this.profileService.delBreakpointDb(this.selectedDb, breakpointDb);
       this.getBreakpointDbList();
     }
   }
 
-  closeAddDbPopOut = (dbName?) => {
-    if(dbName){
+  closeAddDbPopOut = (dbName ? ) => {
+    if (dbName) {
       this.getUserProfile();
       this.selectedDb = dbName;
       this.getBreakpointDbList();
     }
-    
+
     this.popOutAddDb = false;
   }
 
@@ -106,7 +110,22 @@ export class ProfileViewComponent {
     this.activedDb = this.selectedDb;
   }
 
-  downloadDb(breakpointDb){
-    this.profileService.downloadDb(this.selectedDb, breakpointDb);   
+  downloadDb(breakpointDb) {
+    this.profileService.downloadDb(this.selectedDb, breakpointDb);
+  }
+
+  async save() {
+    let _data = {};
+    _data['name'] = this.user['name'];
+    _data['mail'] = this.user['mail'];
+    _data['breakpoint'] = this.user['breakpoint'];
+
+
+    if (this.pwd_original && this.pwd_new &&this.pwd_new == this.pwd_confirm) {
+      _data['pwd'] = this.pwd_original;
+      _data['pwd2'] = this.pwd_new;
+    }
+
+    await this.profileService.set(_data);
   }
 }

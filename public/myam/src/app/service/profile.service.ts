@@ -3,15 +3,21 @@ import { Injectable } from '@angular/core';
 import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
+import { CryptHandler } from '../handler/crypt.handler';
 
 @Injectable() export class ProfileService {
   private endpoint_db = this.config.get('server_domain') + '/db';
+  private endpoint_profile = this.config.get('server_domain') + '/profile';
+  private encrypt;
 
   constructor(
     private config: ConfigHandler,
     private cacheHandler: CacheHandler,
-    private request: RequestHandler
-  ) {};
+    private request: RequestHandler,
+    private cryptHandler: CryptHandler
+  ) {
+    this.encrypt = cryptHandler.encrypt;
+  };
 
   getUserProfile() {
     return this.config.get('user');
@@ -35,6 +41,8 @@ import { CacheHandler } from '../handler/cache.handler';
 
     return { data: _resault };
   }
+
+
 
   async delBreakpointDb(database, breakpoint) {
     const _url = this.endpoint_db + '/breakpoint/del';
@@ -109,5 +117,34 @@ import { CacheHandler } from '../handler/cache.handler';
     const _resault = await this.request.download(_url, _data);
 
     return { data: _resault };
+  }
+
+  async set(formObj) {
+    const _url = this.endpoint_profile + '/set';
+    const _currentProfile = this.getUserProfile();
+
+    const _data = {};
+
+    ['breakpoint', 'mail', 'name'].forEach(key => {
+      if (_currentProfile[key] != formObj[key])
+        _data[key] = formObj[key];
+    });
+
+    if (formObj['pwd'] && formObj['pwd2']) {
+      _data['token'] = this.encrypt(this.encrypt(formObj['pwd']));
+      _data['token2'] = this.encrypt(formObj['pwd2']);
+    }
+
+    if (Object.keys(_data).length) {
+      const _resault = await this.request.post(_url, _data);
+
+      if (_resault && _data['token']) {
+        location.href = '';
+      } else {
+        return { data: _resault };
+      }
+
+    }
+
   }
 }

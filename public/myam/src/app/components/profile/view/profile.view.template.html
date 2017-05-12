@@ -64,19 +64,19 @@
       <div class="profile-view-reset-pwd-input-panel" *ngIf="resetPassword">
         <div>Original Password</div>
         <div>
-          <input type="password" />
+          <input [(ngModel)]="pwd_original" type="password" />
         </div>
         <div>New Password</div>
         <div>
-          <input type="password" />
+          <input [(ngModel)]="pwd_new" type="password" />
         </div>
         <div>Confirm Password</div>
         <div>
-          <input type="password" />
+          <input [(ngModel)]="pwd_confirm" type="password" />
         </div>
       </div>
     </div>
-    <div class="profile-view-submit-btn">Submit</div>
+    <div class="profile-view-submit-btn" (click)="save()">Submit</div>
   </div>
   <hr>
   <div id="profile-view-database">
