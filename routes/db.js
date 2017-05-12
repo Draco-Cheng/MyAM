@@ -152,7 +152,7 @@ routes.download = async function(req, res, next) {
 
   let _dbFilePath = data['dbFile'];
   let _dbName = data['dbPath'].split('/').pop();
-  let _fileName = (req.body.breakpoint.replace(/\.db/, '') || dateFormat(Date.now(), "yyyymmdd-HHMM")) + '-' + _dbName + '.db';
+  let _fileName = (req.body.breakpoint && req.body.breakpoint.replace(/\.db/, '') || dateFormat(Date.now(), "yyyymmdd-HHMM")) + '-' + _dbName + '.db';
 
 
   data['meta'] = { 'path': _dbFilePath };
