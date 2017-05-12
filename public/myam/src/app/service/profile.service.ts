@@ -25,11 +25,22 @@ import { CacheHandler } from '../handler/cache.handler';
     return this.config.get('isLogin');
   }
 
-  async getBreakpointDbList(uid, database) {
+  async getBreakpointDbList(database) {
     const _url = this.endpoint_db + '/breakpoint/list';
     const _data = {
-      uid: uid,
       db: database
+    };
+
+    const _resault = await this.request.post(_url, _data);
+
+    return { data: _resault };
+  }
+
+  async delBreakpointDb(database, breakpoint) {
+    const _url = this.endpoint_db + '/breakpoint/del';
+    const _data = {
+      db: database,
+      breakpoint: breakpoint
     };
 
     const _resault = await this.request.post(_url, _data);
@@ -85,11 +96,15 @@ import { CacheHandler } from '../handler/cache.handler';
     this.config.set('database', dbName);
   }
 
-  async downloadDb(dbName){
+  async downloadDb(dbName, breakpoint ? ) {
     const _url = this.endpoint_db + '/download';
-    const _data = {
-      db: dbName
-    };
+
+    let _data = {}
+    _data['db'] = dbName;
+
+    if (breakpoint) {
+      _data['breakpoint'] = breakpoint;
+    }
 
     const _resault = await this.request.download(_url, _data);
 

@@ -121,7 +121,7 @@
         <h5>There is no backup files!</h5>
       </div>
       <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
-        <div class="profile-view-bdb-save">
+        <div class="profile-view-bdb-save" (click)="downloadDb(dbObj.dbName)">
           <span class="glyphicon glyphicon-save"></span>
         </div>
         <div class="profile-view-bdb-name">
@@ -131,7 +131,7 @@
           <span class="profile-view-bdb-option-btn glyphicon glyphicon-trash" *ngIf="!dbObj.status" (click)="dbObj.status='removing'"></span>
           <div class="profile-view-bdb-del-confirm-block" *ngIf="dbObj.status=='removing'">
             <span class="profile-view-bdb-option-btn glyphicon glyphicon-triangle-left" (click)="dbObj.status=''"></span>
-            <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="del()"></span>
+            <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="delBreakpointDb(dbObj.dbName)"></span>
           </div>
         </div>
       </div>

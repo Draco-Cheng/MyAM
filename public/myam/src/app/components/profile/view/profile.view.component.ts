@@ -60,7 +60,7 @@ export class ProfileViewComponent {
 
   async getBreakpointDbList() {
     if (this.selectedDb) {
-      var _res = await this.profileService.getBreakpointDbList(this.user.uid, this.selectedDb);
+      var _res = await this.profileService.getBreakpointDbList( this.selectedDb);
       this.breakpointDbList = [];
       _res['data'].forEach(name => this.breakpointDbList.push({ 'dbName': name }));
     }
@@ -77,6 +77,13 @@ export class ProfileViewComponent {
       if (dbName == this.activedDb) {
         this.setActiveDb();
       }
+    }
+  }
+
+  async delBreakpointDb(breakpointDb) {
+    if (this.selectedDb) {
+      var _res = await this.profileService.delBreakpointDb( this.selectedDb, breakpointDb);
+      this.getBreakpointDbList();
     }
   }
 
@@ -99,7 +106,7 @@ export class ProfileViewComponent {
     this.activedDb = this.selectedDb;
   }
 
-  downloadDb(){
-    this.profileService.downloadDb(this.selectedDb);   
+  downloadDb(breakpointDb){
+    this.profileService.downloadDb(this.selectedDb, breakpointDb);   
   }
 }
