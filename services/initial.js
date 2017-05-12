@@ -35,7 +35,7 @@ exports.checkAndCreate = async data => {
 
     return data;
   } catch (e) {
-    console.log('!!!!!!!!!!!!!!!!!!!!!', e)
+    console.error(e.stack)
   }
 }
 
