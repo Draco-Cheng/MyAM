@@ -52,17 +52,18 @@ var _createFile = function(data, callback) {
 exports.createFile = _createFile;
 //exports.createFile = _createFile;
 
-var _unlinkFile = function(data, callback) {
-  fs.unlink(data.dbFile, function(err) {
+exports.unlinkFile = function(data) {
+  const _file = data['meta']['file'];
+  let _resolve;
+
+  fs.unlink(_file, function(err) {
     if (err) logger.error(data.reqId, err);
-    else logger.info(data.reqId, 'unlink file ' + data.dbFile);
-    if (callback) callback(data);
+    else logger.info(data.reqId, 'unlink file ' + _file);
+    _resolve(data);
   });
 
-  return new Promise(resolve => callback = resolve);
+  return new Promise((resolve, reject) => _resolve = resolve);
 }
-exports.unlinkFile = _unlinkFile;
-//exports.unlinkFile = _unlinkFile;
 
 exports.isDirectory = async function isDirectory(data, dirList) {
   var _resolve;
@@ -185,8 +186,9 @@ var _upload = function(data, callback) {
 }
 exports.upload = _upload;
 
-var _unlink = function(data, callback) {
-  var _path = data.deleteFile;
+exports.unlink = function(data) {
+  var _path = data['meta']['deleteFile'];
+  var _resolve;
   var _retry = 0;
   logger.log(data.reqId, "[Files]".bgRed + " Delete file... \t" + "File Name:".bgRed + " " + _path);
 
@@ -197,14 +199,13 @@ var _unlink = function(data, callback) {
           return setTimeout(_delete, 100);
         logger.log(data.reqId, "[Files]".bgRed + (" Delete file error " + err).red);
       }
-      callback && callback();
+      _resolve();
     });
   }
   _delete();
 
-  return new Promise(resolve => callback = resolve);
+  return new Promise(resolve => _resolve = resolve);
 }
-exports.unlink = _unlink;
 
 var _createFolder = function(folder, callback) {
   try {

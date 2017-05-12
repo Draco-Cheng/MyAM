@@ -148,20 +148,24 @@ routes.backup = function(req, res, next) {
 router.all('/backup', routes.backup);
 
 routes.download = async function(req, res, next) {
-  var data = tools.createData(req);
-  var _dbFilePath = data['dbFile'];
+  let data = tools.createData(req);
+
+  let _dbFilePath = data['dbFile'];
+  let _dbName = data['dbPath'].split('/').pop();
+  let _fileName = (req.body.breakpoint.replace(/\.db/, '') || dateFormat(Date.now(), "yyyymmdd-HHMM")) + '-' + _dbName + '.db';
+
+
   data['meta'] = { 'path': _dbFilePath };
+
   await services.dbService.checkFileExist(data);
 
   if (data['resault']) {
-    let _userName = data['dbPath'].split('/').pop();
-    let _fileName = dateFormat(Date.now(), "yyyymmdd-HHMM") + '-' + _userName + '.db';
     res.setHeader('Content-Disposition', 'attachment; name="' + _fileName + '"; filename="' + _fileName + '"');
     res.setHeader('x-filename', _fileName);
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, x-filename');
 
-    var filestream = fs.createReadStream(data['dbFile']);
+    const filestream = fs.createReadStream(_dbFilePath);
     filestream.pipe(res);
   } else {
     responseHandler(401, req, res);
@@ -178,7 +182,7 @@ routes.breakpointList = function(req, res, next) {
     // permission check
   }
 
-  _meta['uid'] = req.body.uid;
+  _meta['uid'] = data['uid'];
   _meta['database'] = req.body.db;
 
   services.dbService.breackPointDbList(data)
@@ -194,5 +198,20 @@ routes.breakpointList = function(req, res, next) {
     })
 }
 router.all('/breakpoint/list', routes.breakpointList);
+
+routes.delBreakpoint = async function(req, res, next) {
+  var data = tools.createData(req);
+
+  if (req.body.breakpoint)
+    await services.dbService.delBreakponitDb(data);
+  else
+    return responseHandler(406, req, res);
+
+  if (data['error'])
+    responseHandler(data['error']['code'], data['error']['message'], req, res);
+  else
+    responseHandler(200, req, res);
+}
+router.all('/breakpoint/del', routes.delBreakpoint);
 
 module.exports = router;

@@ -28,11 +28,11 @@ exports.dbList = async data => {
 }
 
 exports.breackPointDbList = async data => {
-  logger.debug(data.reqId, 'Check breackPointDbList Database Folder' + (data['uid'] || 'All') + ' exist or not...');
+  logger.debug(data.reqId, 'Check breackPointDbList Database Folder ' + (data['uid'] || 'All') + ' exist or not...');
   let _meta = data['meta'];
   let _resMeta = data['resMeta'];
 
-  _meta['path'] = config.dbFolder + 'users/' + _meta['uid'] + '/' + _meta['database'] + '/breackpoint/';
+  _meta['path'] = config.dbFolder + 'users/' + _meta['uid'] + '/' + _meta['database'] + '/breakpoint/';
 
 
   let _pool = [];
@@ -126,6 +126,25 @@ exports.delDB = async data => {
   */
 }
 
+exports.delBreakponitDb = async data => {
+  logger.debug(data['reqId'], 'Check Breakponit Database ' + data['dbFile'] + ' exist or not...');
+
+  if (!fs.existsSync(data['dbFile'])) {
+    data['error'] = {
+      code: 412,
+      message: 'DB_NOT_FOUND'
+    };
+    return data;
+  }
+
+  data['meta'] = {
+    'file': data['dbFile']
+  };
+
+  await controller.dbFile.unlinkFile(data);
+
+  return data;
+}
 /*var _downloadDB = function(data, callback) {
   data = data || {};
 

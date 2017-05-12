@@ -8,11 +8,18 @@ var _createData = function(req, uid) {
   let _uid = uid || req['headers']['auth-uid'];
 
   _data.uid = _uid;
+  _data.authUid = req['headers']['auth-uid'];
 
-  if (req.body.db) {
+  if (_uid && req.body.db) {
     _data.dbPath = config.dbFolder + 'users/' + _uid + '/' + req.body.db;
-    _data.dbFile = _data.dbPath + '/database.db';
-    _data.dbFileName = 'database.db';
+
+    if (req.body.breakpoint) {
+      _data.dbFileName = req.body.breakpoint;
+      _data.dbFile = _data.dbPath + '/breakpoint/' + req.body.breakpoint;
+    } else {
+      _data.dbFileName = 'database.db';
+      _data.dbFile = _data.dbPath + '/' + _data.dbFileName;
+    }
   }
 
   return _data;
