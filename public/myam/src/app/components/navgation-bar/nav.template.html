@@ -15,7 +15,10 @@
         <span class="icon-bar"></span>
       </label>
       <!-- customization ends here -->
-      <a class="navbar-brand" href="#/dashboard">{{name}}</a>
+      <a class="navbar-brand" href="#/dashboard">
+          <div class="logo navbar-brand-logo"></div>
+          {{name}}
+      </a>
     </div>
     <div *ngIf="getUserProfile() as user" id="navbar-right" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
