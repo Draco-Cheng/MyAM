@@ -83,7 +83,7 @@
     <h1>Databse</h1>
     <div class="profile-view-select-db">
       Database:
-      <select [(ngModel)]="selectedDb" (change)="getBreakpointDbList()">
+      <select [(ngModel)]="selectedDb" (change)="selectDb()">
         <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
       </select>
     </div>
@@ -94,9 +94,9 @@
       <div class="profile-view-db-col">
         <div class="profile-view-db-col-name">Name</div>
         <div class="profile-view-db-col-val">
-          <input type="text" (change)="changeName=true" value="{{selectedDb}}" />
+          <input type="text" (change)="changeDbName=true" [(ngModel)]="dbName" />
           <div class="profile-view-db-col-input-check">
-            <span class="glyphicon glyphicon-ok" *ngIf="changeName"></span>
+            <span class="glyphicon glyphicon-ok" *ngIf="changeDbName" (click)="renameDb()"></span>
           </div>
         </div>
       </div>

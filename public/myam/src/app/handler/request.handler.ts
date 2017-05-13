@@ -27,6 +27,10 @@ import { CryptHandler } from './crypt.handler';
 
     _data['db'] = (formObj && formObj['db']) || this.config.get('database');
 
+    if (!_data['db']) {
+      return { code: '401', message: 'NO_DB_SELECT', success: false, data:  null};
+    }
+
     this.headers.set('Auth-Salt', _salt);
     this.headers.set('Auth-Token', this.encrypt(this.authTokenBase + _salt));
 

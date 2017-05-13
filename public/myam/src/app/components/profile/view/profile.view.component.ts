@@ -26,6 +26,8 @@ export class ProfileViewComponent {
   private breakpointDbList;
   private profileMap = profileMap;
   private popOutAddDb;
+  private dbName;
+  private changeDbName;
 
   private pwd_original;
   private pwd_new;
@@ -55,18 +57,26 @@ export class ProfileViewComponent {
   }
 
   getDatabaseName() {
-    this.selectedDb = this.activedDb = this.profileService.getUserDatabase();
+    this.dbName = this.selectedDb = this.activedDb = this.profileService.getUserDatabase();
   }
 
   formatDate(date) {
     return new Date(date * 1).toDateString();
   }
 
+  selectDb(){
+    this.getBreakpointDbList();
+    this.dbName = this.selectedDb;
+    this.changeDbName = false;
+  }
+
   async getBreakpointDbList() {
     if (this.selectedDb) {
       var _res = await this.profileService.getBreakpointDbList(this.selectedDb);
+      let _list = <any[]> _res['data'];
       this.breakpointDbList = [];
-      _res['data'].forEach(name => this.breakpointDbList.push({ 'dbName': name }));
+
+      _list.forEach(name => this.breakpointDbList.push({ 'dbName': name }));
     }
   }
 
@@ -114,6 +124,11 @@ export class ProfileViewComponent {
     this.profileService.downloadDb(this.selectedDb, breakpointDb);
   }
 
+  async renameDb() {
+    this.profileService.renameDb(this.selectedDb, this.dbName);
+    this.changeDbName = false;
+  }
+
   async save() {
     let _data = {};
     _data['name'] = this.user['name'];
@@ -121,7 +136,7 @@ export class ProfileViewComponent {
     _data['breakpoint'] = this.user['breakpoint'];
 
 
-    if (this.pwd_original && this.pwd_new &&this.pwd_new == this.pwd_confirm) {
+    if (this.pwd_original && this.pwd_new && this.pwd_new == this.pwd_confirm) {
       _data['pwd'] = this.pwd_original;
       _data['pwd2'] = this.pwd_new;
     }

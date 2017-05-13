@@ -30,7 +30,15 @@ import {
     let _dbList = userProfile['dbList'];
 
     if (_dbList.length) {
-      this.config.set('database', localStorage.getItem(_uid + '.db') || _dbList[0]);
+      let _localSaveDB = localStorage.getItem(_uid + '.db');
+      if (_localSaveDB) {
+        if (_dbList.indexOf(_localSaveDB) != -1) {
+          this.config.set('database', _localSaveDB);
+        } else {
+          this.config.set('database', _dbList[0]);
+          localStorage.setItem(_uid + '.db', _dbList[0]);
+        }
+      }
     }
   }
 

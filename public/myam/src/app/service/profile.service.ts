@@ -86,6 +86,11 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     this.config.set('user', _user);
 
+    if(_resault && dbName == this.config.get('database') ){
+      this.config.set('database', '');
+      this.setActiveDb('');
+    }
+
     return { data: _resault };
   }
 
@@ -117,6 +122,23 @@ import { CryptHandler } from '../handler/crypt.handler';
     const _resault = await this.request.download(_url, _data);
 
     return { data: _resault };
+  }
+
+  async renameDb(dbName, newDbName) {
+    const _url = this.endpoint_db + '/rename';
+
+    let _data = {}
+    _data['db'] = dbName;
+    _data['newDbName'] = newDbName;
+
+    const _resault = await this.request.post(_url, _data);
+
+    if(_resault && dbName == this.config.get('database') ){
+      this.config.set('database', newDbName);
+      this.setActiveDb(newDbName);
+    }
+
+    return { data: _resault };    
   }
 
   async set(formObj) {

@@ -24,7 +24,7 @@ import { RequestHandler } from '../handler/request.handler';
       _formObj.orderBy && (_data.orderBy = _formObj.orderBy);
     }
 
-    let _resault = await this.request.post(_url, _data);
+    let _resault = <any[]> await this.request.post(_url, _data);
 
     _resault.forEach(record => {
       record.tids = record.tids ? record.tids.split(",") : [];

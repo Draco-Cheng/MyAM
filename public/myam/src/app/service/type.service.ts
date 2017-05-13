@@ -55,7 +55,7 @@ let cache = {
       let _reObj = {};
       const _formObj = formObj || {};
       const _url = this.endpoint + '/getMaps'
-      const _res = await this.request.post(_url);
+      const _res = <any[]> await this.request.post(_url);
 
       _res.forEach(ele => {
         _reObj[ele.tid] = _reObj[ele.tid] || { childs: {}, parents: {} };
