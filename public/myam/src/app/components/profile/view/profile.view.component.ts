@@ -44,8 +44,9 @@ export class ProfileViewComponent {
     this.getDatabaseName();
     await this.getBreakpointDbList();
 
-    if (!this.user['dbList'].length)
+    if (!this.user['dbList'].length){
       this.openAddDbPopOut();
+    }
 
     this.__isInit = true;
   };

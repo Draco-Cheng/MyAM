@@ -50,7 +50,8 @@ import {
 
     if (_res) {
       await this.setConfigUserDb(_res);
-      this.router.navigate(['/dashboard']);
+
+      this.router.navigate(_res['dbList'].length ? ['/dashboard'] : ['/profile']);
     }
   }
 
@@ -59,8 +60,10 @@ import {
     const _loginInfo = localStorage.getItem('token').split(',');
     let _res = await this.request.loginByToken(_url, { uid: _loginInfo[0], token: _loginInfo[1] });
 
-    if (_res)
+    if (_res) {
       await this.setConfigUserDb(_res);
+      !_res['dbList'].length && this.router.navigate(['/profile']);
+    }
 
     return !!_res;
   }

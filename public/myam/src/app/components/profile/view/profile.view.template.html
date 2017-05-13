@@ -81,7 +81,7 @@
   <hr>
   <div id="profile-view-database">
     <h1>Databse</h1>
-    <div class="profile-view-select-db">
+    <div *ngIf="user.dbList.length" class="profile-view-select-db">
       Database:
       <select [(ngModel)]="selectedDb" (change)="selectDb()">
         <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
@@ -90,7 +90,7 @@
     <div class="profile-view-add-db" (click)="openAddDbPopOut()">
       <span class="glyphicon glyphicon-plus"></span> New Database
     </div>
-    <div class="profile-view-db-ctr-bar">
+    <div *ngIf="selectedDb" class="profile-view-db-ctr-bar">
       <div class="profile-view-db-col">
         <div class="profile-view-db-col-name">Name</div>
         <div class="profile-view-db-col-val">
@@ -113,28 +113,29 @@
         <span class="glyphicon glyphicon-trash"></span> Delete
       </div>
     </div>
-    <h4>
-      Backup List
-    </h4>
-    <div class="profile-view-bdb-block">
-      <div *ngIf="!breakpointDbList.length">
-        <h5>There is no backup files!</h5>
-      </div>
-      <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
-        <div class="profile-view-bdb-save" (click)="downloadDb(dbObj.dbName)">
-          <span class="glyphicon glyphicon-save"></span>
+    <div class="profile-view-bdb-panel" *ngIf="selectedDb">
+      <h4>Backup List</h4>
+      <div class="profile-view-bdb-block">
+        <div *ngIf="!breakpointDbList.length">
+          <h5>There is no backup files!</h5>
         </div>
-        <div class="profile-view-bdb-name">
-          {{dbObj.dbName}}
-        </div>
-        <div class="profile-view-bdb-option">
-          <span class="profile-view-bdb-option-btn glyphicon glyphicon-trash" *ngIf="!dbObj.status" (click)="dbObj.status='removing'"></span>
-          <div class="profile-view-bdb-del-confirm-block" *ngIf="dbObj.status=='removing'">
-            <span class="profile-view-bdb-option-btn glyphicon glyphicon-triangle-left" (click)="dbObj.status=''"></span>
-            <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="delBreakpointDb(dbObj.dbName)"></span>
+        <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
+          <div class="profile-view-bdb-save" (click)="downloadDb(dbObj.dbName)">
+            <span class="glyphicon glyphicon-save"></span>
+          </div>
+          <div class="profile-view-bdb-name">
+            {{dbObj.dbName}}
+          </div>
+          <div class="profile-view-bdb-option">
+            <span class="profile-view-bdb-option-btn glyphicon glyphicon-trash" *ngIf="!dbObj.status" (click)="dbObj.status='removing'"></span>
+            <div class="profile-view-bdb-del-confirm-block" *ngIf="dbObj.status=='removing'">
+              <span class="profile-view-bdb-option-btn glyphicon glyphicon-triangle-left" (click)="dbObj.status=''"></span>
+              <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="delBreakpointDb(dbObj.dbName)"></span>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
     <div *ngIf="popOutAddDb" add-db-pop-out [callback]="closeAddDbPopOut"></div>
   </div>
