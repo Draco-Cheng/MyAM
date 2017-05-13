@@ -67,31 +67,46 @@ var _backupDB = function(data, callback) {
 exports.backupDB = Promise.denodeify(_backupDB);
 
 
-var _renameDB = function(data, callback) {
-  data = data || {};
-  logger.debug(data.reqId, "Check Database Folder" + data.dbFileName + " exist or not...");
+exports.renameDb = async data => {
+  let _path = data['meta']['path'];
+  let _targetPath = data['meta']['targetPath'];
 
-  if (!fs.existsSync(config.dbFolder + data.dbFileName)) {
-    data.code = 412;
-    return callback(data)
+  logger.debug(data.reqId, "Check Database Folder" + _path + " exist or not...");
+
+  if (!fs.existsSync(_path)) {
+    data['error'] = {
+      code: 412,
+      message: 'DB_NOT_EXIST'
+    };
+    return data;
   }
 
-  if (fs.existsSync(config.dbFolder + data.dbFileRename) || fs.existsSync(config.backupFolder + data.dbFileRename)) {
-    data.code = 409;
-    return callback(data)
+  logger.debug(data.reqId, "Check Target Database Folder" + _targetPath + " exist or not...");
+
+  if (fs.existsSync(_targetPath)) {
+    data['error'] = {
+      code: 409,
+      message: 'DB_TARGET_ALREADY_EXIST'
+    };
+    return data;
   }
 
-  if (controller.dbFile.renameFile(config.dbFolder + data.dbFileName, config.dbFolder + data.dbFileRename)) {
-    if (fs.existsSync(config.backupFolder + data.dbFileName))
-      controller.dbFile.renameFile(config.backupFolder + data.dbFileName, config.backupFolder + data.dbFileRename);
+  data['meta'] = {
+    'source': _path,
+    'target': _targetPath
+  };
 
-    return callback();
+  await controller.dbFile.renameFile(data)
+
+  if (data['resault']) {
+    return data;
   } else {
-    data.code = 500;
-    return callback(data);
+    data['error'] = {
+      code: 500
+    };
+    return data;
   }
 }
-exports.renameDB = Promise.denodeify(_renameDB);
 
 
 exports.delDB = async data => {
@@ -127,53 +142,54 @@ exports.delDB = async data => {
 }
 
 exports.delBreakponitDb = async data => {
-  logger.debug(data['reqId'], 'Check Breakponit Database ' + data['dbFile'] + ' exist or not...');
+    logger.debug(data['reqId'], 'Check Breakponit Database ' + data['dbFile'] + ' exist or not...');
 
-  if (!fs.existsSync(data['dbFile'])) {
-    data['error'] = {
-      code: 412,
-      message: 'DB_NOT_FOUND'
+    if (!fs.existsSync(data['dbFile'])) {
+      data['error'] = {
+        code: 412,
+        message: 'DB_NOT_FOUND'
+      };
+      return data;
+    }
+
+    data['meta'] = {
+      'file': data['dbFile']
     };
+
+    await controller.dbFile.unlinkFile(data);
+
     return data;
   }
+  /*var _downloadDB = function(data, callback) {
+    data = data || {};
 
-  data['meta'] = {
-    'file': data['dbFile']
-  };
+    if (!fs.existsSync(data.dbFileName)) {
+      data.code = 412;
+      return callback(data)
+    }
 
-  await controller.dbFile.unlinkFile(data);
+    var _fileName = config.uploadTempDir + dateFormat(Date.now(), "yyyymmdd-HHMM") + "-" + data.dbFileName;
 
-  return data;
-}
-/*var _downloadDB = function(data, callback) {
-  data = data || {};
+    controller.dbFile.copyFile(config.dbFolder + data.dbFileName, _fileName)
+      .then(function() {
+        data.downloadLink = _fileName.replace("./public/", "/");
+        callback(null, data);
+        setTimeout(function() {
+          fs.unlinkSync(_fileName);
+        }, 1000 * 60 * 30)
+      });
 
-  if (!fs.existsSync(data.dbFileName)) {
-    data.code = 412;
-    return callback(data)
   }
+  exports.downloadDB = Promise.denodeify(_downloadDB);*/
 
-  var _fileName = config.uploadTempDir + dateFormat(Date.now(), "yyyymmdd-HHMM") + "-" + data.dbFileName;
-
-  controller.dbFile.copyFile(config.dbFolder + data.dbFileName, _fileName)
-    .then(function() {
-      data.downloadLink = _fileName.replace("./public/", "/");
-      callback(null, data);
-      setTimeout(function() {
-        fs.unlinkSync(_fileName);
-      }, 1000 * 60 * 30)
-    });
-
-}
-exports.downloadDB = Promise.denodeify(_downloadDB);*/
-
-exports.checkFileExist = async data => {
+exports.checkPathExist = async data => {
   const _path = data['meta']['path'];
 
-  data['resault'] = !!fs.existsSync(data['dbPath']);
+  data['resault'] = !!fs.existsSync(_path);
   return data;
 
 }
+
 
 //***************************** syncDB *****************************
 var _syncTimeout = {};

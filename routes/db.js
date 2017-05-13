@@ -108,21 +108,32 @@ routes.upload = function(req, res, next) {
 }
 router.all('/upload', routes.upload);
 
-routes.rename = function(req, res, next) {
+routes.rename = async (req, res, next) => {
   var data = tools.createData(req);
-  data.dbFileRename = req.body.dbFileRename;
+  let _newDbName = req.body.newDbName;
 
-  if (!data.dbFile || !data.dbFileRename)
-    return responseHandler(406, req, res);
+  let _meta = data['meta'] = {};
+  data['resMeta'] = {};
 
-  services.dbService.renameDB(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, req, res);
-      }
-    });
+  if (data['dbPath'] && _newDbName && data['dbPath'] != _newDbName) {
+    let _arr = data['dbPath'].split('/').slice(0, -1);
+    _arr.push(_newDbName);
+
+    data['meta'] = {
+      'path': data['dbPath'],
+      'targetPath': _arr.join('/')
+    };
+
+    await services.dbService.renameDb(data);
+
+    if (data['error']) {
+      data['error']['message'] ? responseHandler(data['error']['code'], data['error']['message'], req, res) : responseHandler(data['error']['code'], req, res);
+    } else {
+      responseHandler(200, req, res);
+    }
+  } else {
+    responseHandler(406, req, res);
+  }
 }
 router.all('/rename', routes.rename);
 
@@ -157,7 +168,7 @@ routes.download = async function(req, res, next) {
 
   data['meta'] = { 'path': _dbFilePath };
 
-  await services.dbService.checkFileExist(data);
+  await services.dbService.checkPathExist(data);
 
   if (data['resault']) {
     res.setHeader('Content-Disposition', 'attachment; name="' + _fileName + '"; filename="' + _fileName + '"');

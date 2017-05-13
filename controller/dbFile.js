@@ -235,16 +235,17 @@ var _copyFile = function(source, target) {
 }
 exports.copyFile = _copyFile;
 
-var _renameFile = function(source, target) {
+exports.renameFile = (data) => {
   try {
-    fs.renameSync(source, target);
-    return true;
+    fs.renameSync(data['meta']['source'], data['meta']['target']);
+    data['resault'] = true;
+    return data;
   } catch (e) {
-    console.log(e)
-    return false;
+    console.log(e.stack)
+    data['resault'] = false;
+    return data;
   }
 }
-exports.renameFile = _renameFile;
 
 
 
