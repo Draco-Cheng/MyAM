@@ -141,7 +141,7 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.download(_url, _data);
 
-    return { data: _resault };
+    return _resault;
   }
 
   async renameDb(dbName, newDbName) {

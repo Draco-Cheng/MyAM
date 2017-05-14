@@ -3,7 +3,7 @@ import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { ConfigHandler } from './config.handler';
 import { CryptHandler } from './crypt.handler';
 
-var buildResObj = (arg0?, arg1?, arg2?) => {
+var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
   let _obj = {
     success: null,
     code: null,
@@ -86,17 +86,25 @@ var buildResObj = (arg0?, arg1?, arg2?) => {
 
     formObj['db'] = formObj['db'] || this.config.get('database');
 
-    return new Promise < any[] > ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", url, true);
       xhttp.responseType = "blob";
       xhttp.onreadystatechange = () => {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-          this.downloadFile(xhttp.getResponseHeader('x-filename'), xhttp.response);
-          resolve();
-        } else {
-          reject();
+        if (xhttp.readyState == 4) {
+          if (xhttp.status == 200) {
+            this.downloadFile(xhttp.getResponseHeader('x-filename'), xhttp.response);
+          }
+
+          let _res;
+          try {
+            _res = JSON.parse(xhttp.response)['message'];
+          } catch (e) {
+            _res = xhttp.response;
+          }
+
+          resolve(buildResObj(xhttp.status, _res));
         }
       };
 
@@ -131,7 +139,7 @@ var buildResObj = (arg0?, arg1?, arg2?) => {
 
         try {
           _res = JSON.parse(xhttp.responseText)['message'];
-        } catch(e){
+        } catch (e) {
           _res = xhttp.responseText;
         }
 
