@@ -65,10 +65,12 @@ export class ProfileViewComponent {
     return new Date(date * 1).toDateString();
   }
 
-  selectDb(){
-    this.getBreakpointDbList();
+  setSelectDb(db?){    
+    this.selectedDb = db || this.user['dbList'][0];
     this.dbName = this.selectedDb;
     this.changeDbName = false;
+
+    this.getBreakpointDbList();
   }
 
   async getBreakpointDbList() {
@@ -87,7 +89,7 @@ export class ProfileViewComponent {
       await this.profileService.delDB(dbName);
       this.getUserProfile();
 
-      this.selectedDb = this.user['dbList'][0];
+      this.setSelectDb();
       this.getBreakpointDbList();
       if (dbName == this.activedDb) {
         this.setActiveDb();
@@ -105,8 +107,7 @@ export class ProfileViewComponent {
   closeAddDbPopOut = (dbName ? ) => {
     if (dbName) {
       this.getUserProfile();
-      this.selectedDb = dbName;
-      this.getBreakpointDbList();
+      this.setSelectDb(dbName);
     }
 
     this.popOutAddDb = false;

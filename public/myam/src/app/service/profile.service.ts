@@ -73,6 +73,26 @@ import { CryptHandler } from '../handler/crypt.handler';
     return { data: _resault };
   }
 
+  async uploadDB(dbName, file) {
+    const _url = this.endpoint_db + '/upload';
+    const _data = {
+      name: dbName,
+      file: file
+    };
+
+    const _resault = await this.request.upload(_url, _data);
+
+    if(_resault['success']){
+      let _user = this.getUserProfile();
+      _user['dbList'].push(dbName);
+
+      this.config.set('user', _user);      
+    }
+
+
+    return _resault;
+  }  
+
   async delDB(dbName) {
     const _url = this.endpoint_db + '/del';
     const _data = {

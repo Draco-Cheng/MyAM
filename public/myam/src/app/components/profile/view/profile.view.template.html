@@ -83,7 +83,7 @@
     <h1>Databse</h1>
     <div *ngIf="user.dbList.length" class="profile-view-select-db">
       Database:
-      <select [(ngModel)]="selectedDb" (change)="selectDb()">
+      <select [(ngModel)]="selectedDb" (change)="setSelectDb(selectedDb)">
         <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
       </select>
     </div>

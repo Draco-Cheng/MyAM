@@ -21,6 +21,8 @@ export class AddDbPopOutDirectiveComponent {
   private currencyList;
   private dbName;
   private currencyType;
+  private uploadFile;
+  private showUploadBlock;
 
   constructor(
     private profileService: ProfileService,
@@ -30,8 +32,20 @@ export class AddDbPopOutDirectiveComponent {
     this.currencyType = 'USD';
   };
 
+  selectUploadFile(event){
+    this.uploadFile = event.srcElement.files;
+  }
+
   async createDB() {
-    await this.profileService.createDB(this.dbName, this.currencyType);
-    this.callback(this.dbName);
+    if(this.showUploadBlock){
+      if(this.uploadFile){
+        const _res = await this.profileService.uploadDB(this.dbName, this.uploadFile[0]);
+
+        this.callback(_res['success'] ? this.dbName : null);         
+      } 
+    } else {
+      await this.profileService.createDB(this.dbName, this.currencyType);
+      this.callback(this.dbName);      
+    }
   }
 }

@@ -3,7 +3,32 @@ import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { ConfigHandler } from './config.handler';
 import { CryptHandler } from './crypt.handler';
 
+var buildResObj = (arg0?, arg1?, arg2?) => {
+  let _obj = {
+    success: null,
+    code: null,
+    message: null,
+    data: null
+  };
 
+  _obj.success = arg0 == 200;
+  _obj.code = arg0;
+
+  if (arg2 === undefined) {
+    if (typeof arg1 == 'string') {
+      _obj.message = arg1;
+      _obj.data = null;
+    } else {
+      _obj.message = '';
+      _obj.data = arg1;
+    }
+  } else {
+    _obj.message = arg1;
+    _obj.data = arg2;
+  }
+
+  return _obj;
+}
 
 @Injectable() export class RequestHandler {
   private encrypt;
@@ -28,7 +53,7 @@ import { CryptHandler } from './crypt.handler';
     _data['db'] = (formObj && formObj['db']) || this.config.get('database');
 
     if (!_data['db']) {
-      return { code: '401', message: 'NO_DB_SELECT', success: false, data:  null};
+      return { code: '401', message: 'NO_DB_SELECT', success: false, data: null };
     }
 
     this.headers.set('Auth-Salt', _salt);
@@ -61,7 +86,6 @@ import { CryptHandler } from './crypt.handler';
 
     formObj['db'] = formObj['db'] || this.config.get('database');
 
-    // <any[]> predefine resolve return value type
     return new Promise < any[] > ((resolve, reject) => {
 
       var xhttp = new XMLHttpRequest();
@@ -69,7 +93,10 @@ import { CryptHandler } from './crypt.handler';
       xhttp.responseType = "blob";
       xhttp.onreadystatechange = () => {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
-          this.downloadFile(xhttp.getResponseHeader('x-filename'), xhttp.response)
+          this.downloadFile(xhttp.getResponseHeader('x-filename'), xhttp.response);
+          resolve();
+        } else {
+          reject();
         }
       };
 
@@ -79,12 +106,49 @@ import { CryptHandler } from './crypt.handler';
       xhttp.setRequestHeader('Content-Type', 'application/json');
 
       xhttp.send(JSON.stringify(formObj));
-      // this.http.post(url, JSON.stringify(_data), { headers: this.headers })
-      //   .subscribe(res => {
-      //     //this.downloadFile(res['_body']);
-      //     var contentDisposition = res.headers.get('Content-Disposition');
-      //     console.log('contentDisposition', window['a'] = res)
-      //   });
+    });
+  }
+
+  async upload(url: string, formObj: {}) {
+    let _salt = Date.now().toString();
+    let _formData = new FormData();
+    let _self = this;
+
+    return new Promise((resolve, reject) => {
+
+      var xhttp = new XMLHttpRequest();
+
+      xhttp.upload.addEventListener("progress", evt => {
+        if (evt.lengthComputable) {
+          console.log('Upload progress: ', evt.loaded + '/' + evt.total)
+        } else {
+          // No data to calculate on
+        }
+      }, false);
+
+      xhttp.addEventListener("load", () => {
+        let _res;
+
+        try {
+          _res = JSON.parse(xhttp.responseText)['message'];
+        } catch(e){
+          _res = xhttp.responseText;
+        }
+
+        resolve(buildResObj(xhttp.status, _res));
+      }, false);
+
+      xhttp.open('POST', url, true);
+      xhttp.setRequestHeader('Auth-UID', this.headers.get('Auth-UID'));
+      xhttp.setRequestHeader('Auth-Salt', _salt);
+      xhttp.setRequestHeader('Auth-Token', this.encrypt(this.authTokenBase + _salt));
+      xhttp.onload = function(e) {};
+
+      for (let _key in formObj) {
+        _formData.append(_key, formObj[_key]);
+      }
+
+      xhttp.send(_formData); // multipart/form-data
     });
   }
 
