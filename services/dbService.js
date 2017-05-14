@@ -55,7 +55,7 @@ var _backupDB = function(data, callback) {
   controller.dbFile.checkFile({ checkFile: config.dbFolder + data.dbFileName })
     .then(function(_tempData) {
       if (_tempData.fileExists) {
-        if (controller.dbFile.createFolder(config.backupFolder + data.dbFileName))
+        if (controller.dbFile.createFolderSync(config.backupFolder + data.dbFileName))
           return controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-" + data.dbFileName);
       }
       callback();
@@ -108,7 +108,6 @@ exports.renameDb = async data => {
   }
 }
 
-
 exports.delDB = async data => {
   logger.debug(data['reqId'], 'Check Database Folder ' + data['dbPath'] + ' exist or not...');
 
@@ -129,7 +128,7 @@ exports.delDB = async data => {
   return data;
 
   /*
-      if (controller.dbFile.createFolder(config.backupFolder + data.dbFileName))
+      if (controller.dbFile.createFolderSync(config.backupFolder + data.dbFileName))
       controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-delete-" + data.dbFileName)
       .then(function() {
         setTimeout(function() {
@@ -207,7 +206,7 @@ process.on('exit', function(err) {
   _syncList.forEach(function(dbName) {
     logger.debug("syncDB Database Folder" + dbName + " ...");
     if (fs.existsSync(config.dbFolder + dbName))
-      if (controller.dbFile.createFolder(config.backupFolder + dbName))
+      if (controller.dbFile.createFolderSync(config.backupFolder + dbName))
         fs.writeFileSync(config.backupFolder + dbName + "/sync-" + dbName, fs.readFileSync(config.dbFolder + dbName));
   })
 });

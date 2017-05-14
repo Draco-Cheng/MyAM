@@ -3,6 +3,7 @@ var rimraf = require('rimraf');
 var logger = require("./logger.js");
 var formidable = require("formidable");
 var dateFormat = require('dateformat');
+var mkdirp = require('mkdirp');
 var config = require("../config.js");
 
 var _checkFile = function(data, callback) {
@@ -87,7 +88,7 @@ exports.readdir = data => {
   var _resolve;
   logger.debug(data.reqId, "readdir : " + data['meta']['path']);
   let _dir = fs.readdir(data['meta']['path'], async(err, dir) => {
-    _resolve(dir ? await exports.isDirectory(data, dir) : []);
+    _resolve((dir && dir.length) ? await exports.isDirectory(data, dir) : []);
   });
   return new Promise(resolve => _resolve = resolve);
 }
@@ -102,89 +103,62 @@ exports.createdir = data => {
 }
 
 
-var _upload = function(data, callback) {
-  logger.log(data.reqId, "[Files]".bgWhite.black + "\tUpload files...");
-  var _request = data.request;
-  var _form = new formidable.IncomingForm();
-  _form.uploadDir = config.uploadTempDir || require('os').tmpdir();
+exports.upload = async data => {
+  try {
+    logger.log(data.reqId, "[Files]".bgWhite.black + "\tUpload files...");
+    var _resolve;
+    var _request = data.request;
+    var _form = new formidable.IncomingForm();
+    _form.uploadDir = config.uploadTempDir || require('os').tmpdir();
 
-  data.DBList = [];
-  var _numFlag = 0;
+    var _timeFlag = Date.now();
+    _form.on('progress', function(bytesReceived, bytesExpected) {
+      if (Date.now() >= _timeFlag) {
+        var _percentage = ((bytesReceived / bytesExpected) * 100).toFixed(2)
+        logger.log(data.reqId, "[Files]".bgWhite.black + " progress: " + _percentage + "% ( " + bytesReceived + "\t/ " + bytesExpected + ")");
+        _timeFlag = Date.now() + 1000;
+      }
+    });
 
-  var _timeFlag = Date.now();
-  _form.on('progress', function(bytesReceived, bytesExpected) {
-    if (Date.now() >= _timeFlag) {
-      var _percentage = ((bytesReceived / bytesExpected) * 100).toFixed(2)
-      logger.log(data.reqId, "[Files]".bgWhite.black + " progress: " + _percentage + "% ( " + bytesReceived + "\t/ " + bytesExpected + ")");
-      _timeFlag = Date.now() + 1000;
-    }
-  });
+    _form.parse(_request, function(error, fields, files) {
+      logger.log(data.reqId, "[Files]".bgWhite.black + " progress: done...");
 
-  _form.parse(_request, function(error, fields, files) {
-    logger.log(data.reqId, "[Files]".bgWhite.black + " progress: done...");
-
-    if (error) {
-      logger.log(data.reqId, "[Files]".bgRed + (" upload file error " + error).red);
-      return callback();
-    }
-
-    for (var fileFormName in files) {
-      var _file = files[fileFormName];
-      var _tempPath = _file.path;
-      var _uploadPath = data.renameFolder + _file.name;
-      _numFlag++;
-
-      logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\t" + "FileReneme:".bgMagenta + " " + _tempPath + " -> " + _uploadPath);
-      _checkFile({ checkFile: _uploadPath }, function(err, json) {
-        if (json.fileExists)
-          switch (data.fileConflict) {
-            case "backup":
-              var _name = data.renameFolder + "bk-" + dateFormat(Date.now(), "yyyymmdd-HHMM-") + _file.name;
-              fs.renameSync(_uploadPath, _name);
-              logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\tFile already exists rename old one to " + _name);
-              break;
-            default:
-              logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\tFile already exists replace...");
-          }
-
-
-        var _finishRename = function() {
-          logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\trename is finished...");
-          data.DBList.push({
-            path: _uploadPath,
-            name: _file.name
-          });
-
-          setTimeout(function() {
-            if (data.DBList.length >= _numFlag)
-              callback(data);
-          });
+      if (error) {
+        logger.log(data.reqId, "[Files]".bgRed + (" upload file error " + error).red);
+        data['error'] = {
+          code: 406,
+          message: 'UPLOAD_FAILD'
         }
+        return _resolve(data);
+      }
 
-        try {
-          fs.renameSync(_tempPath, _uploadPath);
-          _finishRename();
-        } catch (e) {
-          /**********************************************
-          Error: EXDEV, Cross-device link
-          **********************************************/
-          var is = fs.createReadStream(_tempPath);
-          var os = fs.createWriteStream(_uploadPath);
-          is.pipe(os);
-          is.on('end', function() {
-            fs.unlinkSync(_tempPath);
-            _finishRename();
-          });
-          /*********************************************/
+      if (!fields['name']) {
+        logger.log(data.reqId, "[Files]".bgRed + (" No file name ").red);
+        data['error'] = {
+          code: 406,
+          message: 'NO_FILE_NAME'
         }
+        return _resolve(data);
+      }
 
-      });
-    }
-  });
+      // file temp path is  in files['file']['path']
+      const _file = files['file'];
 
-  return new Promise(resolve => callback = resolve);
+      data['resault'] = {
+        'name': fields['name'],
+        'file': _file
+      };
+
+      _resolve(data);
+    });
+  } catch (e) {
+    console.error(e.stack);
+    data['error'] = { code: 500 };
+    return data;
+  }
+
+  return new Promise(resolve => _resolve = resolve);
 }
-exports.upload = _upload;
 
 exports.unlink = function(data) {
   var _path = data['meta']['deleteFile'];
@@ -207,16 +181,14 @@ exports.unlink = function(data) {
   return new Promise(resolve => _resolve = resolve);
 }
 
-var _createFolder = function(folder, callback) {
+var _createFolderSync = function(path) {
   try {
-    if (!fs.existsSync(folder))
-      fs.mkdirSync(folder);
-    return true;
+    mkdirp.sync(path);
   } catch (e) {
-    return false;
+    logger.error("Can't create " + path + "\tERROR : " + e);
   }
 }
-exports.createFolder = _createFolder;
+exports.createFolderSync = _createFolderSync;
 
 var _copyFile = function(source, target) {
   /**********************************************
@@ -237,6 +209,7 @@ exports.copyFile = _copyFile;
 
 exports.renameFile = (data) => {
   try {
+    logger.debug('Rename file: ' + data['meta']['source'] + ' -> ' +data['meta']['target']);
     fs.renameSync(data['meta']['source'], data['meta']['target']);
     data['resault'] = true;
     return data;
@@ -246,8 +219,6 @@ exports.renameFile = (data) => {
     return data;
   }
 }
-
-
 
 exports.removeFolder = async data => {
   const _meta = data['meta'];

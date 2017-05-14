@@ -97,14 +97,15 @@ routes.creat = function(req, res, next) {
 }
 router.all('/create', routes.creat);
 
-routes.upload = function(req, res, next) {
+routes.upload = async (req, res, next) => {
+  // This api is special case (multipart-form)
+  // There is some router task write in 'controller/dbFile.js > function:upload'
+
   var data = tools.createData(req);
-  data.renameFolder = config.dbFolder;
-  data.fileConflict = "backup";
-  services.initial.uploadDB(data)
-    .then(function(data) {
-      responseHandler(200, data.dbInfo, req, res);
-    });
+
+  await services.initial.uploadDB(data);
+
+  responseHandler(data['error'] || 200, req, res);
 }
 router.all('/upload', routes.upload);
 

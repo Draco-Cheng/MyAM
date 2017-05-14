@@ -37,6 +37,7 @@ routes.login = async(req, res, next) => {
   const _getDbListMeta = {
     'uid': data.uid
   };
+
   data['meta'] = _getDbListMeta;
   await dbServ.dbList(data);
 

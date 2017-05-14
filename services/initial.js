@@ -8,6 +8,8 @@ var controller = {
 // logger is special function so its not in the controller object
 var logger = require("../controller/logger.js");
 
+var config = require("../config.js");
+
 var _checkDB = function(data) {
   return controller.dbFile.checkDB(data);
 }
@@ -35,19 +37,62 @@ exports.checkAndCreate = async data => {
 
     return data;
   } catch (e) {
-    console.error(e.stack)
+    console.log(e.stack)
   }
 }
 
-var _uploadDB = function(data, callback) {
-  controller.dbFile.upload(data)
-    .then(function(data) {
-      return controller.dbController.checkDBisCorrect(data);
-    })
-    .then(function(data) { callback(null, data); })
-    .catch(function(err) {
-      logger.error(data.reqId, err);
-      callback(null, data);
-    });
+exports.uploadDB = async data => {
+  try {
+    await controller.dbFile.upload(data);
+
+    if (data['error']) return data;
+
+    const _dbName = data['resault']['name'];
+    data['dbPath'] = config['dbFolder'] + 'users/' + data['uid'] + '/' + _dbName;
+    data['dbFile'] = data['dbPath'] + '/database.db';
+
+    const _tempPath = data['resault']['file']['path'];
+
+    await controller.dbFile.checkDB(data);
+
+    if (data['resault']['isExist']) {
+      data['error'] = {
+        code: 409,
+        message: 'DB_NAME_CONFLICT'
+      }
+
+      data['meta'] = { 'deleteFile': _tempPath };
+      await controller.dbFile.unlink(data);
+      return data;
+    }
+
+    data['meta'] = { 'dbFile': _tempPath };
+
+    await controller.dbController.checkDBisCorrect(data);
+
+    let _checkResault = data['resault'];
+
+    if (_checkResault['isCorrect']) {
+      controller.dbFile.createFolderSync(data['dbPath']);
+
+      data['meta'] = {};
+      data['meta']['source'] = _tempPath;
+      data['meta']['target'] = data['dbFile'];
+
+      await controller.dbFile.renameFile(data);
+
+    } else {
+      data['error'] = {
+        code: 406,
+        message: 'DB_CHECK_FAIL'
+      };
+      data['meta'] = { 'deleteFile': _tempPath };
+      await controller.dbFile.unlink(data);
+    }
+
+    return data;
+  } catch (e) {
+    console.error(e);
+  }
+
 }
-exports.uploadDB = Promise.denodeify(_uploadDB);

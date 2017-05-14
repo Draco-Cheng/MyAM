@@ -35,8 +35,9 @@ var _dbLogger = function(data, str) {
 }
 
 var _connectDB = function(data, callback) {
-  logger.debug(data.reqId, "connect Database file : " + data.dbFile);
-  data.db = new sqlite3.Database(data.dbFile);
+  const _dbFile = ( data['meta'] && data['meta']['dbFile'] ) || data['dbFile']
+  logger.debug(data.reqId, "connect Database file : " + _dbFile);
+  data.db = new sqlite3.Database(_dbFile);
   data.db.serialize(function() {
     _dbLogger(data, "open database...");
     callback(null, data);
@@ -125,7 +126,7 @@ var _getSQL = function(data, sql, value) {
 
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data.resault = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][get] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -291,49 +292,37 @@ var _initialDatabase = function(data, callback) {
 }
 exports.initialDatabase = Promise.denodeify(_initialDatabase);
 
-var _checkDBisCorrect = function(data, callback) {
-
+exports.checkDBisCorrect = data => {
+  var _resolve;
   var _sql = "SELECT * FROM type, typeMap, record, recordTypeMap, currencies LIMIT 1";
-  var _popDBList = data.DBList.pop();
-  data.dbFile = _popDBList.path;
 
-  data.dbInfo = data.dbInfo || [];
-  var _dbInfo = {};
-  data.dbInfo.push(_dbInfo);
-  _dbInfo.name = _popDBList;
-
-  var _checkFinish = function() {
-    if (data.DBList.length)
-      _checkDBisCorrect(data, callback);
-    else
-      callback(null, data);
-  };
-
-  logger.debug(data.reqId, "Check Database " + data.dbFile + " is correct or not...");
+  var _dbFile = data['meta']['dbFile'];
+  
+  logger.debug(data.reqId, "Check Database " + _dbFile + " is correct or not...");
 
   _connectDB(data)
     .then(function(data) {
-      return _getSQL(data, _sql, []); })
+      return _getSQL(data, _sql, []);
+    })
     .nodeify(function(err) {
+
+      data['resault'] = {};
+      
       if (err) {
-        _dbInfo.isCorrect = false;
-        _dbInfo.message = err;
+        data['resault']['isCorrect'] = false;
+        data['resault']['message'] = err;
       } else {
-        _dbInfo.isCorrect = true;
-        _dbInfo.message = "OK";
+        data['resault']['isCorrect'] = true;
+        data['resault']['message'] = "OK";
       }
 
       _closeDB(data).then(function() {
-        if (!_dbInfo.isCorrect) {
-          data.deleteFile = _popDBList.path;
-          dbFile.unlink(data)
-        }
-
-        _checkFinish();
+        _resolve(data);
       });
     })
+
+  return new Promise(resolve => _resolve = resolve);
 };
-exports.checkDBisCorrect = Promise.denodeify(_checkDBisCorrect);
 
 //********************************************
 // Currencies ********************************
