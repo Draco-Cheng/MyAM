@@ -12,7 +12,7 @@ var config = require('../config.js');
 exports.dbList = async data => {
   logger.debug(data.reqId, 'Check Database Folder ' + (data['uid'] || 'All') + ' exist or not...');
   let _meta = data['meta'];
-  let _resMeta = data['resMeta'];
+  let _responseObj = data['responseObj'];
 
   _meta['path'] = config.dbFolder + 'users/' + (_meta['uid'] ? _meta['uid'] + '/' : '');
 
@@ -22,7 +22,7 @@ exports.dbList = async data => {
   _list.forEach(ele => {
     ele.isDir && _pool.push(ele.name);
   })
-  _resMeta['dbList'] = _pool;
+  _responseObj['dbList'] = _pool;
 
   return data;
 }
@@ -30,7 +30,7 @@ exports.dbList = async data => {
 exports.breackPointDbList = async data => {
   logger.debug(data.reqId, 'Check breackPointDbList Database Folder ' + (data['uid'] || 'All') + ' exist or not...');
   let _meta = data['meta'];
-  let _resMeta = data['resMeta'];
+  let _responseObj = data['responseObj'];
 
   _meta['path'] = config.dbFolder + 'users/' + _meta['uid'] + '/' + _meta['database'] + '/breakpoint/';
 
@@ -42,7 +42,7 @@ exports.breackPointDbList = async data => {
   _list.forEach(ele => {
     !ele.isDir && _pool.push(ele.name);
   })
-  _resMeta['dbList'] = _pool;
+  _responseObj['dbList'] = _pool;
 
   return data;
 }

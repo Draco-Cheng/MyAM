@@ -38,22 +38,25 @@ routes.check = function(req, res, next) {
 }
 router.all('/check', routes.check);
 
-routes.dbList = function(req, res, next) {
-  var data = tools.createData(req);
-  data.path = config.dbFolder;
+routes.dbList = async (req, res, next) => {
+  try {
 
-  services.dbService.dbList(data)
-    .then(function(data) {
-      var _list = data.fileList.filter(function(ele) {
-        if (!ele.isDir)
-          return true;
-      }).map(function(ele) {
-        return ele;
-      });
+    var data = tools.createData(req);
 
-      responseHandler(200, _list, req, res);
-    })
+    data['responseObj'] = {};
+    data['error'] = null;
 
+    data['meta'] = { uid: data['uid'] };
+    await services.dbService.dbList(data);
+
+    if (data['error'])
+      return responseHandler(data['error'], req, res);
+    else
+      return responseHandler(200, data['responseObj'], req, res);
+  } catch (e) {
+    console.error(e.stack);
+    return responseHandler(500, req, res);
+  }
 }
 
 router.all('/dbList', routes.dbList);
@@ -114,7 +117,7 @@ routes.rename = async (req, res, next) => {
   let _newDbName = req.body.newDbName;
 
   let _meta = data['meta'] = {};
-  data['resMeta'] = {};
+  data['responseObj'] = {};
 
   if (data['dbPath'] && _newDbName && data['dbPath'] != _newDbName) {
     let _arr = data['dbPath'].split('/').slice(0, -1);
@@ -188,7 +191,7 @@ router.all('/download', routes.download);
 routes.breakpointList = function(req, res, next) {
   var data = tools.createData(req);
   let _meta = data['meta'] = {};
-  data['resMeta'] = {};
+  data['responseObj'] = {};
 
   if (req.body.uid != data.uid) {
     // permission check
@@ -199,7 +202,7 @@ routes.breakpointList = function(req, res, next) {
 
   services.dbService.breackPointDbList(data)
     .then(function(data) {
-      var _list = data['resMeta']['dbList'].filter(function(ele) {
+      var _list = data['responseObj']['dbList'].filter(function(ele) {
         if (!ele.isDir)
           return true;
       }).map(function(ele) {

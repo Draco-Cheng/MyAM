@@ -27,14 +27,14 @@ exports.check = (header) => {
 
 exports.login = async(data) => {
   let _meta = data['meta'];
-  let _resMeta = data['resMeta'];
+  let _responseObj = data['responseObj'];
 
   let _acc = _meta['acc'];
   let _token = _meta['token'];
   let _salt = _meta['salt'];
   let _keep = _meta['keep'];
 
-  data['dbFile'] = config['dbFolder'] + 'sys.db'
+  data['dbFile'] = config['dbFolder'] + 'sys.db';
 
   // connect databse
   await controller.dbFile.checkDB(data);
@@ -70,13 +70,13 @@ exports.login = async(data) => {
     };
 
     // set login res
-    _resMeta['uid'] = _uid;
-    _resMeta['name'] = _resault['name'];
-    _resMeta['permission'] = _resault['permission'];
-    _resMeta['status'] = _resault['status'];
-    _resMeta['mail'] = _resault['mail'];
-    _resMeta['date'] = _resault['date'];
-    _resMeta['breakpoint'] = _resault['breakpoint'];
+    _responseObj['uid'] = _uid;
+    _responseObj['name'] = _resault['name'];
+    _responseObj['permission'] = _resault['permission'];
+    _responseObj['status'] = _resault['status'];
+    _responseObj['mail'] = _resault['mail'];
+    _responseObj['date'] = _resault['date'];
+    _responseObj['breakpoint'] = _resault['breakpoint'];
 
     // update login status in database
     data['meta'] = {};
@@ -101,7 +101,7 @@ exports.login = async(data) => {
 
 exports.loginByToken = async(data) => {
   let _meta = data['meta'];
-  let _resMeta = data['resMeta'];
+  let _responseObj = data['responseObj'];
   let _token = _meta['token'];
   let _salt = _meta['salt'];
   let _keep = _meta['keep'];
@@ -136,13 +136,13 @@ exports.loginByToken = async(data) => {
       };
 
       // set login res
-      _resMeta['uid'] = _uid;
-      _resMeta['name'] = _resault['name'];
-      _resMeta['permission'] = _resault['permission'];
-      _resMeta['status'] = _resault['status'];
-      _resMeta['mail'] = _resault['mail'];
-      _resMeta['date'] = _resault['date'];
-      _resMeta['breakpoint'] = _resault['breakpoint'];
+      _responseObj['uid'] = _uid;
+      _responseObj['name'] = _resault['name'];
+      _responseObj['permission'] = _resault['permission'];
+      _responseObj['status'] = _resault['status'];
+      _responseObj['mail'] = _resault['mail'];
+      _responseObj['date'] = _resault['date'];
+      _responseObj['breakpoint'] = _resault['breakpoint'];
 
       // update login status in database
       data['meta'] = {};

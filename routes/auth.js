@@ -14,7 +14,7 @@ var routes = {};
 routes.login = async(req, res, next) => {
   var data = tools.createData(req);
 
-  data['resMeta'] = {};
+  data['responseObj'] = {};
   data['error'] = null;
 
   const _loginMeta = {};
@@ -41,7 +41,7 @@ routes.login = async(req, res, next) => {
   data['meta'] = _getDbListMeta;
   await dbServ.dbList(data);
 
-  return responseHandler(200, data['resMeta'], req, res);
+  return responseHandler(200, data['responseObj'], req, res);
 }
 router.all('/login', routes.login);
 
