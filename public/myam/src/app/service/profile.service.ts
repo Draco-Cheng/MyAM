@@ -19,16 +19,21 @@ import { CryptHandler } from '../handler/crypt.handler';
     this.encrypt = cryptHandler.encrypt;
   };
 
-  getUserProfile() {
-    return this.config.get('user');
+  getConfig() {
+    return this.config.get();
   }
 
-  getUserDatabase() {
-    return this.config.get('database');
-  }
+  async updateConfigProfile() {
+    const _urlProfile = this.endpoint_profile + '/get';
+    const _resaultProfile = await this.request.post(_urlProfile);
 
-  isLogin() {
-    return this.config.get('isLogin');
+    const _urlDbList = this.endpoint_db + '/dbList';
+    const _resaultDbList = await this.request.post(_urlDbList);
+
+    let _userProfile = _resaultProfile['user'][0];
+    _userProfile['dbList'] = _resaultDbList['dbList'];
+
+    this.config.setUserProfile(_userProfile);
   }
 
   async getBreakpointDbList(database) {
@@ -65,10 +70,7 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    let _user = this.getUserProfile();
-    _user['dbList'].push(dbName);
-
-    this.config.set('user', _user);
+    await this.updateConfigProfile();
 
     return { data: _resault };
   }
@@ -82,16 +84,13 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.upload(_url, _data);
 
-    if(_resault['success']){
-      let _user = this.getUserProfile();
-      _user['dbList'].push(dbName);
-
-      this.config.set('user', _user);      
+    if (_resault['success']) {
+      await this.updateConfigProfile();     
     }
 
 
     return _resault;
-  }  
+  }
 
   async delDB(dbName) {
     const _url = this.endpoint_db + '/del';
@@ -101,12 +100,9 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    let _user = this.getUserProfile();
-    _user['dbList'] = _user['dbList'].filter(name => name != dbName);
+    await this.updateConfigProfile();
 
-    this.config.set('user', _user);
-
-    if(_resault && dbName == this.config.get('database') ){
+    if (_resault && dbName == this.config.get('database')) {
       this.config.set('database', '');
       this.setActiveDb('');
     }
@@ -153,17 +149,19 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    if(_resault && dbName == this.config.get('database') ){
+    await this.updateConfigProfile();
+
+    if (_resault && dbName == this.config.get('database')) {
       this.config.set('database', newDbName);
       this.setActiveDb(newDbName);
     }
 
-    return { data: _resault };    
+    return { data: _resault };
   }
 
   async set(formObj) {
     const _url = this.endpoint_profile + '/set';
-    const _currentProfile = this.getUserProfile();
+    const _currentProfile = this.config.get('user');
 
     const _data = {};
 
@@ -183,6 +181,7 @@ import { CryptHandler } from '../handler/crypt.handler';
       if (_resault && _data['token']) {
         location.href = '';
       } else {
+        await this.updateConfigProfile();
         return { data: _resault };
       }
 

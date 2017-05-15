@@ -21,26 +21,6 @@ import {
     private request: RequestHandler
   ) {};
 
-  async setConfigUserDb(userProfile) {
-    this.config.set('user', userProfile);
-    this.config.set('uid', userProfile['uid']);
-    this.config.set('isLogin', true);
-
-    let _uid = userProfile['uid'];
-    let _dbList = userProfile['dbList'];
-
-    if (_dbList.length) {
-      let _localSaveDB = localStorage.getItem(_uid + '.db');
-      if (_localSaveDB) {
-        if (_dbList.indexOf(_localSaveDB) != -1) {
-          this.config.set('database', _localSaveDB);
-        } else {
-          this.config.set('database', _dbList[0]);
-          localStorage.setItem(_uid + '.db', _dbList[0]);
-        }
-      }
-    }
-  }
 
   async login(formObj: any) {
     const _url = this.endpoint + '/login';
@@ -49,7 +29,7 @@ import {
     let _res = await this.request.login(_url, formObj);
 
     if (_res) {
-      await this.setConfigUserDb(_res);
+      await this.config.setUserProfile(_res);
 
       this.router.navigate(_res['dbList'].length ? ['/dashboard'] : ['/profile']);
     }
@@ -61,7 +41,7 @@ import {
     let _res = await this.request.loginByToken(_url, { uid: _loginInfo[0], token: _loginInfo[1] });
 
     if (_res) {
-      await this.setConfigUserDb(_res);
+      await this.config.setUserProfile(_res);
       !_res['dbList'].length && this.router.navigate(['/profile']);
     }
 

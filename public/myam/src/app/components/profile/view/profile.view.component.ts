@@ -7,6 +7,9 @@ import './profile.view.style.less';
 
 const profileMap = require('../profile.map.json');
 
+function cloneObj(obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
 
 @Component({
   selector: 'profile-content',
@@ -40,9 +43,8 @@ export class ProfileViewComponent {
 
 
   async ngOnInit() {
-    this.getUserProfile();
-    this.getDatabaseName();
-    await this.getBreakpointDbList();
+    this.getConfig();
+    await this.setSelectDb(this.activedDb);    
 
     if (!this.user['dbList'].length){
       this.openAddDbPopOut();
@@ -51,26 +53,29 @@ export class ProfileViewComponent {
     this.__isInit = true;
   };
 
-  async __checkDataUpToDate() {}
-
-  getUserProfile() {
-    this.user = this.profileService.getUserProfile();
+  async __checkDataUpToDate() {
+    if (this.__meta['config']['legacy']){
+      this.getConfig();
+    }
   }
 
-  getDatabaseName() {
-    this.dbName = this.selectedDb = this.activedDb = this.profileService.getUserDatabase();
+  getConfig() {
+    this.__meta['config'] = this.profileService.getConfig();
+    const _config = cloneObj(this.__meta['config']);
+    this.user = _config['user'];
+    this.activedDb = _config['database'];
   }
 
   formatDate(date) {
     return new Date(date * 1).toDateString();
   }
 
-  setSelectDb(db?){    
+  async setSelectDb(db?){    
     this.selectedDb = db || this.user['dbList'][0];
     this.dbName = this.selectedDb;
     this.changeDbName = false;
 
-    this.getBreakpointDbList();
+    await this.getBreakpointDbList();
   }
 
   async getBreakpointDbList() {
@@ -87,7 +92,6 @@ export class ProfileViewComponent {
     let _msg = `Are you sure, you want to delete database: ${dbName}?\nPlease Enter: "${dbName}" to confirm!`;
     if (prompt(_msg) == dbName) {
       await this.profileService.delDB(dbName);
-      this.getUserProfile();
 
       this.setSelectDb();
       this.getBreakpointDbList();
@@ -106,7 +110,6 @@ export class ProfileViewComponent {
 
   closeAddDbPopOut = (dbName ? ) => {
     if (dbName) {
-      this.getUserProfile();
       this.setSelectDb(dbName);
     }
 

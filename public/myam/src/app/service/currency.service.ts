@@ -8,7 +8,6 @@ const currencyList = require('./currency.list.json');
 
 
 @Injectable() export class CurrencyService {
-
   private currencyList = currencyList;
   private endpoint = this.config.get('server_domain') + '/currency';
 
