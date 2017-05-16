@@ -7,8 +7,8 @@ import { CryptHandler } from '../handler/crypt.handler';
 import { NotificationHandler } from '../handler/notification.handler';
 
 @Injectable() export class ProfileService {
-  private endpoint_db = this.config.get('server_domain') + '/db';
-  private endpoint_profile = this.config.get('server_domain') + '/profile';
+  private endpoint_db = '/db';
+  private endpoint_profile = '/profile';
   private encrypt;
 
   constructor(

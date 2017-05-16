@@ -12,7 +12,7 @@ import { NotificationHandler } from '../handler/notification.handler';
     private notificationHandler: NotificationHandler
   ) {};
 
-  private endpoint = this.config.get('server_domain') + '/record'; // URL to web API
+  private endpoint = '/record'; // URL to web API
 
   async get(formObj ? : any) {
     const _url = this.endpoint + '/get';

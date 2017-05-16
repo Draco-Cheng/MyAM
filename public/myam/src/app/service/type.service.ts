@@ -12,7 +12,7 @@ let cache = {
 
 @Injectable() export class TypeService {
 
-  private endpoint = this.config.get('server_domain') + '/type';
+  private endpoint = '/type';
 
   constructor(
     private request: RequestHandler,

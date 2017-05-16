@@ -49,7 +49,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     'Content-Type': 'application/json'
   });
 
-  async post(url: string, formObj ? : any) {
+  async post(path: string, formObj ? : any) {
     let _data = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
     let _salt = Date.now().toString();
 
@@ -64,7 +64,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
     // <any[]> predefine resolve return value type
     return new Promise < any > ((resolve, reject) => {
-      this.http.post(url, JSON.stringify(_data), { headers: this.headers })
+      this.http.post(this.config.get('server_domain') + path, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => resolve(buildResObj(data.status, data.json())),
           error => {
@@ -91,7 +91,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     window.URL.revokeObjectURL(url);
   }
 
-  async download(url: string, formObj: {}) {
+  async download(path: string, formObj: {}) {
     let _salt = Date.now().toString();
 
     formObj['db'] = formObj['db'] || this.config.get('database');
@@ -99,7 +99,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     return new Promise((resolve, reject) => {
 
       var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", url, true);
+      xhttp.open("POST", this.config.get('server_domain') + path, true);
       xhttp.responseType = "blob";
       xhttp.onreadystatechange = () => {
         if (xhttp.readyState == 4) {
@@ -128,7 +128,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     });
   }
 
-  async upload(url: string, formObj: {}) {
+  async upload(path: string, formObj: {}) {
     let _salt = Date.now().toString();
     let _formData = new FormData();
     let _self = this;
@@ -157,7 +157,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
         resolve(buildResObj(xhttp.status, _res));
       }, false);
 
-      xhttp.open('POST', url, true);
+      xhttp.open('POST', this.config.get('server_domain') + path, true);
       xhttp.setRequestHeader('Auth-UID', this.headers.get('Auth-UID'));
       xhttp.setRequestHeader('Auth-Salt', _salt);
       xhttp.setRequestHeader('Auth-Token', this.encrypt(this.authTokenBase + _salt));
@@ -172,7 +172,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
   }
 
 
-  async login(url: string, formObj: any) {
+  async login(path: string, formObj: any) {
     let _data = {};
     let _salt = Date.now();
     let _formObj = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
@@ -184,7 +184,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
     // <any[]> predefine resolve return value type
     return new Promise < any > ((resolve, reject) => {
-      this.http.post(url, JSON.stringify(_data), { headers: this.headers })
+      this.http.post(this.config.get('server_domain') + path, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
             let _data = data.json();
@@ -213,7 +213,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     });
   };
 
-  async loginByToken(url: string, formObj: any) {
+  async loginByToken(path: string, formObj: any) {
     let _data = {};
     let _salt = Date.now();
     let _formObj = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
@@ -225,7 +225,7 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
     // <any[]> predefine resolve return value type
     return new Promise < any > ((resolve, reject) => {
-      this.http.post(url, JSON.stringify(_data), { headers: this.headers })
+      this.http.post(this.config.get('server_domain') + path, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
             let _data = data.json();

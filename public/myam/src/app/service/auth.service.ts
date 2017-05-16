@@ -14,7 +14,7 @@ import {
 
 @Injectable() export class AuthService {
 
-  private endpoint = this.config.get('server_domain') + '/auth';
+  private endpoint = '/auth';
 
   constructor(
     private router: Router,
@@ -62,7 +62,7 @@ import {
 }
 
 @Injectable() export class AuthGuard implements CanActivate {
-  private endpoint = this.config.get('server_domain') + '/auth';
+  private endpoint = '/auth';
 
   constructor(
     private router: Router,
