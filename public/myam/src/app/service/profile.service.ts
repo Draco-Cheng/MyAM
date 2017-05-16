@@ -4,6 +4,7 @@ import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { CryptHandler } from '../handler/crypt.handler';
+import { NotificationHandler } from '../handler/notification.handler';
 
 @Injectable() export class ProfileService {
   private endpoint_db = this.config.get('server_domain') + '/db';
@@ -14,7 +15,8 @@ import { CryptHandler } from '../handler/crypt.handler';
     private config: ConfigHandler,
     private cacheHandler: CacheHandler,
     private request: RequestHandler,
-    private cryptHandler: CryptHandler
+    private cryptHandler: CryptHandler,
+    private notificationHandler: NotificationHandler
   ) {
     this.encrypt = cryptHandler.encrypt;
   };
@@ -27,11 +29,17 @@ import { CryptHandler } from '../handler/crypt.handler';
     const _urlProfile = this.endpoint_profile + '/get';
     const _resaultProfile = await this.request.post(_urlProfile);
 
+    if (!_resaultProfile['success'])
+      return this.notificationHandler.broadcast('error', _resaultProfile['message']);
+
     const _urlDbList = this.endpoint_db + '/dbList';
     const _resaultDbList = await this.request.post(_urlDbList);
 
-    let _userProfile = _resaultProfile['user'][0];
-    _userProfile['dbList'] = _resaultDbList['dbList'];
+    if (!_resaultDbList['success'])
+      return this.notificationHandler.broadcast('error', _resaultDbList['message']);
+
+    let _userProfile = _resaultProfile['data']['user'][0];
+    _userProfile['dbList'] = _resaultDbList['data']['dbList'];
 
     this.config.setUserProfile(_userProfile);
   }
@@ -44,7 +52,10 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    return { data: _resault };
+    if (!_resault['success'])
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
 
@@ -58,7 +69,10 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    return { data: _resault };
+    if (!_resault['success'])
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   async createDB(dbName, mainCurrenciesType) {
@@ -70,9 +84,12 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     const _resault = await this.request.post(_url, _data);
 
+    if (!_resault['success'])
+      this.notificationHandler.broadcast('error', _resault['message']);
+
     await this.updateConfigProfile();
 
-    return { data: _resault };
+    return _resault;
   }
 
   async uploadDB(dbName, file) {
@@ -85,9 +102,8 @@ import { CryptHandler } from '../handler/crypt.handler';
     const _resault = await this.request.upload(_url, _data);
 
     if (_resault['success']) {
-      await this.updateConfigProfile();     
+      await this.updateConfigProfile();
     }
-
 
     return _resault;
   }
@@ -102,12 +118,15 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     await this.updateConfigProfile();
 
-    if (_resault && dbName == this.config.get('database')) {
+    if (_resault['success'] && dbName == this.config.get('database')) {
       this.config.set('database', '');
       this.setActiveDb('');
     }
 
-    return { data: _resault };
+    if (!_resault['success'])
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   wipeCache() {
@@ -151,12 +170,15 @@ import { CryptHandler } from '../handler/crypt.handler';
 
     await this.updateConfigProfile();
 
-    if (_resault && dbName == this.config.get('database')) {
+    if (_resault['success'] && dbName == this.config.get('database')) {
       this.config.set('database', newDbName);
       this.setActiveDb(newDbName);
     }
 
-    return { data: _resault };
+    if (!_resault['success'])
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   async set(formObj) {
@@ -178,7 +200,10 @@ import { CryptHandler } from '../handler/crypt.handler';
     if (Object.keys(_data).length) {
       const _resault = await this.request.post(_url, _data);
 
-      if (_resault && _data['token']) {
+      if (!_resault['success'])
+        this.notificationHandler.broadcast('error', _resault['message']);
+
+      if (_resault['success'] && _data['token']) {
         location.href = '';
       } else {
         await this.updateConfigProfile();

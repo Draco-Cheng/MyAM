@@ -5,12 +5,16 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// i18n
+import { i18n } from '../i18n/i18n';
+
 // Handler
 import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { CryptHandler } from '../handler/crypt.handler';
 import { NotificationHandler } from '../handler/notification.handler';
+
 
 // APP Module
 import { AppRoutingModule } from './app.routing';

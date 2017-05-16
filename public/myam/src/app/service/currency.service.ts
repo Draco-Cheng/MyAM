@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { ConfigHandler } from '../handler/config.handler';
+import { NotificationHandler } from '../handler/notification.handler';
 
 const currencyList = require('./currency.list.json');
 
@@ -14,7 +15,8 @@ const currencyList = require('./currency.list.json');
   constructor(
     private request: RequestHandler,
     private config: ConfigHandler,
-    private cacheHandler: CacheHandler
+    private cacheHandler: CacheHandler,
+    private notificationHandler: NotificationHandler
   ) {};
 
   wipe() {
@@ -37,7 +39,7 @@ const currencyList = require('./currency.list.json');
     return this.config.get('cid')
   }
 
-  getCurrencyList(){
+  getCurrencyList() {
     return this.currencyList;
   }
 
@@ -50,7 +52,11 @@ const currencyList = require('./currency.list.json');
       const _resolveCache = this.cacheHandler.regAsyncReq(_cacheName);
       const _url = this.endpoint + '/get';
       const _resualt = await this.request.post(_url);
-      return _resolveCache(_resualt);
+
+      if (_resualt['success'])
+        return _resolveCache(_resualt['data']);
+      else
+        this.notificationHandler.broadcast('error', _resualt['message']);
     }
   }
 
@@ -86,7 +92,7 @@ const currencyList = require('./currency.list.json');
           _flatMap[cur.to_cid].childs.push(cur);
         }
       });
-      
+
       // set config cid 
       this.setConfigCid(_rootCid, _flatMap);
 
@@ -94,9 +100,6 @@ const currencyList = require('./currency.list.json');
         _structureMap[_rootCid] = _flatMap[_rootCid];
         _rootCid = _flatMap[_rootCid].preMain || null;
       } while (!!_rootCid);
-
-      
-      
 
       return _resolveCache({
         flatMap: _flatMap,
@@ -120,8 +123,13 @@ const currencyList = require('./currency.list.json');
 
 
     const _resault = await this.request.post(_url, _data);
-    _resault && this.wipe();
-    return { data: _resault };
+    
+    if (_resault['success'])
+      this.wipe();
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   async add(formObj: any) {
@@ -137,8 +145,13 @@ const currencyList = require('./currency.list.json');
     };
 
     const _resault = await this.request.post(_url, _data);
-    _resault && this.wipe();
-    return { data: _resault };
+
+    if (_resault['success'])
+      this.wipe();
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   async del(del_cid) {
@@ -148,7 +161,12 @@ const currencyList = require('./currency.list.json');
     };
 
     const _resault = await this.request.post(_url, _data);
-    _resault && this.wipe();
-    return { data: _resault };
+    
+    if (_resault['success'])
+      this.wipe();
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 }

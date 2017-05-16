@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
+
+import { i18n } from '../i18n/i18n';
+
 import { ConfigHandler } from './config.handler';
 import { CryptHandler } from './crypt.handler';
 
@@ -60,11 +63,18 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     this.headers.set('Auth-Token', this.encrypt(this.authTokenBase + _salt));
 
     // <any[]> predefine resolve return value type
-    return new Promise < any[] > ((resolve, reject) => {
+    return new Promise < any > ((resolve, reject) => {
       this.http.post(url, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
-          data => {
-            resolve(data['status'] == 200 ? data.json() : null);
+          data => resolve(buildResObj(data.status, data.json())),
+          error => {
+            let _msg;
+            try {
+              _msg = i18n('ajax', error.json()['message']) || error.json()['message'];
+            } catch (e) {
+              _msg = error;
+            };
+            resolve(buildResObj(error.status, _msg))
           }
         );
     });
@@ -99,7 +109,8 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
           let _res;
           try {
-            _res = JSON.parse(xhttp.response)['message'];
+            let _msg = JSON.parse(xhttp.response)['message'];
+            _res = i18n('ajax', _msg) || _msg;
           } catch (e) {
             _res = xhttp.response;
           }
@@ -136,11 +147,11 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
       xhttp.addEventListener("load", () => {
         let _res;
-
         try {
-          _res = JSON.parse(xhttp.responseText)['message'];
+          let _msg = JSON.parse(xhttp.response)['message'];
+          _res = i18n('ajax', _msg) || _msg;
         } catch (e) {
-          _res = xhttp.responseText;
+          _res = xhttp.response;
         }
 
         resolve(buildResObj(xhttp.status, _res));
@@ -191,7 +202,13 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
             resolve(buildResObj(data.status, _data));
           }, error => {
-            resolve(buildResObj(error.status, error.json()));
+            let _msg;
+            try {
+              _msg = i18n('ajax', error.json()['message']) || error.json()['message'];
+            } catch (e) {
+              _msg = error;
+            };
+            resolve(buildResObj(error.status, _msg))
           });
     });
   };
@@ -221,7 +238,13 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
             resolve(buildResObj(data.status, _data));
           }, error => {
-            resolve(buildResObj(error.status, error.json()));
+            let _msg;
+            try {
+              _msg = i18n('ajax', error.json()['message']) || error.json()['message'];
+            } catch (e) {
+              _msg = error;
+            };
+            resolve(buildResObj(error.status, _msg))
           });
     });
   }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
+import { NotificationHandler } from '../handler/notification.handler';
 
 let cache = {
   'type': null,
@@ -16,7 +17,8 @@ let cache = {
   constructor(
     private request: RequestHandler,
     private cacheHandler: CacheHandler,
-    private config: ConfigHandler
+    private config: ConfigHandler,
+    private notificationHandler: NotificationHandler
   ) {};
 
   wipe(id ? : String) {
@@ -39,7 +41,11 @@ let cache = {
       const _url = this.endpoint + '/get'
       const _resault = await this.request.post(_url);
 
-      return _resolveCache(_resault);
+      if (_resault['success'])
+        return _resolveCache(_resault['data']);
+      else
+        this.notificationHandler.broadcast('error', _resault['message']);
+
     }
   }
 
@@ -55,17 +61,21 @@ let cache = {
       let _reObj = {};
       const _formObj = formObj || {};
       const _url = this.endpoint + '/getMaps'
-      const _res = <any[]> await this.request.post(_url);
+      const _resault = < any[] > await this.request.post(_url);
 
-      _res.forEach(ele => {
-        _reObj[ele.tid] = _reObj[ele.tid] || { childs: {}, parents: {} };
-        _reObj[ele.tid]['childs'][ele.sub_tid] = ele.sequence || 1;
+      if (_resault['success']) {
+        _resault['data'].forEach(ele => {
+          _reObj[ele.tid] = _reObj[ele.tid] || { childs: {}, parents: {} };
+          _reObj[ele.tid]['childs'][ele.sub_tid] = ele.sequence || 1;
 
-        _reObj[ele.sub_tid] = _reObj[ele.sub_tid] || { childs: {}, parents: {} };
-        _reObj[ele.sub_tid]['parents'][ele.tid] = ele.sequence || 1;
-      });
+          _reObj[ele.sub_tid] = _reObj[ele.sub_tid] || { childs: {}, parents: {} };
+          _reObj[ele.sub_tid]['parents'][ele.tid] = ele.sequence || 1;
+        });
 
-      return _resolveCache(_reObj);
+        return _resolveCache(_reObj);
+      } else {
+        this.notificationHandler.broadcast('error', _resault['message']);
+      }
     };
   }
 
@@ -81,8 +91,10 @@ let cache = {
     };
     const _resault = await this.request.post(_url, _data);
 
-    _resault && this.wipe();
-    return { data: _resault };
+    if (_resault['success'])
+      this.wipe();
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
   }
 
   async add(formObj ? : any) {
@@ -101,17 +113,27 @@ let cache = {
     const _resault = await this.request.post(_urlSet, _dataSet);
     const _tid = _resault[0]['tid'];
 
+    if (!_resault['success']) {
+      this.notificationHandler.broadcast('error', _resault['message']);
+      return _resault;
+    }
+
     for (let _i = 0; _i < _parentsArr.length; _i++) {
       const _ptid = _parentsArr[_i];
       const _dataSetMap = {
         tid: _ptid,
         sub_tid: _tid
       };
-      await this.request.post(_urlSetMap, _dataSetMap);
+
+      let _resaultSetMap = await this.request.post(_urlSetMap, _dataSetMap);
+
+      if (!_resaultSetMap['success']) {
+        this.notificationHandler.broadcast('error', _resaultSetMap['message']);
+      }
     }
 
-    _resault && this.wipe();
-    return { data: _resault };
+    this.wipe();
+    return _resault;
   }
 
   async del(del_tid) {
@@ -121,8 +143,12 @@ let cache = {
     };
     const _resault = await this.request.post(_url, _data);
     
-    _resault && this.wipe();
-    return { data: _resault };
+    if (_resault['success'])
+      this.wipe();
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
 
@@ -133,8 +159,14 @@ let cache = {
       del_sub_tid: c_tid
     }
     const _resault = await this.request.post(_url, _data);
-    _resault && this.wipe('type.flatmap');
-    return { data: _resault };
+
+    
+    if (_resault['success'])
+      this.wipe('type.flatmap');
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 
   async linkParant(p_tid, c_tid) {
@@ -144,7 +176,12 @@ let cache = {
       sub_tid: c_tid
     }
     const _resault = await this.request.post(_url, _data);
-    _resault && this.wipe('type.flatmap');
-    return { data: _resault };
+    
+    if (_resault['success'])
+      this.wipe('type.flatmap');
+    else
+      this.notificationHandler.broadcast('error', _resault['message']);
+
+    return _resault;
   }
 }
