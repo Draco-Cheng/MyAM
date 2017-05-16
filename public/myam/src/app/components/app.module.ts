@@ -10,6 +10,7 @@ import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { CryptHandler } from '../handler/crypt.handler';
+import { NotificationHandler } from '../handler/notification.handler';
 
 // APP Module
 import { AppRoutingModule } from './app.routing';
@@ -24,6 +25,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { TypesModule } from './types/types.module';
 import { ProfileModule } from './profile/profile.module';
 import { AboutModule } from './about/about.module';
+import { NotificationBubbleModule } from './notification-bubble/notification-bubble.module';
 
 @NgModule({
   imports: [
@@ -42,7 +44,8 @@ import { AboutModule } from './about/about.module';
     CurrencyModule,
     TypesModule,
     RecordsModule,
-    ProfileModule
+    ProfileModule,
+    NotificationBubbleModule
   ],
   declarations: [
     AppComponent
@@ -52,7 +55,8 @@ import { AboutModule } from './about/about.module';
     ConfigHandler,
     RequestHandler,
     CacheHandler,
-    CryptHandler
+    CryptHandler,
+    NotificationHandler
   ],
   exports: []
 })

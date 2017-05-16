@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { RequestHandler } from '../handler/request.handler';
 import { ConfigHandler } from '../handler/config.handler';
+import { NotificationHandler } from '../handler/notification.handler';
 
 import {
   CanActivate,
@@ -18,7 +19,8 @@ import {
   constructor(
     private router: Router,
     private config: ConfigHandler,
-    private request: RequestHandler
+    private request: RequestHandler,
+    private notificationHandler: NotificationHandler
   ) {};
 
 
@@ -67,12 +69,14 @@ import {
     private router: Router,
     private config: ConfigHandler,
     private request: RequestHandler,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationHandler: NotificationHandler
   ) {};
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log('AuthGuard#canActivate called');
     return new Promise(async(resolve: Function, reject: Function) => {
+
       if (this.config.get('isLogin')) {
         return resolve(true);
       }
