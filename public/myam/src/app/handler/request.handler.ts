@@ -172,30 +172,27 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
     _data['keep'] = _formObj['keep'];
 
     // <any[]> predefine resolve return value type
-    return new Promise < any[] > ((resolve, reject) => {
+    return new Promise < any > ((resolve, reject) => {
       this.http.post(url, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
-            if (data.status == 200) {
-              let _data = data.json();
-              let _uid = _data['uid'];
+            let _data = data.json();
+            let _uid = _data['uid'];
 
-              this.authTokenBase = this.encrypt(_salt + this.encrypt(_formObj['pwd']));
+            this.authTokenBase = this.encrypt(_salt + this.encrypt(_formObj['pwd']));
 
-              if (_formObj['keep']) {
-                localStorage.setItem('token', _uid + ',' + this.encrypt(_salt + _salt + this.encrypt(_formObj['pwd'])));
-              } else {
-                localStorage.removeItem('token');
-              }
-
-              this.headers.set('Auth-UID', _data['uid']);
-
-              resolve(_data);
+            if (_formObj['keep']) {
+              localStorage.setItem('token', _uid + ',' + this.encrypt(_salt + _salt + this.encrypt(_formObj['pwd'])));
             } else {
-              resolve(null);
+              localStorage.removeItem('token');
             }
-          }
-        );
+
+            this.headers.set('Auth-UID', _data['uid']);
+
+            resolve(buildResObj(data.status, _data));
+          }, error => {
+            resolve(buildResObj(error.status, error.json()));
+          });
     });
   };
 
@@ -210,26 +207,21 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
 
     // <any[]> predefine resolve return value type
-    return new Promise < any[] > ((resolve, reject) => {
+    return new Promise < any > ((resolve, reject) => {
       this.http.post(url, JSON.stringify(_data), { headers: this.headers })
         .subscribe(
           data => {
+            let _data = data.json();
+            let _uid = _data['uid'];
 
-            if (data.status == 200) {
-              let _data = data.json();
-              let _uid = _data['uid'];
+            this.authTokenBase = this.encrypt(_salt + _formObj['token']);
+            localStorage.setItem('token', _uid + ',' + this.encrypt(_salt + _salt + _formObj['token']));
 
-              this.authTokenBase = this.encrypt(_salt + _formObj['token']);
-              localStorage.setItem('token', _uid + ',' + this.encrypt(_salt + _salt + _formObj['token']));
+            this.headers.set('Auth-UID', _data['uid']);
 
-              this.headers.set('Auth-UID', _data['uid']);
-
-              resolve(_data);
-            } else {
-              resolve(null);
-            }
+            resolve(buildResObj(data.status, _data));
           }, error => {
-            resolve(null);
+            resolve(buildResObj(error.status, error.json()));
           });
     });
   }

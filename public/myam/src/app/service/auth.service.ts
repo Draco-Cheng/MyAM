@@ -30,10 +30,9 @@ import {
 
     let _res = await this.request.login(_url, formObj);
 
-    if (_res) {
-      await this.config.setUserProfile(_res);
-
-      this.router.navigate(_res['dbList'].length ? ['/dashboard'] : ['/profile']);
+    if (_res['success']) {
+      await this.config.setUserProfile(_res['data']);
+      this.router.navigate(_res['data']['dbList'].length ? ['/dashboard'] : ['/profile']);
     }
   }
 
@@ -42,12 +41,12 @@ import {
     const _loginInfo = localStorage.getItem('token').split(',');
     let _res = await this.request.loginByToken(_url, { uid: _loginInfo[0], token: _loginInfo[1] });
 
-    if (_res) {
-      await this.config.setUserProfile(_res);
-      !_res['dbList'].length && this.router.navigate(['/profile']);
+    if (_res['success']) {
+      await this.config.setUserProfile(_res['data']);
+      !_res['data']['dbList'].length && this.router.navigate(['/profile']);
     }
 
-    return !!_res;
+    return !!_res['success'];
   }
 
   async logout() {
