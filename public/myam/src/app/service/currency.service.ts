@@ -123,7 +123,7 @@ const currencyList = require('./currency.list.json');
 
 
     const _resault = await this.request.post(_url, _data);
-    
+
     if (_resault['success'])
       this.wipe();
     else
@@ -161,12 +161,17 @@ const currencyList = require('./currency.list.json');
     };
 
     const _resault = await this.request.post(_url, _data);
-    
+
     if (_resault['success'])
       this.wipe();
     else
       this.notificationHandler.broadcast('error', _resault['message']);
 
     return _resault;
+  }
+
+  setDefaultCid(cid) {
+    localStorage.setItem(this.config.get('uid') + '.cid', cid);
+    this.config.set('cid', cid);
   }
 }

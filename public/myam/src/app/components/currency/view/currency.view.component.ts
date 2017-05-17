@@ -28,7 +28,7 @@ function formatDate(date) {
 export class CurrencyViewComponent {
   private __isInit = false;
   private __meta = {};
-  
+
   private currencyFlatMap;
   private currencyStructureMap;
   private currencyList;
@@ -36,7 +36,7 @@ export class CurrencyViewComponent {
   private newCurrency = {
     type: '',
     rate: 1,
-    to_cid: this.currencyService.getDefaultCid(),
+    to_cid: null,
     memo: '',
     main: false,
     quickSelect: true,
@@ -50,16 +50,24 @@ export class CurrencyViewComponent {
     this.currencyList = this.currencyService.getCurrencyList();
   };
 
-
   async ngOnInit() {
     await this.getCurrency();
+    this.newCurrency['to_cid'] = this.getDefaultCid();
     this.__isInit = true;
   };
 
-  async __checkDataUpToDate(){
-    if(this.__meta['currencyMap']['legacy']){
+  async __checkDataUpToDate() {
+    if (this.__meta['currencyMap']['legacy']) {
       await this.getCurrency();
     }
+  }
+
+  getDefaultCid() {
+    return this.currencyService.getDefaultCid();
+  }
+
+  setDefaultCurrency = cid => {
+    return this.currencyService.setDefaultCid(cid);
   }
 
   async getCurrency() {
@@ -73,10 +81,10 @@ export class CurrencyViewComponent {
   }
 
   getCurrentMainType() {
-    return this.getType( Object.keys(this.currencyStructureMap)[0] ); 
+    return this.getType(Object.keys(this.currencyStructureMap)[0]);
   }
 
-  getSelectionCallback(currency){
+  getSelectionCallback(currency) {
     return cid => {
       currency.to_cid = cid;
     }

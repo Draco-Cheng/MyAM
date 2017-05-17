@@ -1,6 +1,11 @@
 
 <div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12">
   <h1>Currency</h1>
+  <div class="currency-set-default-selection-panel col-md-offset-1 col-lg-offset-2">
+    <div class="currency-set-default-selection">
+    Default Currency: <span currency-selection [inputCid]="getDefaultCid()" [callback]="setDefaultCurrency" ></span>      
+    </div>
+  </div>
   <div class="currency-add-panel col-md-offset-1 col-lg-offset-2">
     <div class="currency-add-col currency-add-option">
       <span class="currency-add-btn glyphicon glyphicon-plus currency-add-submit" (click)="save(newCurrency)"></span>
