@@ -7,11 +7,15 @@ var mkdirp = require('mkdirp');
 var config = require("../config.js");
 
 var _checkFile = function(data, callback) {
-  fs.exists(data.checkFile, function(exists) {
-    // handle result
-    data.fileExists = exists;
-    callback(data);
-  });
+  try {
+    fs.exists(data.checkFile, function(exists) {
+      // handle result
+      data.fileExists = exists;
+      callback(data);
+    });
+  } catch (e) {
+    logger.error(data.reqId, e.stack);
+  }
 
   return new Promise(resolve => callback = resolve);
 };
@@ -20,23 +24,27 @@ exports.checkFile = _checkFile;
 
 var _checkDB = function(data) {
   return new Promise(function(resolve, reject) {
-    data.checkFile = data.dbFile;
-    logger.debug(data.reqId, "Check Database " + data.checkFile + " exist or not...");
+    try {
+      data.checkFile = data.dbFile;
+      logger.debug(data.reqId, "Check Database " + data.checkFile + " exist or not...");
 
-    exports.checkFile(data).then(function(data) {
-      if (!data.fileExists) {
-        var _msg = "Database " + data.checkFile + " not exist...";
-        logger.warn(data.reqId, _msg);
-        data['resault'] = { isExist: false };
-      } else {
-        var _msg = "Database " + data.checkFile + " exist...";
-        logger.warn(data.reqId, _msg);
-        data['resault'] = { isExist: true };
-      }
+      exports.checkFile(data).then(function(data) {
+        if (!data.fileExists) {
+          var _msg = "Database " + data.checkFile + " not exist...";
+          logger.warn(data.reqId, _msg);
+          data['resault'] = { isExist: false };
+        } else {
+          var _msg = "Database " + data.checkFile + " exist...";
+          logger.warn(data.reqId, _msg);
+          data['resault'] = { isExist: true };
+        }
 
-      delete data.checkFile;
-      resolve(data);
-    });
+        delete data.checkFile;
+        resolve(data);
+      });
+    } catch (e) {
+      logger.error(data.reqId, e.stack);
+    }
   });
 }
 exports.checkDB = _checkDB;
@@ -209,7 +217,7 @@ exports.copyFile = _copyFile;
 
 exports.renameFile = (data) => {
   try {
-    logger.debug('Rename file: ' + data['meta']['source'] + ' -> ' +data['meta']['target']);
+    logger.debug('Rename file: ' + data['meta']['source'] + ' -> ' + data['meta']['target']);
     fs.renameSync(data['meta']['source'], data['meta']['target']);
     data['resault'] = true;
     return data;
