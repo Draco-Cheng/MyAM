@@ -449,7 +449,7 @@ exports.setTypes = Promise.denodeify(_setTypes);
 
 var _delTypes = function(data, callback) {
   var _sql = "DELETE FROM type WHERE tid = $del_tid";
-  _allSQL(data, _sql, { $del_tid: data.del_tid }).then(function(data) {
+  _allSQL(data, _sql, { $del_tid: data['meta']['del_tid'] }).then(function(data) {
     callback(null, data);
   });
 }

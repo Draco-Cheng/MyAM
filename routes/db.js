@@ -68,8 +68,8 @@ routes.creat = function(req, res, next) {
 
   services.initial.checkAndCreate(data)
     .then(function(data) {
-      if (data.code) {
-        throw responseHandler(data.code, req, res);
+      if (data['error']) {
+        throw responseHandler(data['error'], req, res);
       } else {
         logger.info(data.reqId, "set currencies...");
         data.type = req.body.mainCurrenciesType.toUpperCase();
