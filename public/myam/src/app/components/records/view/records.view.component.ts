@@ -9,7 +9,10 @@ import './records.view.style.less';
   template: require('./records.view.template.html'),
   providers: [
     RecordsService
-  ]
+  ],
+  host: {
+    '(window:scroll)': 'onRecordScroll($event)'
+  }
 })
 
 export class RecordsViewComponent {
@@ -45,4 +48,7 @@ export class RecordsViewComponent {
     this.__meta['records'] = await this.recordsService.get(this.qureyCondition);
     this.records = this.__meta['records']['data'];
   };
+
+  onRecordScroll(event){
+  }
 }
