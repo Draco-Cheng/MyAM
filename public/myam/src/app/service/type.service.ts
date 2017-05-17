@@ -111,7 +111,7 @@ let cache = {
       showInMap: formObj.showInMap ? 1 : 0
     };
     const _resault = await this.request.post(_urlSet, _dataSet);
-    const _tid = _resault[0]['tid'];
+    const _tid = _resault['data'][0]['tid'];
 
     if (!_resault['success']) {
       this.notificationHandler.broadcast('error', _resault['message']);
