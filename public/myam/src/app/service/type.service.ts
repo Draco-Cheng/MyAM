@@ -184,4 +184,23 @@ let cache = {
 
     return _resault;
   }
+
+  async getNodeAllParents(tid){}
+
+  async getNodeAllChilds(tid){
+    let _map = (await this.getFlatMap())['data'];
+    let _arr = [];
+    this.getNodeAllChildsRecursive(_map, _arr, tid);
+    return _arr;
+  }
+  getNodeAllChildsRecursive(map, arr, tid){
+    if(!map[tid] && !map[tid]['childs']) return;
+    arr.push(tid);
+    let _keys = Object.keys(map[tid]['childs']);
+    _keys.forEach( k => {
+      if(arr.indexOf(k) == -1){        
+        this.getNodeAllChildsRecursive(map, arr, k);
+      }
+    });
+  }
 }

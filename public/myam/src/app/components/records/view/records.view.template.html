@@ -1,5 +1,73 @@
-<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12">
+<div *ngIf="__isInit && __checkDataUpToDate()" (scroll)="onScroll($event)" class="col-md-12">
   <h1>Records</h1>
-  <records-table [records]="records" class="col-md-12"></records-table>
+  <div class="records-query-panel" (change)="conditionChange()">
+    <h4>Query Condition</h4>
+    <div class="records-query-block">
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Cash Type:</span>
+        <select [(ngModel)]="qureyCondition.cashType">
+          <option value=0>Cost/Earn</option>
+          <option value=-1>Cost</option>
+          <option value=1>Earn</option>
+        </select>
+      </div>
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Currency:</span>
+        <span currency-selection [inputCid]="qureyCondition.cid" [callback]="getSelectionCallback" [enableAnyOption]="true"></span>
+      </div>
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Duration:</span>
+        <input type="date" [(ngModel)]="qureyCondition.start_date" placeholder="No start date"> ~
+        <input type="date" [(ngModel)]="qureyCondition.end_date" placeholder="No end date">
+      </div>
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Memo:</span>
+        <input [(ngModel)]="qureyCondition.memo" placeholder="No memo">
+      </div>
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Price Range:</span>
+        <input class="records-query-price-input" type="number" [(ngModel)]="qureyCondition.value_greater" placeholder="No price"> ~
+        <input class="records-query-price-input" type="number" [(ngModel)]="qureyCondition.value_less" placeholder="No price">
+      </div>
+      <div class="records-query-block-col col-md-4">
+        <span class="records-query-block-col-label">Numbers:</span>
+        <select [(ngModel)]="qureyCondition.limit">
+          <option value="">No limit</option>
+          <option value="10">10 Records</option>
+          <option value="25">25 Records</option>
+          <option value="50">50 Records</option>
+          <option value="100">100 Records</option>
+        </select>
+      </div>
+      <div class="records-query-block-col col-md-12">
+        <span class="records-query-block-col-label">Order by:</span>
+        <div class="records-query-block-item" (click)="qureyCondition.orderBy[0] = qureyCondition.orderBy[0] == 'rid' ? 'date' : 'rid'; conditionChange();">
+          {{ qureyCondition.orderBy[0] == 'rid' ? 'Add Date' : 'Record Date'}}
+        </div>
+        <div class="records-query-block-item" (click)="qureyCondition.orderBy[1] = qureyCondition.orderBy[1] == 'ASC' ? 'DESC' : 'ASC'; conditionChange();">
+          <span *ngIf="qureyCondition.orderBy[1] == 'ASC'" class="glyphicon glyphicon-arrow-up"></span>
+          <span *ngIf="qureyCondition.orderBy[1] == 'DESC'" class="glyphicon glyphicon-arrow-down"></span>
+        </div>
+      </div>
+      <div class="records-query-block-col col-md-12">
+        <span class="records-query-block-col-label">Types:</span>
+        <select [(ngModel)]="qureyCondition.type_query_set">
+          <option value="intersection">Intersection</option>
+          <option value="union">Union</option>
+        </select>
+        <div class="records-query-type-add" (click)="showTypeMap=true">
+          <span class="glyphicon glyphicon-plus"></span> Type
+        </div>
+        <div>
+          <div class="records-type-label" *ngFor="let item of getQureyConditionTidsArr()" (click)="removeQureyConditionTids(item.tid)">
+            {{item.label}}
+          </div>
+        </div>
+        <div *ngIf="showTypeMap" type-map-panel-pop-out [callback]="typeMapCallback" [selectedTids]="qureyConditionTidsObj"></div>
+      </div>
+    </div>
+  </div>
+  <hr>
   <div>Query {{records?.length}} records.</div>
+  <records-table [records]="records" class="col-md-12"></records-table>
 </div>

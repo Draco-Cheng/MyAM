@@ -22,6 +22,7 @@ export class CurrencySelectionDirectiveComponent {
   //*************************************
   // optional input
   @Input() inputCid ? : any;
+  @Input() enableAnyOption ? : any;
   //*************************************
 
 
@@ -43,7 +44,7 @@ export class CurrencySelectionDirectiveComponent {
 
   async ngOnInit() {
     await this.getCurrency();
-    this.cid = this.inputCid || null;
+    this.cid = this.inputCid || '';
     this.__isInit = true;
   };
 
@@ -65,23 +66,19 @@ export class CurrencySelectionDirectiveComponent {
     this.quickSelectList = _quickSelectList;
   };
 
-  cidToType(cid) {
-    return this.currencyFlatMap[cid].type;
-  }
-
 
   onSelect(cid) {
     if (cid == -1)
       this.showCurrencyMap = true;
     else
-      this.callback(cid);
+      this.callback(cid || null);
   }
 
-  typMapCallcak = (function(_self) {
+  currencyMapCallcak = (function(_self) {
     return cid => {
       _self.showCurrencyMap = false;
       _self.cid = cid || _self.inputCid;
-      _self.callback(_self.cid);
+      _self.callback(_self.cid || null);
     };
   })(this);
 

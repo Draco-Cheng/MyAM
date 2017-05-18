@@ -84,7 +84,7 @@ export class TypeMapFragmentDirectiveComponent {
   }
 
   onSelect(node) {
-    this.callback(node);
+    this.callback(node, this.typesFlat[node].type_label);
   }
 
   classCheck(node) {

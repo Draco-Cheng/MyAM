@@ -16,15 +16,7 @@ import { NotificationHandler } from '../handler/notification.handler';
 
   async get(formObj ? : any) {
     const _url = this.endpoint + '/get';
-    const _formObj = formObj;
-    const _data = {
-      orderBy: ['rid', 'DESC'],
-      limit: 10
-    };
-
-    if (_formObj) {
-      _formObj.orderBy && (_data.orderBy = _formObj.orderBy);
-    }
+    const _data = formObj || { orderBy: ['rid', 'DESC'], limit: 10 };
 
     let _resault = < any[] > await this.request.post(_url, _data);
 

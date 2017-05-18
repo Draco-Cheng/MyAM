@@ -40,6 +40,10 @@ export class RecordTableDirectiveComponent {
     if(this.__meta['types']['legacy']){
       await this.getTypes();
     }
+
+    if(!this.records['adjustRecordData']){
+      this.adjustRecordData();
+    }
   }
 
   async getTypes() {
@@ -60,7 +64,9 @@ export class RecordTableDirectiveComponent {
       let _map = {};
       record.tids.forEach(tid => _map[tid] = true);
       record.tids = _map;
-    })
+    });
+
+    this.records['adjustRecordData'] = true;
   }
 
   tidToLabel(tid: string) {
