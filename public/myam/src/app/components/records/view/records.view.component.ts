@@ -34,6 +34,10 @@ export class RecordsViewComponent {
   private __meta = {};
 
   private records;
+  private records_pool = [];
+  private records_push_number = 10;
+  private records_index;
+
   private showTypeMap;
   private qureyCondition = {
     cashType: 0,
@@ -65,7 +69,17 @@ export class RecordsViewComponent {
 
   async getRecord() {
     this.__meta['records'] = await this.recordsService.get(this.qureyCondition);
-    this.records = this.__meta['records']['data'];
+    this.records_pool = this.__meta['records']['data'] || [];
+    this.records = [];
+    this.records_index = 0;
+    this.lazyPushRecords();
+  };
+
+
+
+  lazyPushRecords() {
+    this.records.push(...(this.records_pool.slice(this.records_index, this.records_index + this.records_push_number)));
+    this.records_index = this.records_index + this.records_push_number;
   };
 
   getSelectionCallback = cid => {
@@ -115,5 +129,16 @@ export class RecordsViewComponent {
     this.conditionChange();
   }
 
-  onRecordScroll(event) {}
+  onRecordScroll(event) {
+    if (this.records_pool.length <= this.records_index)
+      return;
+
+    const _target = event.target.scrollingElement;
+    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 100)
+      this.lazyPushRecords();
+  }
+
+  scrollToTop(){
+    document.scrollingElement.scrollTop = 0;
+  }
 }

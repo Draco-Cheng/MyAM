@@ -43,10 +43,9 @@
     </div>
   </div>
 </div>
-<div *ngIf="__isInit" class="col-sm-12 records-recent-table">
+<div *ngIf="__isInit && records.length" class="col-sm-12 records-recent-table">
   <div class="col-md-12 records-recent-title">
     <h1>Recent Add</h1>
   </div>
-  <div>Query {{records?.length}} records.</div>
   <records-table class="col-md-12 " [records]="records"></records-table>
 </div>

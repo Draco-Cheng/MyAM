@@ -31,18 +31,12 @@ export class RecordTableDirectiveComponent {
 
   async ngOnInit() {
     await this.getTypes();
-
-    this.adjustRecordData();
     this.__isInit = true;
   }
   
   async __checkDataUpToDate(){
     if(this.__meta['types']['legacy']){
       await this.getTypes();
-    }
-
-    if(!this.records['adjustRecordData']){
-      this.adjustRecordData();
     }
   }
 
@@ -59,22 +53,12 @@ export class RecordTableDirectiveComponent {
     return Object.keys(obj);
   }
 
-  adjustRecordData() {
-    this.records.forEach(record => {
-      let _map = {};
-      record.tids.forEach(tid => _map[tid] = true);
-      record.tids = _map;
-    });
-
-    this.records['adjustRecordData'] = true;
-  }
-
   tidToLabel(tid: string) {
     return this.typesFlat[tid].type_label;
   }
 
   removeTypeInRecord(record, tid) {
-    delete record.tids[tid];
+    delete record.tidsObjMap[tid];
     this.recordChange(record);
   }
 
@@ -85,10 +69,10 @@ export class RecordTableDirectiveComponent {
   getRecordTypeMapSwitch(record) {
     let _self = this;
     return (tid) => {
-      if (record.tids[tid])
-        delete record.tids[tid];
+      if (record.tidsObjMap[tid])
+        delete record.tidsObjMap[tid];
       else
-        record.tids[tid] = true;
+        record.tidsObjMap[tid] = true;
 
       _self.recordChange(record);
     };
@@ -104,7 +88,7 @@ export class RecordTableDirectiveComponent {
   async saveRecord(record) {
 
     const _resault1 = await this.recordsService.set(record);
-    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tids));
+    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tidsObjMap));
 
     if (_resault1['data'] && _resault2['data'])
       record.isChange = false;
@@ -122,12 +106,11 @@ export class RecordTableDirectiveComponent {
   async reAdd(record) {
     const _resault = await this.recordsService.set(record);
     record.rid = _resault['data'][0].rid;
-    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tids));
+    const _resault2 = await this.recordsService.setType(record.rid, Object.keys(record.tidsObjMap));
     if (_resault['data']) {
       record.status = '';
       record.isChange = false;
     }
   }
-
 
 }

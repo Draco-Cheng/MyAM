@@ -22,7 +22,10 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (_resault['success']) {
       _resault['data'].forEach(record => {
+        let _map = {};
         record.tids = record.tids ? record.tids.split(",") : [];
+        record.tids.forEach(tid => _map[tid] = true);
+        record.tidsObjMap = _map;
       });
     } else {
       this.notificationHandler.broadcast('error', _resault['message']);
