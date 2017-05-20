@@ -69,10 +69,15 @@
   </div>
   <hr>
   <div class="records-number-top-hint-block">
-  	<div class="records-number-top-hints">Query {{records_pool?.length}} records.</div>
+    <div class="records-number-top-hints">Query {{records_pool?.length}} records.</div>
   </div>
   <records-table [records]="records" class="col-md-12"></records-table>
-  <div class="records-number-bottom-hint-block" *ngIf="records_pool?.length <= records_index">
-  	<div class="records-number-bottom-hints" (click)="scrollToTop()"><span class="glyphicon glyphicon-arrow-up"></span> Total {{records_pool?.length}} records.</div>
+  <div #showMoreBtn class="records-more-record" *ngIf="records_pool?.length > records_index" (click)="showMoreRecord()">
+    <div class="records-more-record-hints"><span class="glyphicon glyphicon-triangle-bottom"></span> More</div>
+  </div>
+  <div class="records-number-bottom-hint-block">
+    <div  *ngIf="records_pool?.length > records_index" class="records-number-bottom-hints" (click)="scrollToTop()"><span class="glyphicon glyphicon-arrow-up"></span> {{records_index}} / {{records_pool.length}} records.</div>
+
+    <div  *ngIf="records_pool?.length <= records_index" class="records-number-bottom-hints" (click)="scrollToTop()"><span class="glyphicon glyphicon-arrow-up"></span> Total {{records_pool?.length}} records.</div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef , ViewChild} from '@angular/core';
 
 import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
@@ -24,19 +24,26 @@ function formatDate(date) {
     RecordsService,
     TypeService
   ],
+
+  /*
   host: {
     '(window:scroll)': 'onRecordScroll($event)'
   }
+  */
 })
 
 export class RecordsViewComponent {
   private __isInit = false;
   private __meta = {};
 
+  @ViewChild('showMoreBtn') showMoreBtn:ElementRef;
+
   private records;
   private records_pool = [];
-  private records_push_number = 10;
+  private records_push_number = 25;
   private records_index;
+
+  private renderTimestamp;
 
   private showTypeMap;
   private qureyCondition = {
@@ -62,6 +69,7 @@ export class RecordsViewComponent {
 
   async ngOnInit() {
     await this.getRecord();
+    document.body.onscroll = (evt) => { this.onRecordScroll(evt) };
     this.__isInit = true;
   };
 
@@ -74,8 +82,6 @@ export class RecordsViewComponent {
     this.records_index = 0;
     this.lazyPushRecords();
   };
-
-
 
   lazyPushRecords() {
     this.records.push(...(this.records_pool.slice(this.records_index, this.records_index + this.records_push_number)));
@@ -130,12 +136,23 @@ export class RecordsViewComponent {
   }
 
   onRecordScroll(event) {
-    if (this.records_pool.length <= this.records_index)
+    if (this.records_pool.length <= this.records_index || this.records_index > 500)
       return;
 
+    if(Date.now() - this.renderTimestamp < 500 )
+      return;
+    
     const _target = event.target.scrollingElement;
-    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 100)
-      this.lazyPushRecords();
+    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 100){
+      //this.lazyPushRecords();
+      this.renderTimestamp = Date.now();
+      this.showMoreBtn.nativeElement.click();
+    }
+    
+  }
+
+  showMoreRecord(){
+    this.lazyPushRecords();
   }
 
   scrollToTop(){
