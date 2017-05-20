@@ -43,8 +43,6 @@ export class RecordsViewComponent {
   private records_push_number = 25;
   private records_index;
 
-  private renderTimestamp;
-
   private showTypeMap;
   private qureyCondition = {
     cashType: 0,
@@ -136,16 +134,12 @@ export class RecordsViewComponent {
   }
 
   onRecordScroll(event) {
-    if (this.records_pool.length <= this.records_index || this.records_index > 500)
-      return;
-
-    if(Date.now() - this.renderTimestamp < 500 )
+    if (this.records_pool.length <= this.records_index || this.records_index >= 500)
       return;
     
     const _target = event.target.scrollingElement;
-    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 100){
+    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 1){
       //this.lazyPushRecords();
-      this.renderTimestamp = Date.now();
       this.showMoreBtn.nativeElement.click();
     }
     
