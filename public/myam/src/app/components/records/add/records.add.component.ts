@@ -97,6 +97,12 @@ export class RecordsAddComponent {
     }
   };
 
+  async currencyExchange(records) {
+    // for(let record of records){
+    //   record.currencyExhange = await this.currencyService.exchange(record.cid, this.defaultCid, record.value);
+    // }    
+  }
+
   tidToLabel(tid: string) {
     return this.typesFlat[tid].type_label;
   }

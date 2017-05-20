@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 
 import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
+import { CurrencyService } from '../../../service/currency.service';
 
 import './record-table.style.less';
 
@@ -10,7 +11,8 @@ import './record-table.style.less';
   template: require('./record-table.template.html'),
   providers: [
     RecordsService,
-    TypeService
+    TypeService,
+    CurrencyService
   ]
 })
 
@@ -24,13 +26,17 @@ export class RecordTableDirectiveComponent {
   private types;
   private typesFlat = {};
 
+  private defaultCid;
+
   constructor(
     private recordsService: RecordsService,
-    private typeService: TypeService
+    private typeService: TypeService,
+    private currencyService: CurrencyService
   ) {};
 
   async ngOnInit() {
     await this.getTypes();
+    await this.getCurrency();
     this.__isInit = true;
   }
   
@@ -38,6 +44,12 @@ export class RecordTableDirectiveComponent {
     if(this.__meta['types']['legacy']){
       await this.getTypes();
     }
+  }
+
+  async getCurrency(){
+    // only check currency on initial ready
+    await this.currencyService.getMap();
+    this.defaultCid = this.currencyService.getDefaultCid();
   }
 
   async getTypes() {
@@ -113,4 +125,9 @@ export class RecordTableDirectiveComponent {
     }
   }
 
+  currencyExchange(record) {
+    record.currencyExhange = this.currencyService.exchange(record.cid, this.defaultCid, record.value);
+
+    return true;
+  }
 }

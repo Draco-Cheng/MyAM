@@ -24,6 +24,13 @@
       <div class="table-col col-md-2 records-price-col">
         <span currency-selection [inputCid]="record.cid" [callback]="getSelectionCallback(record)" ></span>
         <input type="number" class="records-price-input" [(ngModel)]="record.value" (change)="recordChange(record)" />
+
+        <div class="records-currency-exchange" *ngIf="record.cid != defaultCid">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+          <span class="records-currency-exchange-wrap" *ngIf="currencyExchange(record) && record.currencyExhange">
+            {{ record.currencyExhange.value }} {{record.currencyExhange.type}}
+          </span>          
+        </div>
       </div>
       <div class="table-col col-md-2">
         <div class="records-type-label" *ngFor="let tid of ObjKey(record.tidsObjMap)" (click)="removeTypeInRecord(record, tid)">

@@ -18,6 +18,9 @@ import { NotificationHandler } from '../handler/notification.handler';
     const _url = this.endpoint + '/get';
     const _data = formObj || { orderBy: ['rid', 'DESC'], limit: 10 };
 
+    if (_data.cashType == "string")
+      _data.cashType = _data.cashType * 1;
+    
     let _resault = < any[] > await this.request.post(_url, _data);
 
     if (_resault['success']) {
@@ -38,7 +41,7 @@ import { NotificationHandler } from '../handler/notification.handler';
     const _url = this.endpoint + '/set';
     const _data = {
       rid: recordObj.rid,
-      cashType: recordObj.cashType,
+      cashType: recordObj.cashType * 1,
       cid: recordObj.cid,
       value: recordObj.value,
       memo: recordObj.memo,
