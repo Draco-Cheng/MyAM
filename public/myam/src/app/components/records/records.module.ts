@@ -16,6 +16,7 @@ import { RecordTableDirectiveComponent } from './_directive/record-table.directi
 import { CurrencySelectionDirectiveModule } from '../_directive/currency-selection/module';
 import { TypeMapPanelDirectiveModule } from '../_directive/type-map-panel/module';
 import { TypeQuickListDirectiveModule } from '../_directive/type-quick-list/module';
+import { RecordSummarizeTypeFlatDirectiveModule } from '../_directive/record-summarize-type-flat/module';
 
 
 // style
@@ -28,7 +29,8 @@ import './records.style.less';
     FormsModule,
     CurrencySelectionDirectiveModule,
     TypeMapPanelDirectiveModule,
-    TypeQuickListDirectiveModule
+    TypeQuickListDirectiveModule,
+    RecordSummarizeTypeFlatDirectiveModule
   ],
   declarations: [
     RecordsViewComponent,

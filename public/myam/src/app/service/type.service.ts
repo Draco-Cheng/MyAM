@@ -5,9 +5,9 @@ import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { NotificationHandler } from '../handler/notification.handler';
 
-let cache = {
-  'type': null,
-  'typeFlatMap': null
+let tidRelatedCache = {
+  'nodeAllParents': {},
+  'nodeAllChilds': {}
 };
 
 @Injectable() export class TypeService {
@@ -28,6 +28,9 @@ let cache = {
       this.cacheHandler.wipe('type');
       this.cacheHandler.wipe('type.flatmap');
     }
+
+    tidRelatedCache['nodeAllParents'] = {};
+    tidRelatedCache['nodeAllChilds'] = {};
   }
 
   async get(formObj ? : any) {
@@ -142,7 +145,7 @@ let cache = {
       del_tid: del_tid
     };
     const _resault = await this.request.post(_url, _data);
-    
+
     if (_resault['success'])
       this.wipe();
     else
@@ -160,7 +163,7 @@ let cache = {
     }
     const _resault = await this.request.post(_url, _data);
 
-    
+
     if (_resault['success'])
       this.wipe('type.flatmap');
     else
@@ -176,7 +179,7 @@ let cache = {
       sub_tid: c_tid
     }
     const _resault = await this.request.post(_url, _data);
-    
+
     if (_resault['success'])
       this.wipe('type.flatmap');
     else
@@ -185,20 +188,41 @@ let cache = {
     return _resault;
   }
 
-  async getNodeAllParents(tid){}
-
-  async getNodeAllChilds(tid){
-    let _map = (await this.getFlatMap())['data'];
-    let _arr = [];
-    this.getNodeAllChildsRecursive(_map, _arr, tid);
-    return _arr;
+  async getNodeAllParents(tid) {
+    if (!tidRelatedCache['nodeAllParents'][tid]) {
+      let _map = (await this.getFlatMap())['data'];
+      let _arr = [];
+      this.getNodeAllParentsRecursive(_map, _arr, tid);
+      tidRelatedCache['nodeAllParents'][tid] = _arr;
+    }
+    return tidRelatedCache['nodeAllParents'][tid];
   }
-  getNodeAllChildsRecursive(map, arr, tid){
-    if(!map[tid] && !map[tid]['childs']) return;
+  getNodeAllParentsRecursive(map, arr, tid) {
+    if (!map[tid] || !map[tid]['parents'] || arr.indexOf(tid) != -1) return;
+    let _keys = Object.keys(map[tid]['parents']);
+    arr.push(tid);
+    _keys.forEach(k => {
+      if (arr.indexOf(k) == -1) {
+        this.getNodeAllParentsRecursive(map, arr, k);
+      }
+    });
+  }
+
+  async getNodeAllChilds(tid) {
+    if (!tidRelatedCache['nodeAllChilds'][tid]) {
+      let _map = (await this.getFlatMap())['data'];
+      let _arr = [];
+      this.getNodeAllChildsRecursive(_map, _arr, tid);
+      tidRelatedCache['nodeAllChilds'][tid] = _arr;
+    }
+    return tidRelatedCache['nodeAllChilds'][tid];
+  }
+  getNodeAllChildsRecursive(map, arr, tid) {
+    if (!map[tid] || !map[tid]['childs'] || arr.indexOf(tid) != -1) return;
     arr.push(tid);
     let _keys = Object.keys(map[tid]['childs']);
-    _keys.forEach( k => {
-      if(arr.indexOf(k) == -1){        
+    _keys.forEach(k => {
+      if (arr.indexOf(k) == -1) {
         this.getNodeAllChildsRecursive(map, arr, k);
       }
     });

@@ -37,6 +37,7 @@ export class RecordsViewComponent {
   private __meta = {};
 
   @ViewChild('showMoreBtn') showMoreBtn:ElementRef;
+  @ViewChild('recordSummarizeTypeFlat') recordSummarizeTypeFlat;
 
   private records;
   private records_pool = [];
@@ -71,14 +72,14 @@ export class RecordsViewComponent {
     this.__isInit = true;
   };
 
-  async __checkDataUpToDate() {}
-
   async getRecord() {
     this.__meta['records'] = await this.recordsService.get(this.qureyCondition);
     this.records_pool = this.__meta['records']['data'] || [];
     this.records = [];
     this.records_index = 0;
     this.lazyPushRecords();
+
+    this.recordSummarizeTypeFlat && this.recordSummarizeTypeFlat.buildSummerize();
   };
 
   lazyPushRecords() {
@@ -151,5 +152,9 @@ export class RecordsViewComponent {
 
   scrollToTop(){
     document.scrollingElement.scrollTop = 0;
+  }
+
+  putRecordsToDirective = () => {
+    return  this.records_pool;
   }
 }

@@ -1,7 +1,7 @@
-<div *ngIf="__isInit && __checkDataUpToDate()" (scroll)="onScroll($event)" class="col-md-12">
+<div *ngIf="__isInit" (scroll)="onScroll($event)" class="col-md-12">
   <h1>Records</h1>
   <div class="records-query-panel" (change)="conditionChange()">
-    <h4>Query Condition</h4>
+    <h3>Query Condition</h3>
     <div class="records-query-block">
       <div class="records-query-block-col col-md-4">
         <span class="records-query-block-col-label">Cash Type:</span>
@@ -68,9 +68,13 @@
     </div>
   </div>
   <hr>
+  <h3>Summarization</h3>
   <div class="records-number-top-hint-block">
     <div class="records-number-top-hints">Query {{records_pool?.length}} records.</div>
   </div>
+  <div #recordSummarizeTypeFlat record-summarize-type-flat [getRecord]="putRecordsToDirective"></div>
+  <hr>
+  <h3>Record Table</h3>
   <records-table [records]="records" class="col-md-12"></records-table>
   <div #showMoreBtn class="records-more-record" *ngIf="records_pool?.length > records_index" (click)="showMoreRecord()">
     <div class="records-more-record-hints"><span class="glyphicon glyphicon-triangle-bottom"></span> More</div>
