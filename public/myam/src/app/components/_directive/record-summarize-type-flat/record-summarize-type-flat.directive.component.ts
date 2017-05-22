@@ -70,6 +70,7 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
     let _typeSummerize = this.typeSummerize = {};
 
     _typeSummerize['types'] = {};
+    _typeSummerize['typeNone'] = {};
     _typeSummerize['total'] = {};
     _typeSummerize['sum'] = {};
 
@@ -97,6 +98,20 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
         const _tcItem = _typeSummerize['types'][_tid][_record.cid];
         _tcItem['count'] += 1;
         _tcItem[_record['cashType'] == -1 ? 'priceCost' : 'priceEarn'] += _record['value'];
+      }
+
+      if (Object.keys(_parents).length == 0) {
+        if (!_typeSummerize['typeNone'][_record.cid]){
+          _typeSummerize['typeNone'][_record.cid] = {
+            count: 0,
+            priceCost: 0,
+            priceEarn: 0
+          };          
+        }
+
+        const _ncItem = _typeSummerize['typeNone'][_record.cid];
+        _ncItem['count'] += 1;
+        _ncItem[_record['cashType'] == -1 ? 'priceCost' : 'priceEarn'] += _record['value'];
       }
 
       if (!_typeSummerize['total'][_record.cid]) {
@@ -135,7 +150,7 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
 
     this.typeSummerize = _typeSummerize;
 
-    setTimeout(()=>this.summarizeReady = true);
+    setTimeout(() => this.summarizeReady = true);
   }
 
   objKey(obj) {
@@ -151,6 +166,7 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
   }
 
   roundPrice(num) {
+    if(num == 0) return 0;
     return Math.round(num * 100) / 100 || 0.01;
   }
 }

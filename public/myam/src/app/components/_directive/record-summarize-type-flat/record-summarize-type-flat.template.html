@@ -52,7 +52,41 @@
     <div class="record-sum-type-flat-detail-head" (click)="showDetail=!showDetail">
       <h4>Detail <span class="glyphicon glyphicon-menu-{{showDetail?'up':'down'}}"></span></h4>
     </div>
-    <div class="record-sum-type-flat-detail-body" *ngIf="showDetail && summarizeReady" record-sum-type-map-fragment [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta" [typeSummerize]="typeSummerize" [currencyFlatMap]="currencyFlatMap" [currencyEx]="currencyEx" [defaultCid]="defaultCid"></div>
+    <div *ngIf="showDetail && summarizeReady">
+      <div class="record-sum-type-flat-detail-body" record-sum-type-map-fragment [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta" [typeSummerize]="typeSummerize" [currencyFlatMap]="currencyFlatMap" [currencyEx]="currencyEx" [defaultCid]="defaultCid"></div>
+      <div class="record-sum-type-flat-detail-body-notype" *ngIf="objKey(typeSummerize['typeNone']).length">
+        <h5><b>No Type</b></h5>
+        <hr>
+        <div class="record-sum-type-flat-total-row" *ngFor="let cid of objKey(typeSummerize['typeNone'])">
+          <div class="record-sum-type-flat-total-col">
+            <div class="record-sum-type-flat-total-label">
+              {{cidToLabel(cid)}}
+            </div>
+            <div *ngIf="typeSummerize['typeNone'][cid]['priceCost']" class="record-sum-type-flat-total-cost">
+              <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(typeSummerize['typeNone'][cid]['priceCost'])}}
+            </div>
+            <div *ngIf="typeSummerize['typeNone'][cid]['priceEarn']" class="record-sum-type-flat-total-earn">
+              <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(typeSummerize['typeNone'][cid]['priceEarn'])}}
+            </div>
+            <div class="record-sum-type-flat-total-ex" *ngIf="cid != defaultCid">
+              <span class="glyphicon glyphicon-arrow-right"></span>
+              <div class="record-sum-type-flat-total-ex-label">
+                {{cidToLabel(defaultCid)}}
+              </div>
+              <div *ngIf="typeSummerize['typeNone'][cid]['priceCost']" class="record-sum-type-flat-total-ex-cost">
+                <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyEx(cid, typeSummerize['typeNone'][cid]['priceCost']))}}
+              </div>
+              <div *ngIf="typeSummerize['typeNone'][cid]['priceEarn']" class="record-sum-type-flat-total-ex-earn">
+                <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(currencyEx(cid, typeSummerize['typeNone'][cid]['priceEarn']))}}
+              </div>
+            </div>
+            <div class="record-sum-type-flat-total-count">
+              ({{typeSummerize['typeNone'][cid]['count']}} records)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div *ngIf="showDetail" class="record-sum-type-flat-detail-bottom" (click)="showDetail=false"><span class="glyphicon glyphicon-menu-up"></span> Hide</div>
   </div>
 </div>

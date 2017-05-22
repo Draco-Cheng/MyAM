@@ -22,14 +22,13 @@
         <span class="records-option-btn glyphicon glyphicon-repeat" *ngIf="record.status=='removed'" (click)="reAdd(record)"></span>
       </div>
       <div class="table-col col-md-2 records-price-col">
-        <span currency-selection [inputCid]="record.cid" [callback]="getSelectionCallback(record)" ></span>
+        <span currency-selection [inputCid]="record.cid" [callback]="getSelectionCallback(record)"></span>
         <input type="number" class="records-price-input" [(ngModel)]="record.value" (change)="recordChange(record)" />
-
         <div class="records-currency-exchange" *ngIf="record.cid != defaultCid">
-        <span class="glyphicon glyphicon-arrow-right"></span>
+          <span class="glyphicon glyphicon-arrow-right"></span>
           <span class="records-currency-exchange-wrap" *ngIf="currencyExchange(record) && record.currencyExhange">
-            {{ record.currencyExhange.value }} {{record.currencyExhange.type}}
-          </span>          
+            {{ roundPrice(record.currencyExhange.value) }} {{record.currencyExhange.type}}
+          </span>
         </div>
       </div>
       <div class="table-col col-md-2">
@@ -46,15 +45,12 @@
       <div class="table-col col-md-2">
         <input type="date" class="records-date-input" [(ngModel)]="record.date" (change)="recordChange(record)" />
       </div>
-
       <div class="col-md-12 records-type-map" *ngIf="record.showTypeMap">
         <div class="records-type-map-title" (click)="record.showTypeMap=false">
-          <span class="glyphicon glyphicon-chevron-up"></span>
-          Type Map
+          <span class="glyphicon glyphicon-chevron-up"></span> Type Map
         </div>
-        <div type-map-panel class="record-type-map-panel" [selectedTids]="record.tidsObjMap" [callback]="getRecordTypeMapSwitch(record)"></div>        
+        <div type-map-panel class="record-type-map-panel" [selectedTids]="record.tidsObjMap" [callback]="getRecordTypeMapSwitch(record)"></div>
       </div>
-
     </div>
   </div>
 </div>

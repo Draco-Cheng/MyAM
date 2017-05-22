@@ -127,7 +127,11 @@ export class RecordTableDirectiveComponent {
 
   currencyExchange(record) {
     record.currencyExhange = this.currencyService.exchange(record.cid, this.defaultCid, record.value);
-
     return true;
+  }
+  
+  roundPrice(num) {
+    if(num == 0) return 0;
+    return Math.round(num * 100) / 100 || 0.01;
   }
 }

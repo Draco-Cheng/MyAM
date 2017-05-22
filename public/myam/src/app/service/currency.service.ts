@@ -358,9 +358,9 @@ function cloneObj(obj) {
     let _cObj = _currencyExchangeCache[_sCid][_tCid];
 
     return {
-      value: Math.round(value * _cObj['rate'] * 100) / 100 || 0.01,
+      value: value * _cObj['rate'],
       track: _cObj['track'],
-      precise_value: Math.round(value * _cObj['precise_rate'] * 100) / 100 || 0.01,
+      precise_value: value * _cObj['precise_rate'],
       precise_track: _cObj['precise_track'],
       type: _cObj['toType']
     };

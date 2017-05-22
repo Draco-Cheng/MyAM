@@ -90,6 +90,7 @@ export class RecordSumTypeMapFragmentDirectiveComponent {
   }
 
   roundPrice(num) {
+    if(num == 0) return 0;
     return Math.round(num * 100) / 100 || 0.01;
   }
 }
