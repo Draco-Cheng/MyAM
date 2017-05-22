@@ -18,9 +18,9 @@ import { NotificationHandler } from '../handler/notification.handler';
     const _url = this.endpoint + '/get';
     const _data = formObj || { orderBy: ['rid', 'DESC'], limit: 10 };
 
-    if (_data.cashType == "string")
+    if (typeof _data.cashType == 'string')
       _data.cashType = _data.cashType * 1;
-    
+
     let _resault = < any[] > await this.request.post(_url, _data);
 
     if (_resault['success']) {
