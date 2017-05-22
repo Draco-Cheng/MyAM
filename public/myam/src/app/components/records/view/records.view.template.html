@@ -72,7 +72,7 @@
   <div class="records-number-top-hint-block">
     <div class="records-number-top-hints">Query {{records_pool?.length}} records.</div>
   </div>
-  <div #recordSummarizeTypeFlat record-summarize-type-flat [getRecord]="putRecordsToDirective"></div>
+  <div *ngIf="records_pool?.length" #recordSummarizeTypeFlat  class="records-view-summarize-block" record-summarize-type-flat [getRecord]="putRecordsToDirective"></div>
   <hr>
   <h3>Record Table</h3>
   <records-table [records]="records" class="col-md-12"></records-table>

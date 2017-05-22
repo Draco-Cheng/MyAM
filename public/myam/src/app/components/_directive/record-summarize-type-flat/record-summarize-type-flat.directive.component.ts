@@ -6,10 +6,6 @@ import { CurrencyService } from '../../../service/currency.service';
 
 import './record-summarize-type-flat.style.less';
 
-function roundPrice(num) {
-  return Math.round(num * 100) / 100;
-}
-
 @Component({
   selector: '[record-summarize-type-flat]',
   template: require('./record-summarize-type-flat.template.html'),
@@ -21,18 +17,21 @@ function roundPrice(num) {
 })
 
 export class RecordSummarizeTypeFlatDirectiveComponent {
-  @Input() getRecord;
+  @Input() getRecord: Function;
 
   private __isInit = false;
   private __meta = {};
 
   private types;
   private typesFlat = {};
+  private typesMapFlatMeta;
   private typeSummerize;
 
   private currencyFlatMap;
 
   private defaultCid;
+
+  private summarizeReady;
 
   constructor(
     private recordsService: RecordsService,
@@ -55,6 +54,8 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
 
   async getTypes() {
     this.__meta['types'] = await this.typeService.get();
+    this.typesMapFlatMeta = await this.typeService.getFlatMap();
+
     this.types = this.__meta['types']['data'];
 
     this.types.forEach(element => {
@@ -63,6 +64,8 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
   };
 
   async buildSummerize() {
+    this.summarizeReady = false;
+
     let _records = this.getRecord();
     let _typeSummerize = this.typeSummerize = {};
 
@@ -125,12 +128,14 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
       _sumCount += _typeSummerize['total'][_cid]['count'];
 
     }
-    _typeSummerize['sum']['priceCost'] = roundPrice(_sumCost);
-    _typeSummerize['sum']['priceEarn'] = roundPrice(_sumEarn);
-    _typeSummerize['sum']['sum'] = roundPrice(_sumEarn - _sumCost);;
+    _typeSummerize['sum']['priceCost'] = _sumCost;
+    _typeSummerize['sum']['priceEarn'] = _sumEarn;
+    _typeSummerize['sum']['sum'] = _sumEarn - _sumCost;
     _typeSummerize['sum']['count'] = _sumCount;
 
     this.typeSummerize = _typeSummerize;
+
+    setTimeout(()=>this.summarizeReady = true);
   }
 
   objKey(obj) {
@@ -141,11 +146,11 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
     return this.currencyFlatMap[cid]['type'];
   }
 
-  currencyEx(cid, value) {
+  currencyEx = (cid, value) => {
     return this.currencyService.exchange(cid, this.defaultCid, value)['value'];
   }
 
-  getSumForDefaultCid() {
-
+  roundPrice(num) {
+    return Math.round(num * 100) / 100 || 0.01;
   }
 }

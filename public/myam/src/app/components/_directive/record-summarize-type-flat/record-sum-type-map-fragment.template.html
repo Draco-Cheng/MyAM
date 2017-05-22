@@ -1,0 +1,44 @@
+<div *ngIf="!currentNode">
+  <div *ngFor="let node of childNode" class="verticalTree record-sum-type-map-fragment-block">
+    <ul>
+      <li record-sum-type-map-fragment [currentNode]="node" [parentNodes]="parentNodes" [typesFlat]="typesFlat" [typesMapFlatMeta]="typesMapFlatMeta" [currencyFlatMap]="currencyFlatMap" [currencyEx]="currencyEx" [defaultCid]="defaultCid" [typeSummerize]="typeSummerize"></li>
+    </ul>
+  </div>
+</div>
+<a *ngIf="currentNode =='_unclassified'" class="record-sum-type-map-fragment-checkbox unclassified">Unclassified</a>
+<a *ngIf="currentNode && currentNode !='_unclassified'" class="record-sum-type-map-fragment-checkbox">
+  <div class="record-sum-type-map-fragment-tlabel">
+    {{ typesFlat[currentNode].type_label }}
+  </div>
+  <hr>
+  <div class="record-sum-type-map-fragment-row" *ngFor="let cObj of objArr(typeSummerize['types'][currentNode])">
+    <div class="record-sum-type-map-fragment-label">
+      {{cidToLabel(cObj['key'])}}
+    </div>
+    <div *ngIf="cObj['data']['priceCost']" class="record-sum-type-map-fragment-cost">
+      <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(cObj['data']['priceCost'])}}
+    </div>
+    <div *ngIf="cObj['data']['priceEarn']" class="record-sum-type-map-fragment-earn">
+      <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(cObj['data']['priceEarn'])}}
+    </div>
+    <div class="record-sum-type-map-fragment-ex" *ngIf="cObj['key'] != defaultCid">
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <div class="record-sum-type-map-fragment-ex-label">
+        {{cidToLabel(defaultCid)}}
+      </div>
+      <div *ngIf="cObj['data']['priceCost']" class="record-sum-type-map-fragment-ex-cost">
+        <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyEx(cObj['key'], cObj['data']['priceCost']))}}
+      </div>
+      <div *ngIf="cObj['data']['priceEarn']" class="record-sum-type-map-fragment-ex-earn">
+        <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(currencyEx(cObj['key'], cObj['data']['priceEarn']))}}
+      </div>
+    </div>
+    <div class="record-sum-type-map-fragment-count">
+      ({{cObj['data']['count']}} records)
+    </div>
+  </div>
+</a>
+<ul *ngIf="currentNode && childNode.length ">
+  <li *ngFor="let node of childNode " record-sum-type-map-fragment [currentNode]="node " [parentNodes]="parentNodes " [typesFlat]="typesFlat " [typesMapFlatMeta]="typesMapFlatMeta" [currencyFlatMap]="currencyFlatMap" [currencyEx]="currencyEx" [defaultCid]="defaultCid" [typeSummerize]="typeSummerize">
+  </li>
+</ul>
