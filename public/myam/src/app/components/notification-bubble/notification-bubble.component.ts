@@ -58,7 +58,7 @@ export class NotificationBubbleComponent {
     let _item = { type: type, msg: msg };
     this.msgPool.unshift(_item);
 
-    type != 'error' && setTimeout(() => this.msgPool.pop(), 5000);
+    setTimeout(() => this.msgPool.pop(), type == 'error'? 5000 : 3000);
   }
 
   remove(item){

@@ -52,6 +52,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (!_resault['success'])
       this.notificationHandler.broadcast('error', _resault['message']);
+    else
+      this.notificationHandler.broadcast('success', 'Updated success!');
 
     return _resault;
   };
@@ -81,6 +83,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (!_resault['success'])
       this.notificationHandler.broadcast('error', _resault['message']);
+    else
+      this.notificationHandler.broadcast('success', 'Deleted success!');
 
     return _resault;
   };

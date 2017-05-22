@@ -85,10 +85,17 @@ export class RecordsAddComponent {
   async addRecord() {
     let _record = cloneObj(this.newRecord);
     const _resault = await this.recordsService.set(_record);
+
+    if (!_resault.success) return;
+
     _record.rid = _resault['data'][0].rid;
     const _resault2 = await this.recordsService.setType(_record.rid, Object.keys(_record.tids));
 
     if (_resault) {
+      let _map = {};
+      _record.tidsObjMap = _record.tids;
+      _record.tids = Object.keys(_record.tids);
+
       this.records.unshift(_record);
 
       this.newRecord.value = 0;

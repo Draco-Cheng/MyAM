@@ -134,10 +134,12 @@ function cloneObj(obj) {
 
     const _resault = await this.request.post(_url, _data);
 
-    if (_resault['success'])
+    if (_resault['success']) {
       this.wipe();
-    else
+      this.notificationHandler.broadcast('success', 'Updated success!');
+    } else {
       this.notificationHandler.broadcast('error', _resault['message']);
+    }
 
     return _resault;
   }
@@ -156,10 +158,12 @@ function cloneObj(obj) {
 
     const _resault = await this.request.post(_url, _data);
 
-    if (_resault['success'])
+    if (_resault['success']) {
       this.wipe();
-    else
+      this.notificationHandler.broadcast('success', 'Add success!');
+    } else {
       this.notificationHandler.broadcast('error', _resault['message']);
+    }
 
     return _resault;
   }
@@ -172,10 +176,12 @@ function cloneObj(obj) {
 
     const _resault = await this.request.post(_url, _data);
 
-    if (_resault['success'])
+    if (_resault['success']) {
       this.wipe();
-    else
+      this.notificationHandler.broadcast('success', 'Deleted success!');
+    } else {
       this.notificationHandler.broadcast('error', _resault['message']);
+    }
 
     return _resault;
   }

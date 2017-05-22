@@ -81,6 +81,8 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
         for (let _ptid of _allRelateNode) {
           _parents[_ptid] = true;
         }
+
+        _parents[_tid] = true;
       }
 
       for (let _tid in _parents) {

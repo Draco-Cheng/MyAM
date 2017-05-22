@@ -1,14 +1,13 @@
 <div class="container">
   <h1>Login</h1>
-  <h5>[Fake login page] Input anything is fine then click submit</h5>
   <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
       <label for="name">ID</label>
-      <input type="text" [(ngModel)]="form.acc" class="form-control" name="acc" required>
+      <input type="text" placeholder="enter your ID" [(ngModel)]="form.acc" class="form-control" name="acc" required>
     </div>
     <div class="form-group">
       <label for="alterEgo">Password</label>
-      <input type="password" [(ngModel)]="form.pwd" class="form-control" name="pwd" required>
+      <input type="password" placeholder="enter your password" [(ngModel)]="form.pwd" class="form-control" name="pwd" required>
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
     <input type="checkbox" [(ngModel)]="form.keep" name="keepLogin" id="keepLogin">

@@ -33,6 +33,8 @@ import {
     if (_res['success']) {
       await this.config.setUserProfile(_res['data']);
       this.router.navigate(_res['data']['dbList'].length ? ['/dashboard'] : ['/profile']);
+    } else {
+      this.notificationHandler.broadcast('error', 'Login Fail!');
     }
   }
 

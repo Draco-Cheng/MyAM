@@ -41,6 +41,7 @@ import { NotificationHandler } from '../handler/notification.handler';
     let _userProfile = _resaultProfile['data']['user'][0];
     _userProfile['dbList'] = _resaultDbList['data']['dbList'];
 
+    this.notificationHandler.broadcast('success', 'Updated success!');
     this.config.setUserProfile(_userProfile);
   }
 
@@ -71,6 +72,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (!_resault['success'])
       this.notificationHandler.broadcast('error', _resault['message']);
+    else
+      this.notificationHandler.broadcast('success', 'Deleted success!');
 
     return _resault;
   }
@@ -89,6 +92,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     await this.updateConfigProfile();
 
+    this.notificationHandler.broadcast('success', 'Created success!');
+
     return _resault;
   }
 
@@ -102,7 +107,10 @@ import { NotificationHandler } from '../handler/notification.handler';
     const _resault = await this.request.upload(_url, _data);
 
     if (_resault['success']) {
+      this.notificationHandler.broadcast('success', 'Upload success!');
       await this.updateConfigProfile();
+    } else {
+      this.notificationHandler.broadcast('error', _resault['message']);
     }
 
     return _resault;
@@ -125,6 +133,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (!_resault['success'])
       this.notificationHandler.broadcast('error', _resault['message']);
+    else
+      this.notificationHandler.broadcast('success', 'Updated success!');
 
     return _resault;
   }
@@ -177,6 +187,8 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     if (!_resault['success'])
       this.notificationHandler.broadcast('error', _resault['message']);
+    else
+      this.notificationHandler.broadcast('success', 'Updated success!');
 
     return _resault;
   }
@@ -206,6 +218,7 @@ import { NotificationHandler } from '../handler/notification.handler';
       if (_resault['success'] && _data['token']) {
         location.href = '';
       } else {
+        this.notificationHandler.broadcast('success', 'Updated success!');
         await this.updateConfigProfile();
         return { data: _resault };
       }
