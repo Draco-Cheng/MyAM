@@ -1,17 +1,14 @@
 # MyAM
 
-This is the self accounting manage web server.
+This is a server for record personal spending history.
 
-#How to use
-	Windows:
-		Option 1: run start.bat
-		Option 2: Open command line "npm install" then "npm start"
+## How to use
+ Open command line "npm install" then "npm start"
 
-
-#about the server
+## about the server
 It's build with node.js and angular 4.
 
-What is in progress:
+## What is in progress:
 	Trello: https://trello.com/b/Vi0X4kpX
 
 Made by Draco Cheng.
