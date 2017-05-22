@@ -6,6 +6,7 @@ This is a server for record personal spending history.
  Open command line "npm install" then "npm start"
  
  #### server use async/await, it's need nodejs 7+
+ #### Default administrator account: admin/admin
 
 ## about the server
 It's build with node.js and angular 4.
