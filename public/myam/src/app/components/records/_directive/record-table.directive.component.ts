@@ -66,7 +66,11 @@ export class RecordTableDirectiveComponent {
   }
 
   tidToLabel(tid: string) {
-    return this.typesFlat[tid].type_label;
+    if(this.typesFlat[tid])
+      return this.typesFlat[tid].type_label;
+    
+    console.warn('Type missing', tid);
+    return tid;
   }
 
   removeTypeInRecord(record, tid) {
