@@ -1,20 +1,24 @@
 {
-  "name": "myecm",
+  "name": "myam",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "This is MyAM server, you will need node.js 7+ server to run server!",
+  "scripts": {
+    "build": "npm install && node index.js",
+    "start": "node index.js"
+  },
   "dependencies": {
-    "async": "^0.9.0",
-    "body-parser": "^1.9.0",
-    "colors": "^1.0.3",
-    "express": "^4.9.5",
-    "fs": "0.0.2",
-    "promise": "^6.0.0"
+    "body-parser": "^1.17.1",
+    "colors": "^1.1.2",
+    "dateformat": "^2.0.0",
+    "express": "^4.15.2",
+    "formidable": "^1.1.1",
+    "md5": "^2.2.1",
+    "mkdirp": "^0.5.1",
+    "promise": "^7.1.1",
+    "rimraf": "^2.6.1",
+    "sqlite3": "^3.1.8"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC"
 }

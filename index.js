@@ -13,6 +13,8 @@ if (config.uploadTempDir &&
   })
 }
 
+global.ROOT_PATH = __dirname;
+
 if (!require('fs').existsSync(config.dbFolder))
   require('fs').mkdirSync(config.dbFolder);
 if (!require('fs').existsSync(config.backupFolder))
@@ -22,7 +24,7 @@ app.set('views', __dirname + '/views');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use("/", require("./controller/resquestHandler"));
-app.use("/", express.static(__dirname + '/public'));
+app.use("/", express.static(__dirname + config.frontendPublicFolder));
 app.use("/", require("./routes/index"));
 
 

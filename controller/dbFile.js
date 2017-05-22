@@ -1,42 +1,50 @@
-var fs         = require("fs");
-var logger     = require("./logger.js");
-var Promise    = require("promise");
+var fs = require("fs");
+var rimraf = require('rimraf');
+var logger = require("./logger.js");
 var formidable = require("formidable");
 var dateFormat = require('dateformat');
-var config     = require("../config.js");
+var mkdirp = require('mkdirp');
+var config = require("../config.js");
 
 var _checkFile = function(data, callback) {
-  fs.exists(data.checkFile, function(exists) {
-    // handle result
-    data.fileExists = exists;
-    callback(null, data);
-  });
+  try {
+    fs.exists(data.checkFile, function(exists) {
+      // handle result
+      data.fileExists = exists;
+      callback(data);
+    });
+  } catch (e) {
+    logger.error(data.reqId, e.stack);
+  }
+
+  return new Promise(resolve => callback = resolve);
 };
-exports.checkFile = Promise.denodeify(_checkFile);
+exports.checkFile = _checkFile;
 //exports.check = _check;
 
 var _checkDB = function(data) {
   return new Promise(function(resolve, reject) {
-    data.checkFile = data.dbFile;
-    logger.debug(data.reqId, "Check Database " + data.checkFile + " exist or not...");
+    try {
+      data.checkFile = data.dbFile;
+      logger.debug(data.reqId, "Check Database " + data.checkFile + " exist or not...");
 
-    exports.checkFile(data).then(function(data) {
+      exports.checkFile(data).then(function(data) {
+        if (!data.fileExists) {
+          var _msg = "Database " + data.checkFile + " not exist...";
+          logger.warn(data.reqId, _msg);
+          data['resault'] = { isExist: false };
+        } else {
+          var _msg = "Database " + data.checkFile + " exist...";
+          logger.warn(data.reqId, _msg);
+          data['resault'] = { isExist: true };
+        }
 
-      if (!data.fileExists) {
-        var _msg = "Database " + data.checkFile + " not exist...";
-        logger.warn(data.reqId, _msg);
-        data.message = _msg;
-        data.code = 412;
-        reject(data)
-      } else {
-        var _msg = "Database " + data.checkFile + " exist...";
-        logger.warn(data.reqId, _msg);
-        data.message = _msg;
+        delete data.checkFile;
         resolve(data);
-      }
-
-      delete data.checkFile;
-    });
+      });
+    } catch (e) {
+      logger.error(data.reqId, e.stack);
+    }
   });
 }
 exports.checkDB = _checkDB;
@@ -45,136 +53,124 @@ var _createFile = function(data, callback) {
   fs.writeFile(data.createFile, '', function(err) {
     if (err) logger.error(err);
     else logger.info(data.reqId, 'create file ' + data.createFile);
-    if (callback) callback(err, data);
+    if (callback) callback(data);
   });
+
+  return new Promise(resolve => callback = resolve);
 }
-exports.createFile = Promise.denodeify(_createFile);
+exports.createFile = _createFile;
 //exports.createFile = _createFile;
 
-var _unlinkFile = function(data, callback) {
-  fs.unlink(data.dbFile, function(err) {
+exports.unlinkFile = function(data) {
+  const _file = data['meta']['file'];
+  let _resolve;
+
+  fs.unlink(_file, function(err) {
     if (err) logger.error(data.reqId, err);
-    else logger.info(data.reqId, 'unlink file ' + data.dbFile);
-    if (callback) callback(err, data);
+    else logger.info(data.reqId, 'unlink file ' + _file);
+    _resolve(data);
   });
+
+  return new Promise((resolve, reject) => _resolve = resolve);
 }
-exports.unlinkFile = Promise.denodeify(_unlinkFile);
-//exports.unlinkFile = _unlinkFile;
 
-var _isDirectory = function(data, callback) {
+exports.isDirectory = async function isDirectory(data, dirList) {
+  var _resolve;
   var _pool = [];
-  var _list = data.fileList;
-  var _path = data.path ? (data.path.substr(-1, 1) == "/" ? data.path : data.path + "/") : "";
-  logger.debug(data.reqId, "get stat:" + _path);
+  var _path = data['meta']['path'] ? (data['meta']['path'].substr(-1, 1) == '/' ? data['meta']['path'] : data['meta']['path'] + '/') : '';
+  logger.debug(data.reqId, 'get stat:' + _path);
 
-  _list.forEach(function(dir) {
+  dirList.forEach(function(dir) {
     fs.stat(_path + dir, function(err, stats) {
       _pool.push({ name: dir, isDir: stats.isDirectory(), stats: stats });
-      if (_list.length == _pool.length) {
-        data.fileList = _pool;
-        callback(null, data)
+      if (dirList.length == _pool.length) {
+        _resolve(_pool)
       }
     })
-  })
-}
-exports.isDirectory = Promise.denodeify(_isDirectory);
-
-var _readdir = function(data, callback) {
-  logger.debug(data.reqId, "readdir : " + data.path);
-  fs.readdir(data.path, function(err, dir) {
-    // handle result
-
-    data.fileList = dir;
-    _isDirectory(data, callback);
-  });
-}
-exports.readdir = Promise.denodeify(_readdir);
-
-
-var _upload = function(data, callback) {
-  logger.log(data.reqId, "[Files]".bgWhite.black + "\tUpload files...");
-  var _request = data.request;
-  var _form = new formidable.IncomingForm();
-  _form.uploadDir = config.uploadTempDir || require('os').tmpdir();
-
-  data.DBList = [];
-  var _numFlag = 0;
-
-  var _timeFlag = Date.now();
-  _form.on('progress', function(bytesReceived, bytesExpected) {
-    if (Date.now() >= _timeFlag) {
-      var _percentage = ((bytesReceived / bytesExpected) * 100).toFixed(2)
-      logger.log(data.reqId, "[Files]".bgWhite.black + " progress: " + _percentage + "% ( " + bytesReceived + "\t/ " + bytesExpected + ")");
-      _timeFlag = Date.now() + 1000;
-    }
   });
 
-  _form.parse(_request, function(error, fields, files) {
-    logger.log(data.reqId, "[Files]".bgWhite.black + " progress: done...");
+  return new Promise(resolve => _resolve = resolve);
+}
 
-    if (error) {
-      logger.log(data.reqId, "[Files]".bgRed + (" upload file error " + error).red);
-      return callback();
-    }
+exports.readdir = data => {
+  var _resolve;
+  logger.debug(data.reqId, "readdir : " + data['meta']['path']);
+  let _dir = fs.readdir(data['meta']['path'], async(err, dir) => {
+    _resolve((dir && dir.length) ? await exports.isDirectory(data, dir) : []);
+  });
+  return new Promise(resolve => _resolve = resolve);
+}
 
-    for (var fileFormName in files) {
-      var _file = files[fileFormName];
-      var _tempPath = _file.path;
-      var _uploadPath = data.renameFolder + _file.name;
-      _numFlag++;
-
-      logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\t" + "FileReneme:".bgMagenta + " " + _tempPath + " -> " + _uploadPath);
-      _checkFile({ checkFile: _uploadPath }, function(err, json) {
-        if (json.fileExists)
-          switch (data.fileConflict) {
-            case "backup":
-              var _name = data.renameFolder + "bk-" + dateFormat(Date.now(), "yyyymmdd-HHMM-") + _file.name;
-              fs.renameSync(_uploadPath, _name);
-              logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\tFile already exists rename old one to " + _name);
-              break;
-            default:
-              logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\tFile already exists replace...");
-          }
+exports.createdir = data => {
+  var _resolve;
+  logger.debug(data.reqId, "readdir : " + data['meta']['path']);
+  let _dir = fs.mkdir(data['meta']['path'], async(err, dir) => {
+    _resolve(data['resault'] = 200);
+  });
+  return new Promise(resolve => _resolve = resolve);
+}
 
 
-        var _finishRename = function() {
-          logger.log(data.reqId, "[Files]".bgWhite.black + " " + "File Name:".bgMagenta + " " + _file.name + "\trename is finished...");
-          data.DBList.push({
-            path: _uploadPath,
-            name: _file.name
-          });
+exports.upload = async data => {
+  try {
+    logger.log(data.reqId, "[Files]".bgWhite.black + "\tUpload files...");
+    var _resolve;
+    var _request = data.request;
+    var _form = new formidable.IncomingForm();
+    _form.uploadDir = config.uploadTempDir || require('os').tmpdir();
 
-          setTimeout(function() {
-            if (data.DBList.length >= _numFlag)
-              callback(null, data);
-          });
+    var _timeFlag = Date.now();
+    _form.on('progress', function(bytesReceived, bytesExpected) {
+      if (Date.now() >= _timeFlag) {
+        var _percentage = ((bytesReceived / bytesExpected) * 100).toFixed(2)
+        logger.log(data.reqId, "[Files]".bgWhite.black + " progress: " + _percentage + "% ( " + bytesReceived + "\t/ " + bytesExpected + ")");
+        _timeFlag = Date.now() + 1000;
+      }
+    });
+
+    _form.parse(_request, function(error, fields, files) {
+      logger.log(data.reqId, "[Files]".bgWhite.black + " progress: done...");
+
+      if (error) {
+        logger.log(data.reqId, "[Files]".bgRed + (" upload file error " + error).red);
+        data['error'] = {
+          code: 406,
+          message: 'UPLOAD_FAILD'
         }
+        return _resolve(data);
+      }
 
-        try {
-          fs.renameSync(_tempPath, _uploadPath);
-          _finishRename();
-        } catch (e) {
-          /**********************************************
-          Error: EXDEV, Cross-device link
-          **********************************************/
-          var is = fs.createReadStream(_tempPath);
-          var os = fs.createWriteStream(_uploadPath);
-          is.pipe(os);
-          is.on('end', function() {
-            fs.unlinkSync(_tempPath);
-            _finishRename();
-          });
-          /*********************************************/
+      if (!fields['name']) {
+        logger.log(data.reqId, "[Files]".bgRed + (" No file name ").red);
+        data['error'] = {
+          code: 406,
+          message: 'NO_FILE_NAME'
         }
+        return _resolve(data);
+      }
 
-      });
-    }
-  });
+      // file temp path is  in files['file']['path']
+      const _file = files['file'];
+
+      data['resault'] = {
+        'name': fields['name'],
+        'file': _file
+      };
+
+      _resolve(data);
+    });
+  } catch (e) {
+    console.error(e.stack);
+    data['error'] = { code: 500 };
+    return data;
+  }
+
+  return new Promise(resolve => _resolve = resolve);
 }
-exports.upload = Promise.denodeify(_upload);
 
-var _unlink = function(data, callback) {
-  var _path = data.deleteFile;
+exports.unlink = function(data) {
+  var _path = data['meta']['deleteFile'];
+  var _resolve;
   var _retry = 0;
   logger.log(data.reqId, "[Files]".bgRed + " Delete file... \t" + "File Name:".bgRed + " " + _path);
 
@@ -185,24 +181,22 @@ var _unlink = function(data, callback) {
           return setTimeout(_delete, 100);
         logger.log(data.reqId, "[Files]".bgRed + (" Delete file error " + err).red);
       }
-      callback && callback();
+      _resolve();
     });
   }
   _delete();
 
+  return new Promise(resolve => _resolve = resolve);
 }
-exports.unlink = Promise.denodeify(_unlink);
 
-var _createFolder = function(folder, callback) {
+var _createFolderSync = function(path) {
   try {
-    if (!fs.existsSync(folder))
-      fs.mkdirSync(folder);
-    return true;
+    mkdirp.sync(path);
   } catch (e) {
-    return false;
+    logger.error("Can't create " + path + "\tERROR : " + e);
   }
 }
-exports.createFolder = _createFolder;
+exports.createFolderSync = _createFolderSync;
 
 var _copyFile = function(source, target) {
   /**********************************************
@@ -221,13 +215,27 @@ var _copyFile = function(source, target) {
 }
 exports.copyFile = _copyFile;
 
-var _renameFile = function(source, target) {
+exports.renameFile = (data) => {
   try {
-    fs.renameSync(source, target);
-    return true;
+    logger.debug('Rename file: ' + data['meta']['source'] + ' -> ' + data['meta']['target']);
+    fs.renameSync(data['meta']['source'], data['meta']['target']);
+    data['resault'] = true;
+    return data;
   } catch (e) {
-    console.log(e)
-    return false;
+    console.log(e.stack)
+    data['resault'] = false;
+    return data;
   }
 }
-exports.renameFile = _renameFile;
+
+exports.removeFolder = async data => {
+  const _meta = data['meta'];
+  const _path = _meta['delPath'];
+  let _resolve;
+
+  rimraf(_path, () => {
+    _resolve();
+  });
+
+  return new Promise(resolve => _resolve = resolve);
+}

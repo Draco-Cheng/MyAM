@@ -1,0 +1,52 @@
+.currency-edit-map {
+  &>ul>li {
+    &>a {
+      border: 2px double !important;
+    }
+    &:first-child>a {
+      background-color: grey;
+      color: white;
+    }
+    input,
+    select {
+      border: 0;
+    }
+    .currency-edit-map-col {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 5px;
+      &:first-child {
+        margin-left: 0px;
+      }
+    }
+    .currency-edit-map-option {
+      margin-top: 3px;
+      margin-bottom: 3px;
+    }
+    .currency-del-confirm-block {
+      display: inline-block;
+    }
+    .currency-edit-map-memo {
+      text-align: center;
+    }
+    .currency-option-btn {
+      cursor: pointer;
+      font-size: 1.5em;
+      vertical-align: middle;
+    }
+    .currency-edit-rate-input {
+      width: 55px;
+      text-align: right;
+    }
+    .currency-edit-map-checkbox {
+      color: #d1d1d1;
+      cursor: pointer;
+      transition: color 0.5s;
+      -webkit-transition: color 0.5s;
+      -moz-transition: color 0.5s;
+      &.checked {
+        color: green;
+      }
+    }
+  }
+}

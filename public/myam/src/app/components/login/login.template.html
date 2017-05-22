@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>Login</h1>
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">ID</label>
+      <input type="text" placeholder="enter your ID" [(ngModel)]="form.acc" class="form-control" name="acc" required>
+    </div>
+    <div class="form-group">
+      <label for="alterEgo">Password</label>
+      <input type="password" placeholder="enter your password" [(ngModel)]="form.pwd" class="form-control" name="pwd" required>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+    <input type="checkbox" [(ngModel)]="form.keep" name="keepLogin" id="keepLogin">
+    <label for="keepLogin">Keep Login</label>
+  </form>
+</div>

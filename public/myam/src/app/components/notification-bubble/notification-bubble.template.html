@@ -1,0 +1,4 @@
+<div class="notification-bubble-item {{item.type}}" [@flyInOut] *ngFor="let item of msgPool">
+  {{item.msg}}
+  <span class="glyphicon glyphicon-remove notification-bubble-close" (click)="remove(item)"></span>
+</div>

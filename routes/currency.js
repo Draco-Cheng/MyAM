@@ -52,7 +52,7 @@ routes.set = function(req, res, next) {
 				else
 					responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200, req, res);
+				responseHandler(200,{ cid: data.cid } , req, res);
 				services.dbService.syncDB(data);
 			}
 		});

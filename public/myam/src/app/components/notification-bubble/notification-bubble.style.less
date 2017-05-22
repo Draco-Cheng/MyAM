@@ -1,0 +1,39 @@
+notification-bubble {
+  position: fixed;
+  right: 25px;
+  top: 70px;
+  z-index: 9999;
+  width: 300px;
+  .notification-bubble-item {
+    border-style: double;
+    border-radius: 10px;
+    border-width: 3px;
+    padding: 5px 10px;
+    width: 300px;
+    margin-bottom: 1px;
+    display: block;
+    float: right;
+    width: 300px;
+
+    .notification-bubble-close{
+      float: right;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    &.error{
+      color: white;
+      background: red;
+    }
+
+    &.warn{
+      color: white;
+      background: orange;
+    }
+
+    &.success{
+      color: white;
+      background: green;
+    }
+  }
+}

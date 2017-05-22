@@ -51,44 +51,40 @@ var _setTypes = function(data, callback){
 }
 exports.setTypes = Promise.denodeify(_setTypes);
 
-var _delTypes = function(data, callback){
-	var _checkDB = controller.dbFile.checkDB(data);
+exports.delTypes = async data => {
+  try {
 
-	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
+    data['error'] || await controller.dbFile.checkDB(data);
+    data['error'] || await controller.dbController.connectDB(data);
+    if (data['error']) return data;
 
-			.then(function(data){
-				var _tempData = {
-					db : data.db,
-					reqId : data.reqId,
-					tid : data.del_tid,
-					limit : 1
-				}
-				return controller.dbController.getRecordTypeMap(_tempData);
-			})
-			.then(function(tempData){
+    const _tempData = {
+      db: data.db,
+      reqId: data.reqId,
+      tid: data['meta']['del_tid'],
+      limit: 1
+    }
 
-				var _resault = tempData.resault.pop().length;
-				if(_resault){
-					data.code = 424;
-					data.message = "record_dependencies";
-					throw data;
-				}else{
-					return controller.dbController.delTypeMaps(data);
-				}				
-			})
-			.then(function(data){ return controller.dbController.delTypes(data); })
-			.nodeify(function(err){
-				controller.dbController.closeDB(data).then(function(){
-					err && logger.error(data.reqId, err);
-					callback(err , data);
-				});
-			});
+    await controller.dbController.getRecordTypeMap(_tempData);
 
-	_checkDB.catch(function(data){
-		callback(data)
-	});
+    if (_tempData.resault[0].length) {
+      data['error'] = {
+        code: 424,
+        message: 'RECORD_DEPENDENCIES'
+      };
+      return data;
+    } else {
+      await controller.dbController.delTypeMaps(data)
+    }
+
+    data['error'] || await controller.dbController.delTypes(data);
+    data['error'] || await controller.dbController.closeDB(data);
+
+    return data;
+
+
+  } catch (e) { logger.error(data.reqId, e.stack) }
 }
-exports.delTypes = Promise.denodeify(_delTypes);
 
 var _delTypeMaps = function(data, callback){
 	var _checkDB = controller.dbFile.checkDB(data);

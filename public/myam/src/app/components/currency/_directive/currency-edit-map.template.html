@@ -1,0 +1,39 @@
+<div *ngIf="!currentNode" class="verticalTree currency-edit-map">
+  <ul>
+    <li>
+      <a>Main Currency</a>
+    </li>
+    <li currency-edit-map *ngFor="let cid of objKeys(currencyStructureMap)" [currentNode]="currencyStructureMap[cid]" [currencyFlatMap]="currencyFlatMap"></li>
+  </ul>
+</div>
+<a *ngIf="currentNode" (change)="currentNode.isChange=true">
+  <div class="currency-edit-map-col">
+    <select [(ngModel)]="currentNode.type">
+      <option [value]="currency" *ngFor="let currency of currencyList">{{currency}}</option>
+    </select>
+    <span *ngIf="currentNode.to_cid">
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <input class="currency-edit-rate-input" [(ngModel)]="currentNode.rate" type="number">
+      <span *ngIf="currentNode.main">{{ getType(currentNode.to_cid) }}</span>
+      <span *ngIf="!currentNode.main" currency-selection [inputCid]="currentNode.to_cid" [callback]="getSelectionCallback(currentNode)" ></span>
+    </span>
+  </div>
+  <div class="currency-edit-map-col">
+    <input class="currency-edit-map-memo" [(ngModel)]="currentNode.memo" placeholder="No Memo" type="text">
+  </div>
+  <div class="currency-edit-map-col">
+    <input [(ngModel)]="currentNode.date" type="date">
+  </div>
+  <div class="currency-edit-map-col currency-edit-map-option">
+    <span class="currency-option-btn glyphicon glyphicon-sort-by-attributes-alt currency-edit-map-checkbox {{ currentNode.quickSelect ? 'checked' : '' }}" alt="Quick Select" (click)="currentNode.quickSelect = !currentNode.quickSelect; currentNode.isChange=true; "></span>
+    <span class="currency-option-btn glyphicon glyphicon-trash" *ngIf="!currentNode.main && !currentNode.status" (click)="currentNode.status='removing'"></span>
+    <span class="currency-option-btn glyphicon glyphicon-floppy-saved" *ngIf="!currentNode.status && currentNode.isChange" (click)="save(currentNode)"></span>
+    <div class="currency-del-confirm-block" *ngIf="currentNode.status=='removing'">
+      <span class="currency-option-btn glyphicon glyphicon-triangle-left" (click)="currentNode.status=''"></span>
+      <span class="currency-option-btn glyphicon glyphicon-floppy-remove" (click)="del(currentNode)"></span>
+    </div>
+  </div>
+</a>
+<ul *ngIf="currentNode && currentNode.childs.length">
+  <li currency-edit-map *ngFor="let node of currentNode.childs" [currentNode]="node" [currencyFlatMap]="currencyFlatMap"></li>
+</ul>

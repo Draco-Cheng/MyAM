@@ -1,0 +1,25 @@
+<div *ngIf="!currentNode" class="verticalTree currency-map">
+  <ul>
+    <li>
+      <a>Main Currency</a>
+    </li>
+    <li currency-map *ngFor="let cid of objKeys(currencyStructureMap)" [callback]="callback" [currentNode]="currencyStructureMap[cid]" [currencyFlatMap]="currencyFlatMap" [inputCid]="inputCid"></li>
+  </ul>
+</div>
+<a *ngIf="currentNode" class="{{inputCid == currentNode.cid ? 'isSelected' : ''}}" (click)="select(currentNode)">
+	<span class="currency-map-col">
+		{{ currentNode.type }}
+	</span>
+	<span class="currency-map-col" *ngIf="currentNode.to_cid">
+		( {{ currentNode.rate }} {{ getType(currentNode.to_cid) }} )	
+	</span>
+	<span class="currency-map-col" *ngIf="currentNode.memo">
+		{{ currentNode.memo }}
+	</span>
+	<span class="currency-map-col">
+		{{ currentNode.date }}
+	</span>
+</a>
+<ul *ngIf="currentNode && currentNode.childs.length">
+  <li currency-map *ngFor="let node of currentNode.childs" [callback]="callback" [currentNode]="node" [currencyFlatMap]="currencyFlatMap" [inputCid]="inputCid"></li>
+</ul>

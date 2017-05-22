@@ -28,12 +28,16 @@ var _valHandler = function(val) {
 }
 
 var _dbLogger = function(data, str) {
-  logger.dbLog(data.reqId, ("[" + data.db.filename + " ," + data.db.mode + "] ").grey + str);
+  if(data.db)
+    logger.dbLog(data.reqId, ("[" + data.db.filename + " ," + data.db.mode + "] ").grey + str);
+  else
+    logger.dbLog(data.reqId, ("[" + data.dbFile + "] ").grey + str);
 }
 
 var _connectDB = function(data, callback) {
-  logger.debug(data.reqId, "connect Database file : " + data.dbFile);
-  data.db = new sqlite3.Database(data.dbFile);
+  const _dbFile = ( data['meta'] && data['meta']['dbFile'] ) || data['dbFile']
+  logger.debug(data.reqId, "connect Database file : " + _dbFile);
+  data.db = new sqlite3.Database(_dbFile);
   data.db.serialize(function() {
     _dbLogger(data, "open database...");
     callback(null, data);
@@ -55,7 +59,7 @@ var _runSQL = function(data, sql, value) {
   return new Promise(function(resolve, reject) {
     var _pool = [];
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data.resault = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][run] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -88,11 +92,12 @@ var _allSQL = function(data, sql, value) {
 
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data['resault'] = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][all] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
       data.db.all(sql, value, function(err, row) {
+
         if (err) {
           _dbLogger(data, "[SQL]".bgRed + ("[" + _stamp + "] ").red + err);
           return reject(err)
@@ -121,7 +126,7 @@ var _getSQL = function(data, sql, value) {
 
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data.resault = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][get] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -287,49 +292,37 @@ var _initialDatabase = function(data, callback) {
 }
 exports.initialDatabase = Promise.denodeify(_initialDatabase);
 
-var _checkDBisCorrect = function(data, callback) {
-
+exports.checkDBisCorrect = data => {
+  var _resolve;
   var _sql = "SELECT * FROM type, typeMap, record, recordTypeMap, currencies LIMIT 1";
-  var _popDBList = data.DBList.pop();
-  data.dbFile = _popDBList.path;
 
-  data.dbInfo = data.dbInfo || [];
-  var _dbInfo = {};
-  data.dbInfo.push(_dbInfo);
-  _dbInfo.name = _popDBList;
-
-  var _checkFinish = function() {
-    if (data.DBList.length)
-      _checkDBisCorrect(data, callback);
-    else
-      callback(null, data);
-  };
-
-  logger.debug(data.reqId, "Check Database " + data.dbFile + " is correct or not...");
+  var _dbFile = data['meta']['dbFile'];
+  
+  logger.debug(data.reqId, "Check Database " + _dbFile + " is correct or not...");
 
   _connectDB(data)
     .then(function(data) {
-      return _getSQL(data, _sql, []); })
+      return _getSQL(data, _sql, []);
+    })
     .nodeify(function(err) {
+
+      data['resault'] = {};
+      
       if (err) {
-        _dbInfo.isCorrect = false;
-        _dbInfo.message = err;
+        data['resault']['isCorrect'] = false;
+        data['resault']['message'] = err;
       } else {
-        _dbInfo.isCorrect = true;
-        _dbInfo.message = "OK";
+        data['resault']['isCorrect'] = true;
+        data['resault']['message'] = "OK";
       }
 
       _closeDB(data).then(function() {
-        if (!_dbInfo.isCorrect) {
-          data.deleteFile = _popDBList.path;
-          dbFile.unlink(data)
-        }
-
-        _checkFinish();
+        _resolve(data);
       });
     })
+
+  return new Promise(resolve => _resolve = resolve);
 };
-exports.checkDBisCorrect = Promise.denodeify(_checkDBisCorrect);
 
 //********************************************
 // Currencies ********************************
@@ -456,7 +449,7 @@ exports.setTypes = Promise.denodeify(_setTypes);
 
 var _delTypes = function(data, callback) {
   var _sql = "DELETE FROM type WHERE tid = $del_tid";
-  _allSQL(data, _sql, { $del_tid: data.del_tid }).then(function(data) {
+  _allSQL(data, _sql, { $del_tid: data['meta']['del_tid'] }).then(function(data) {
     callback(null, data);
   });
 }
@@ -636,7 +629,10 @@ var _getRecord = function(data, callback) {
     _val.$limit = data.limit;
   }
 
-  _allSQL(data, _sql, _val).then(function(data) { callback(null, data); })
+  _allSQL(data, _sql, _val)
+    .then(function(data) { callback(null, data); })
+    .catch(function(err){ callback(err, data);  });
+
 
 };
 exports.getRecord = Promise.denodeify(_getRecord);
@@ -760,3 +756,51 @@ var _setRecordTypeMap = function(data, callback) {
   })
 };
 exports.setRecordTypeMap = Promise.denodeify(_setRecordTypeMap);
+
+
+//********************************************
+// User *************************************
+
+exports.getUser = async data => {
+  let _meta = data.meta;
+  let _sql = 'SELECT * FROM user';
+  let _conditions = [];
+  _meta.uid !== undefined && _conditions.push('uid=$uid');
+  _meta.acc !== undefined && _conditions.push('account=$acc');
+  
+  if(_conditions.length) {
+    _sql += ' WHERE ' + _conditions.join(' OR ');
+  }
+  const _data = await _allSQL(data, _sql, { $uid: _meta.uid, $acc: _meta.acc });
+  return data;
+};
+
+exports.setUser = async data => {
+  var _param = [];
+  var _val = [];
+  let _meta = data.meta;
+
+  ['token', 'name', 'permission', 'status', 'mail', 'last_login_info', 'keep_login_info', 'breakpoint'].forEach(function(each) {
+    if (_meta[each] !== undefined) {
+      _param.push(each);
+      _val.push(_valHandler(_meta[each]));
+    }
+  });
+
+  if (_meta.uid) {
+    _val.push(_meta.uid);
+    var _sql = "UPDATE user SET " + _param.map(function(e, n) {
+      return e + " = ? " }) + "WHERE uid = ?;";
+  } else {
+    _meta.uid = Date.now();
+    _param.unshift("uid");
+    _val.unshift(_meta.uid);
+    var _sql = "INSERT INTO user (" + _param.join(",") + ") VALUES(" + _param.map(function() {
+      return "?" }).join(",") + ");";
+  }
+
+  await _prepareSQL(data, _sql, [_val]);
+  data.resault = [];
+  data.resault.push([{ uid: _meta.uid }]);
+  return data;
+};

@@ -36,7 +36,7 @@ routes.set = function(req, res, next) {
 	data.showInMap 	= req.body.showInMap;
 	data.quickSelect= req.body.quickSelect;
 
-	if(!data.dbFile || !data.tid && ( !data.type_label || !data.cashType ))
+	if(!data.dbFile || !data.tid && ( !data.type_label || data.cashType === undefined ))
 		return responseHandler(406, req, res);
 
 	services.type.setTypes(data)
@@ -51,26 +51,21 @@ routes.set = function(req, res, next) {
 }
 router.all('/set'	, routes.set);
 
-routes.del = function(req, res, next) {
-	var data = tools.createData(req);
-	data.del_tid 		= req.body.del_tid;
-	if(!data.dbFile || !data.del_tid )
-		return responseHandler(406, req, res);
+routes.del = async(req, res, next) => {
+  var data = tools.createData(req);
 
-	services.type.delTypes(data)
-		.nodeify(function(err, data){
-			if(err){
-				if(err.message)
-					responseHandler(err.code,err.message, req, res);
-				else
-					responseHandler(err.code, req, res);
-			}else{
-				responseHandler(200, req, res);
-				services.dbService.syncDB(data);
-			}
-		});
+  if (!data.dbFile || !req.body.del_tid)
+    return responseHandler(406, req, res);
+
+  data['meta'] = { 'del_tid': req.body.del_tid };
+
+  await services.type.delTypes(data);
+
+  responseHandler(data['error'] || 200, req, res);
+  services.dbService.syncDB(data);
 }
-router.all('/del'	, routes.del);
+router.all('/del', routes.del);
+
 
 routes.getMaps = function(req, res, next) {
 	var data = tools.createData(req);
