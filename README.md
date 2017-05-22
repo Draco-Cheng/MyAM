@@ -3,7 +3,7 @@
 This is a server for record personal spending history.
 
 ## How to use
- Open command line ```npm install``` then ```npm start```
+ Open command line ```npm install``` then ```npm start```, then visit ```http://localhost:8000/```
  
  #### server use async/await, it needs nodejs 7+
 
