@@ -26,7 +26,7 @@ import {
 
   async login(formObj: any) {
     const _url = this.endpoint + '/login';
-    console.log("[AuthService] login:", formObj);
+    console.log("[AuthService] login:", formObj['acc']);
 
     let _res = await this.request.login(_url, formObj);
 

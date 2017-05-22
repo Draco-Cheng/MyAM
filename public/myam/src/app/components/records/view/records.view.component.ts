@@ -68,7 +68,7 @@ export class RecordsViewComponent {
 
   async ngOnInit() {
     await this.getRecord();
-    document.body.onscroll = (evt) => { this.onRecordScroll(evt) };
+    window.onscroll = (evt) => { this.onRecordScroll(evt) };
     this.__isInit = true;
   };
 

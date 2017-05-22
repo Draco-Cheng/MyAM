@@ -31355,7 +31355,7 @@ let AuthService = class AuthService {
     login(formObj) {
         return __awaiter(this, void 0, void 0, function* () {
             const _url = this.endpoint + '/login';
-            console.log("[AuthService] login:", formObj);
+            console.log("[AuthService] login:", formObj['acc']);
             let _res = yield this.request.login(_url, formObj);
             if (_res['success']) {
                 yield this.config.setUserProfile(_res['data']);
@@ -42705,7 +42705,7 @@ let RecordsViewComponent = class RecordsViewComponent {
     ngOnInit() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getRecord();
-            document.body.onscroll = (evt) => { this.onRecordScroll(evt); };
+            window.onscroll = (evt) => { this.onRecordScroll(evt); };
             this.__isInit = true;
         });
     }
