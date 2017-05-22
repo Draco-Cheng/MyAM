@@ -36270,14 +36270,12 @@ let ConfigHandler = class ConfigHandler {
         let _dbList = userProfile['dbList'];
         if (_dbList.length) {
             let _localSaveDB = localStorage.getItem(_uid + '.db');
-            if (_localSaveDB) {
-                if (_dbList.indexOf(_localSaveDB) != -1) {
-                    this.set('database', _localSaveDB);
-                }
-                else {
-                    this.set('database', _dbList[0]);
-                    localStorage.setItem(_uid + '.db', _dbList[0]);
-                }
+            if (_localSaveDB && _dbList.indexOf(_localSaveDB) != -1) {
+                this.set('database', _localSaveDB);
+            }
+            else {
+                this.set('database', _dbList[0]);
+                localStorage.setItem(_uid + '.db', _dbList[0]);
             }
         }
     }
@@ -36770,7 +36768,8 @@ let RequestHandler = class RequestHandler {
             let _data = formObj ? JSON.parse(JSON.stringify(formObj)) : {};
             let _salt = Date.now().toString();
             _data['db'] = (formObj && formObj['db']) || this.config.get('database');
-            if (!_data['db']) {
+            if (!_data['db'] && path.indexOf('/profile') == -1 && path.indexOf('/db/dbList') == -1) {
+                console.error('[NO_DB_SELECT]', path, formObj);
                 return { code: '401', message: 'NO_DB_SELECT', success: false, data: null };
             }
             this.headers.set('Auth-Salt', _salt);
@@ -40375,7 +40374,6 @@ let ProfileService = class ProfileService {
                 return this.notificationHandler.broadcast('error', _resaultDbList['message']);
             let _userProfile = _resaultProfile['data']['user'][0];
             _userProfile['dbList'] = _resaultDbList['data']['dbList'];
-            this.notificationHandler.broadcast('success', 'Updated success!');
             this.config.setUserProfile(_userProfile);
         });
     }
@@ -40414,8 +40412,10 @@ let ProfileService = class ProfileService {
                 mainCurrenciesType: mainCurrenciesType
             };
             const _resault = yield this.request.post(_url, _data);
-            if (!_resault['success'])
+            if (!_resault['success']) {
                 this.notificationHandler.broadcast('error', _resault['message']);
+                return _resault;
+            }
             yield this.updateConfigProfile();
             this.notificationHandler.broadcast('success', 'Created success!');
             return _resault;
@@ -40465,9 +40465,9 @@ let ProfileService = class ProfileService {
         this.cacheHandler.wipe('type.flatmap');
     }
     setActiveDb(dbName) {
-        this.wipeCache();
         localStorage.setItem(this.config.get('uid') + '.db', dbName);
         this.config.set('database', dbName);
+        this.wipeCache();
     }
     downloadDb(dbName, breakpoint) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40515,9 +40515,11 @@ let ProfileService = class ProfileService {
             }
             if (Object.keys(_data).length) {
                 const _resault = yield this.request.post(_url, _data);
-                if (!_resault['success'])
+                if (!_resault['success']) {
                     this.notificationHandler.broadcast('error', _resault['message']);
-                if (_resault['success'] && _data['token']) {
+                    return;
+                }
+                if (_data['token']) {
                     location.href = '';
                 }
                 else {
@@ -42346,6 +42348,7 @@ let ProfileViewComponent = class ProfileViewComponent {
         this.closeAddDbPopOut = (dbName) => {
             if (dbName) {
                 this.setSelectDb(dbName);
+                this.setActiveDb();
             }
             this.popOutAddDb = false;
         };
@@ -42380,10 +42383,11 @@ let ProfileViewComponent = class ProfileViewComponent {
     }
     setSelectDb(db) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.getConfig();
             this.selectedDb = db || this.user['dbList'][0];
             this.dbName = this.selectedDb;
             this.changeDbName = false;
-            yield this.getBreakpointDbList();
+            this.selectedDb && (yield this.getBreakpointDbList());
         });
     }
     getBreakpointDbList() {
@@ -77008,7 +77012,7 @@ module.exports = "<div class=\"add-db-pop-out-full-screen\">\r\n  <div class=\"a
 /* 113 */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"__isInit && __checkDataUpToDate()\" class=\"col-md-12 profile-view-panel\">\r\n  <div id=\"profile-view-user\">\r\n    <h1>Profile</h1>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Name\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <input type=\"text\" [(ngModel)]=\"user.name\" />\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Permission\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{profileMap['permission'][user.permission]}}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Status\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{profileMap['status'][user.status]}}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Register Date\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{ formatDate(user.date) }}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Auto backup cycle\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <select [(ngModel)]=\"user.breakpoint\">\r\n          <option value=null>No Backup</option>\r\n          <option value=\"7\">1 Week</option>\r\n          <option value=\"14\">2 Weeks</option>\r\n          <option value=\"30\">1 Month</option>\r\n          <option value=\"90\">3 Months</option>\r\n        </select>\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        E-mail\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <input type=\"text\" [(ngModel)]=\"user.mail\" />\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-reset-pwd-panel\">\r\n      <div class=\"profile-view-reset-pwd-show-btn\" (click)=\"resetPassword = !resetPassword;\">\r\n        <span *ngIf=\"resetPassword\" class=\"glyphicon glyphicon-chevron-up\"></span>\r\n        <span *ngIf=\"!resetPassword\" class=\"glyphicon glyphicon-chevron-down\"></span> Reset password\r\n      </div>\r\n      <br>\r\n      <div class=\"profile-view-reset-pwd-input-panel\" *ngIf=\"resetPassword\">\r\n        <div>Original Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_original\" type=\"password\" />\r\n        </div>\r\n        <div>New Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_new\" type=\"password\" />\r\n        </div>\r\n        <div>Confirm Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_confirm\" type=\"password\" />\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-submit-btn\" (click)=\"save()\">Submit</div>\r\n  </div>\r\n  <hr>\r\n  <div id=\"profile-view-database\">\r\n    <h1>Databse</h1>\r\n    <div *ngIf=\"user.dbList.length\" class=\"profile-view-select-db\">\r\n      Database:\r\n      <select [(ngModel)]=\"selectedDb\" (change)=\"setSelectDb(selectedDb)\">\r\n        <option *ngFor=\"let dbName of user.dbList\" value=\"{{dbName}}\">{{dbName}}</option>\r\n      </select>\r\n    </div>\r\n    <div class=\"profile-view-add-db\" (click)=\"openAddDbPopOut()\">\r\n      <span class=\"glyphicon glyphicon-plus\"></span> New Database\r\n    </div>\r\n    <div *ngIf=\"selectedDb\" class=\"profile-view-db-ctr-bar\">\r\n      <div class=\"profile-view-db-col\">\r\n        <div class=\"profile-view-db-col-name\">Name</div>\r\n        <div class=\"profile-view-db-col-val\">\r\n          <input type=\"text\" (change)=\"changeDbName=true\" [(ngModel)]=\"dbName\" />\r\n          <div class=\"profile-view-db-col-input-check\">\r\n            <span class=\"glyphicon glyphicon-ok\" *ngIf=\"changeDbName\" (click)=\"renameDb()\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"profile-view-db-save-btn\" (click)=\"downloadDb()\">\r\n        <span class=\"glyphicon glyphicon-save\"></span>\r\n      </div>\r\n      <div *ngIf=\"activedDb == selectedDb\" class=\"profile-view-db-btn actived\">\r\n        <span class=\"glyphicon glyphicon-flash\"></span> Actived\r\n      </div>\r\n      <div *ngIf=\"activedDb != selectedDb\" class=\"profile-view-db-btn deactived\" (click)=\"setActiveDb()\">\r\n        <span class=\"glyphicon glyphicon-stop\"></span> Deactivated\r\n      </div>\r\n      <div class=\"profile-view-db-btn delete\" (click)=\"delDB(selectedDb)\">\r\n        <span class=\"glyphicon glyphicon-trash\"></span> Delete\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-bdb-panel\" *ngIf=\"selectedDb\">\r\n      <h4>Backup List</h4>\r\n      <div class=\"profile-view-bdb-block\">\r\n        <div *ngIf=\"!breakpointDbList.length\">\r\n          <h5>There is no backup files!</h5>\r\n        </div>\r\n        <div class=\"profile-view-bdb-row\" *ngFor=\"let dbObj of breakpointDbList\">\r\n          <div class=\"profile-view-bdb-save\" (click)=\"downloadDb(dbObj.dbName)\">\r\n            <span class=\"glyphicon glyphicon-save\"></span>\r\n          </div>\r\n          <div class=\"profile-view-bdb-name\">\r\n            {{dbObj.dbName}}\r\n          </div>\r\n          <div class=\"profile-view-bdb-option\">\r\n            <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-trash\" *ngIf=\"!dbObj.status\" (click)=\"dbObj.status='removing'\"></span>\r\n            <div class=\"profile-view-bdb-del-confirm-block\" *ngIf=\"dbObj.status=='removing'\">\r\n              <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-triangle-left\" (click)=\"dbObj.status=''\"></span>\r\n              <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove\" (click)=\"delBreakpointDb(dbObj.dbName)\"></span>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n    </div>\r\n    <div *ngIf=\"popOutAddDb\" add-db-pop-out [callback]=\"closeAddDbPopOut\"></div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div *ngIf=\"__isInit && __checkDataUpToDate()\" class=\"col-md-12 profile-view-panel\">\r\n  <div id=\"profile-view-user\">\r\n    <h1>Profile</h1>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Name\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <input type=\"text\" [(ngModel)]=\"user.name\" />\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Permission\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{profileMap['permission'][user.permission]}}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Status\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{profileMap['status'][user.status]}}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Register Date\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        {{ formatDate(user.date) }}\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        Auto backup cycle\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <select [(ngModel)]=\"user.breakpoint\">\r\n          <option value=null>No Backup</option>\r\n          <option value=\"7\">1 Week</option>\r\n          <option value=\"14\">2 Weeks</option>\r\n          <option value=\"30\">1 Month</option>\r\n          <option value=\"90\">3 Months</option>\r\n        </select>\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <div class=\"profile-view-col-title\">\r\n        E-mail\r\n      </div>\r\n      <div class=\"profile-view-col-value\">\r\n        <input type=\"text\" [(ngModel)]=\"user.mail\" />\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-reset-pwd-panel\">\r\n      <div class=\"profile-view-reset-pwd-show-btn\" (click)=\"resetPassword = !resetPassword;\">\r\n        <span *ngIf=\"resetPassword\" class=\"glyphicon glyphicon-chevron-up\"></span>\r\n        <span *ngIf=\"!resetPassword\" class=\"glyphicon glyphicon-chevron-down\"></span> Reset password\r\n      </div>\r\n      <br>\r\n      <div class=\"profile-view-reset-pwd-input-panel\" *ngIf=\"resetPassword\">\r\n        <div>Original Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_original\" type=\"password\" />\r\n        </div>\r\n        <div>New Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_new\" type=\"password\" />\r\n        </div>\r\n        <div>Confirm Password</div>\r\n        <div>\r\n          <input [(ngModel)]=\"pwd_confirm\" type=\"password\" />\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-submit-btn\" (click)=\"save()\">Submit</div>\r\n  </div>\r\n  <hr>\r\n  <div id=\"profile-view-database\">\r\n    <h1>Databse</h1>\r\n    <div *ngIf=\"user.dbList.length\" class=\"profile-view-select-db\">\r\n      Database:\r\n      <select [(ngModel)]=\"selectedDb\" (change)=\"setSelectDb(selectedDb)\">\r\n        <option *ngFor=\"let dbName of user.dbList\" value=\"{{dbName}}\">{{dbName}}</option>\r\n      </select>\r\n    </div>\r\n    <div class=\"profile-view-add-db\" (click)=\"openAddDbPopOut()\">\r\n      <span class=\"glyphicon glyphicon-plus\"></span> New Database\r\n    </div>\r\n    <div *ngIf=\"selectedDb\" class=\"profile-view-db-ctr-bar\">\r\n      <div class=\"profile-view-db-col\">\r\n        <div class=\"profile-view-db-col-name\">Name</div>\r\n        <div class=\"profile-view-db-col-val\">\r\n          <input type=\"text\" (change)=\"changeDbName=true\" [(ngModel)]=\"dbName\" />\r\n          <div class=\"profile-view-db-col-input-check\">\r\n            <span class=\"glyphicon glyphicon-ok\" *ngIf=\"changeDbName\" (click)=\"renameDb()\"></span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class=\"profile-view-db-save-btn\" (click)=\"downloadDb()\">\r\n        <span class=\"glyphicon glyphicon-save\"></span>\r\n      </div>\r\n      <div *ngIf=\"activedDb == selectedDb\" class=\"profile-view-db-btn actived\">\r\n        <span class=\"glyphicon glyphicon-flash\"></span> Actived\r\n      </div>\r\n      <div *ngIf=\"activedDb != selectedDb\" class=\"profile-view-db-btn deactived\" (click)=\"setActiveDb()\">\r\n        <span class=\"glyphicon glyphicon-stop\"></span> Deactivated\r\n      </div>\r\n      <div class=\"profile-view-db-btn delete\" (click)=\"delDB(selectedDb)\">\r\n        <span class=\"glyphicon glyphicon-trash\"></span> Delete\r\n      </div>\r\n    </div>\r\n    <div class=\"profile-view-bdb-panel\" *ngIf=\"selectedDb\">\r\n      <h4>Backup List</h4>\r\n      <div class=\"profile-view-bdb-block\">\r\n        <div *ngIf=\"!breakpointDbList.length\">\r\n          <h5>There is no backup files!</h5>\r\n        </div>\r\n        <div *ngIf=\"breakpointDbList.length\">\r\n        <div class=\"profile-view-bdb-row\" *ngFor=\"let dbObj of breakpointDbList\">\r\n          <div class=\"profile-view-bdb-save\" (click)=\"downloadDb(dbObj.dbName)\">\r\n            <span class=\"glyphicon glyphicon-save\"></span>\r\n          </div>\r\n          <div class=\"profile-view-bdb-name\">\r\n            {{dbObj.dbName}}\r\n          </div>\r\n          <div class=\"profile-view-bdb-option\">\r\n            <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-trash\" *ngIf=\"!dbObj.status\" (click)=\"dbObj.status='removing'\"></span>\r\n            <div class=\"profile-view-bdb-del-confirm-block\" *ngIf=\"dbObj.status=='removing'\">\r\n              <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-triangle-left\" (click)=\"dbObj.status=''\"></span>\r\n              <span class=\"profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove\" (click)=\"delBreakpointDb(dbObj.dbName)\"></span>\r\n            </div>\r\n          </div>\r\n        </div>          \r\n        </div>\r\n\r\n      </div>\r\n\r\n    </div>\r\n    <div *ngIf=\"popOutAddDb\" add-db-pop-out [callback]=\"closeAddDbPopOut\"></div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 /* 114 */

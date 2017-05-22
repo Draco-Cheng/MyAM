@@ -31,13 +31,12 @@ function cloneObj(obj) {
 
     if (_dbList.length) {
       let _localSaveDB = localStorage.getItem(_uid + '.db');
-      if (_localSaveDB) {
-        if (_dbList.indexOf(_localSaveDB) != -1) {
-          this.set('database', _localSaveDB);
-        } else {
-          this.set('database', _dbList[0]);
-          localStorage.setItem(_uid + '.db', _dbList[0]);
-        }
+
+      if (_localSaveDB && _dbList.indexOf(_localSaveDB) != -1) {
+        this.set('database', _localSaveDB);
+      } else {
+        this.set('database', _dbList[0]);
+        localStorage.setItem(_uid + '.db', _dbList[0]);
       }
     }
   }

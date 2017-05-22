@@ -119,6 +119,7 @@
         <div *ngIf="!breakpointDbList.length">
           <h5>There is no backup files!</h5>
         </div>
+        <div *ngIf="breakpointDbList.length">
         <div class="profile-view-bdb-row" *ngFor="let dbObj of breakpointDbList">
           <div class="profile-view-bdb-save" (click)="downloadDb(dbObj.dbName)">
             <span class="glyphicon glyphicon-save"></span>
@@ -133,7 +134,9 @@
               <span class="profile-view-bdb-option-btn glyphicon glyphicon-floppy-remove" (click)="delBreakpointDb(dbObj.dbName)"></span>
             </div>
           </div>
+        </div>          
         </div>
+
       </div>
 
     </div>

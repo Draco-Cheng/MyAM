@@ -55,7 +55,8 @@ var buildResObj = (arg0 ? , arg1 ? , arg2 ? ) => {
 
     _data['db'] = (formObj && formObj['db']) || this.config.get('database');
 
-    if (!_data['db']) {
+    if (!_data['db'] && path.indexOf('/profile') == -1 && path.indexOf('/db/dbList') == -1) {
+      console.error('[NO_DB_SELECT]',path, formObj)
       return { code: '401', message: 'NO_DB_SELECT', success: false, data: null };
     }
 

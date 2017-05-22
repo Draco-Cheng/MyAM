@@ -41,7 +41,6 @@ import { NotificationHandler } from '../handler/notification.handler';
     let _userProfile = _resaultProfile['data']['user'][0];
     _userProfile['dbList'] = _resaultDbList['data']['dbList'];
 
-    this.notificationHandler.broadcast('success', 'Updated success!');
     this.config.setUserProfile(_userProfile);
   }
 
@@ -87,8 +86,10 @@ import { NotificationHandler } from '../handler/notification.handler';
 
     const _resault = await this.request.post(_url, _data);
 
-    if (!_resault['success'])
+    if (!_resault['success']){
       this.notificationHandler.broadcast('error', _resault['message']);
+      return _resault;
+    }
 
     await this.updateConfigProfile();
 
@@ -147,11 +148,11 @@ import { NotificationHandler } from '../handler/notification.handler';
   }
 
   setActiveDb(dbName) {
-    this.wipeCache();
-
     localStorage.setItem(this.config.get('uid') + '.db', dbName);
 
     this.config.set('database', dbName);
+
+    this.wipeCache();
   }
 
   async downloadDb(dbName, breakpoint ? ) {
@@ -212,10 +213,12 @@ import { NotificationHandler } from '../handler/notification.handler';
     if (Object.keys(_data).length) {
       const _resault = await this.request.post(_url, _data);
 
-      if (!_resault['success'])
+      if (!_resault['success']) {
         this.notificationHandler.broadcast('error', _resault['message']);
+        return;
+      }
 
-      if (_resault['success'] && _data['token']) {
+      if (_data['token']) {
         location.href = '';
       } else {
         this.notificationHandler.broadcast('success', 'Updated success!');

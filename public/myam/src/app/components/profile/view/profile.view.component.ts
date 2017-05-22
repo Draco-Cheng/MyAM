@@ -71,11 +71,12 @@ export class ProfileViewComponent {
   }
 
   async setSelectDb(db?){    
+    this.getConfig();
     this.selectedDb = db || this.user['dbList'][0];
     this.dbName = this.selectedDb;
     this.changeDbName = false;
 
-    await this.getBreakpointDbList();
+    this.selectedDb && await this.getBreakpointDbList();
   }
 
   async getBreakpointDbList() {
@@ -111,6 +112,7 @@ export class ProfileViewComponent {
   closeAddDbPopOut = (dbName ? ) => {
     if (dbName) {
       this.setSelectDb(dbName);
+      this.setActiveDb();
     }
 
     this.popOutAddDb = false;
