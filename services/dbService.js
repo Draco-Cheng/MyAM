@@ -54,7 +54,7 @@ exports.checkBackUp = async data => {
   if (!_resObj['breakpoint'] || !_resObj['dbList'].length) {
     return;
   }
-    
+
   logger.debug(data.reqId, 'Check Database Backup Folder For User: ' + data['uid']);
 
   let _timeFlag = Date.now() - _resObj['breakpoint'] * 24 * 60 * 60 * 1000;
@@ -131,15 +131,14 @@ var renameBackupFolder = (uid, dbName, newDbName) => {
   if (!_resault)
     logger.warn('[RenameBackupFolder] Fail... Check the log, but please ignore "no such file or directory"');
 
-
 }
 
-var deletRenameBackupFolder = (uid, dbName) => {
+var deleteRenameBackupFolder = (uid, dbName) => {
   let _backupFolderPath = config.backupFolder + 'users/' + uid + '/';
   const _data = {
     meta: {
       source: _backupFolderPath + dbName,
-      target: _backupFolderPath + Date.now() + '.delete.' + dbName
+      target: _backupFolderPath + dateFormat(Date.now(), 'yyyymmdd-HHMMss') + '.delete.' + dbName
     }
   }
   controller.dbFile.renameFile(_data);
@@ -150,7 +149,6 @@ var makeBreakPointInBackupFolder = async(uid, dbName, fileName) => {
   let _dbFilePath = _dbFolderPath + '/database.db';
   let _backupFolderPath = config.backupFolder + 'users/' + uid + '/' + dbName + '/breakpoint';
   let _fileName = fileName || dateFormat(Date.now(), 'yyyy-mm-dd-HH-MM-ss') + '.db';
-
 
   controller.dbFile.createFolderSync(_backupFolderPath);
   await controller.dbFile.copyFile(_dbFilePath, _backupFolderPath + "/" + _fileName);
@@ -196,6 +194,8 @@ exports.renameDb = async data => {
 
   if (data['resault']) {
     renameBackupFolder(_uid, _dbName, _newDbName);
+    controller.dbFile.syncDB.del(_uid, _dbName);
+    controller.dbFile.syncDB(_uid, _newDbName);
     return data;
   } else {
     data['error'] = {
@@ -217,7 +217,9 @@ exports.delDB = async data => {
   }
 
   await makeBreakPointInBackupFolder(data['uid'], data['dbName']);
-  deletRenameBackupFolder(data['uid'], data['dbName']);
+  deleteRenameBackupFolder(data['uid'], data['dbName']);
+
+  controller.dbFile.syncDB.del(data['uid'], data['dbName']);
 
   data['meta'] = {
     'delPath': data['dbPath']
@@ -227,75 +229,32 @@ exports.delDB = async data => {
 }
 
 exports.delBreakponitDb = async data => {
-    logger.debug(data['reqId'], 'Check Breakponit Database ' + data['dbFile'] + ' exist or not...');
+  logger.debug(data['reqId'], 'Check Breakponit Database ' + data['dbFile'] + ' exist or not...');
 
-    if (!fs.existsSync(data['dbFile'])) {
-      data['error'] = {
-        code: 412,
-        message: 'DB_NOT_FOUND'
-      };
-      return data;
-    }
-
-    data['meta'] = {
-      'file': data['dbFile']
+  if (!fs.existsSync(data['dbFile'])) {
+    data['error'] = {
+      code: 412,
+      message: 'DB_NOT_FOUND'
     };
-
-    await controller.dbFile.unlinkFile(data);
-
     return data;
   }
-  /*var _downloadDB = function(data, callback) {
-    data = data || {};
 
-    if (!fs.existsSync(data.dbFileName)) {
-      data.code = 412;
-      return callback(data)
-    }
+  data['meta'] = {
+    'file': data['dbFile']
+  };
 
-    var _fileName = config.uploadTempDir + dateFormat(Date.now(), "yyyymmdd-HHMM") + "-" + data.dbFileName;
+  await controller.dbFile.unlinkFile(data);
 
-    controller.dbFile.copyFile(config.dbFolder + data.dbFileName, _fileName)
-      .then(function() {
-        data.downloadLink = _fileName.replace("./public/", "/");
-        callback(null, data);
-        setTimeout(function() {
-          fs.unlinkSync(_fileName);
-        }, 1000 * 60 * 30)
-      });
+  return data;
+}
 
-  }
-  exports.downloadDB = Promise.denodeify(_downloadDB);*/
 
 exports.checkPathExist = async data => {
   const _path = data['meta']['path'];
 
   data['resault'] = !!fs.existsSync(_path);
   return data;
-
 }
 
 
-//***************************** syncDB *****************************
-var _syncTimeout = {};
-var _syncList = [];
-var _syncDB = function(data) {
-  if (_syncList.indexOf(data.dbFileName) == -1)
-    _syncList.push(data.dbFileName);
-}
-exports.syncDB = Promise.denodeify(_syncDB);
-
-
-/*
-process.on('uncaughtException', function(err) { process.exit(); });
-process.on('SIGINT', function(err) { process.exit(); });
-process.on('SIGHUP', function(err) { process.exit(); });
-process.on('exit', function(err) {
-  _syncList.forEach(function(dbName) {
-    logger.debug("syncDB Database Folder" + dbName + " ...");
-    if (fs.existsSync(config.dbFolder + dbName))
-      if (controller.dbFile.createFolderSync(config.backupFolder + dbName))
-        fs.writeFileSync(config.backupFolder + dbName + "/sync-" + dbName, fs.readFileSync(config.dbFolder + dbName));
-  })
-});
-*/
+exports.syncDB = controller.dbFile.syncDB;

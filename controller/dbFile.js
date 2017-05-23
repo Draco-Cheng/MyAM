@@ -239,3 +239,70 @@ exports.removeFolder = async data => {
 
   return new Promise(resolve => _resolve = resolve);
 }
+
+//***************************** syncDB *****************************
+var syncDbList = {};
+
+var syncDB = function() {
+  let _uid;
+  let _dbName;
+
+  if (typeof arguments[0] == 'object') {
+    _uid = arguments[0]['uid'];
+    _dbName = arguments[0]['dbName'];
+  } else {
+    _uid = arguments[0];
+    _dbName = arguments[1];
+  }
+
+  if (!_uid || !_dbName) return;
+
+  syncDbList[_uid] = syncDbList[_uid] || {};
+  syncDbList[_uid][_dbName] = true;
+
+
+};
+
+syncDB.del = (uid, dbName) => {
+  if (syncDbList[uid])
+    delete syncDbList[uid][dbName];
+};
+
+syncDB.fire = () => {
+  logger.info('SyncDB Fire!');
+
+  for (let _uid in syncDbList) {
+    for (let _dbName in syncDbList[_uid]) {
+      try {
+        logger.debug('SyncDB Database: ' + _uid + ' , ' + _dbName);
+        let _dbPath = config.dbFolder + 'users/' + _uid + '/' + _dbName + '/database.db';
+        let _bkDbFolderPath = config.backupFolder + 'users/' + _uid + '/' + _dbName;
+        let _bkDbFilePath = _bkDbFolderPath + '/sync-database.db';
+
+        if (fs.existsSync(_dbPath)) {
+          this.createFolderSync(_bkDbFolderPath);
+          fs.writeFileSync(_bkDbFilePath, fs.readFileSync(_dbPath));
+        }
+      } catch (e) {
+        logger.error(e);
+      }
+
+      delete syncDbList[uid][dbName];
+    }
+    delete syncDbList[uid];
+  }
+}
+
+exports.syncDB = syncDB;
+
+if (config.syncDbInterval > 1000) {
+  setInterval(syncDB.fire, config.syncDbInterval);
+}
+
+process.on('uncaughtException', function(err) { process.exit(err); });
+process.on('SIGINT', function(err) { process.exit(err); });
+process.on('SIGHUP', function(err) { process.exit(err); });
+process.on('exit', function(err) {
+  err && logger.error(err);
+  syncDB.fire();
+});
