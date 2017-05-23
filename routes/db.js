@@ -119,13 +119,11 @@ routes.rename = async (req, res, next) => {
   let _meta = data['meta'] = {};
   data['responseObj'] = {};
 
-  if (data['dbPath'] && _newDbName && data['dbPath'] != _newDbName) {
-    let _arr = data['dbPath'].split('/').slice(0, -1);
-    _arr.push(_newDbName);
+  if (data['dbName'] && _newDbName && data['dbName'] != _newDbName) {
 
     data['meta'] = {
-      'path': data['dbPath'],
-      'targetPath': _arr.join('/')
+      'dbName': data['dbName'],
+      'newDbName': _newDbName
     };
 
     await services.dbService.renameDb(data);
@@ -202,7 +200,7 @@ routes.breakpointList = function(req, res, next) {
 
   services.dbService.breackPointDbList(data)
     .then(function(data) {
-      var _list = data['responseObj']['dbList'].filter(function(ele) {
+      var _list = Object.keys(data['responseObj']['breackPointList']).filter(function(ele) {
         if (!ele.isDir)
           return true;
       }).map(function(ele) {

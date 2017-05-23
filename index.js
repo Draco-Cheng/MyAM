@@ -22,7 +22,7 @@ if (!require('fs').existsSync(config.backupFolder))
 
 app.set('views', __dirname + '/views');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", require("./controller/resquestHandler"));
 app.use("/", express.static(__dirname + config.frontendPublicFolder));
 app.use("/", require("./routes/index"));

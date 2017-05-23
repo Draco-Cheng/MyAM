@@ -153,6 +153,8 @@ exports.loginByToken = async(data) => {
       await controller.dbController.setUser(data);
 
       await controller.dbController.closeDB(data);
+    } else {
+      data['error'] = { code: 403, message: 'LOGIN_FAIL' };
     }
   } else {
     data['error'] = { code: 403, message: 'LOGIN_FAIL' };

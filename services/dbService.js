@@ -28,48 +28,144 @@ exports.dbList = async data => {
 }
 
 exports.breackPointDbList = async data => {
-  logger.debug(data.reqId, 'Check breackPointDbList Database Folder ' + (data['uid'] || 'All') + ' exist or not...');
   let _meta = data['meta'];
   let _responseObj = data['responseObj'];
+
+  logger.debug(data.reqId, 'Check breackPointDbList Database Folder ' + (_meta['uid'] || 'All') + ' exist or not...');
 
   _meta['path'] = config.dbFolder + 'users/' + _meta['uid'] + '/' + _meta['database'] + '/breakpoint/';
 
 
-  let _pool = [];
+  let _pool = {};
 
   let _list = await controller.dbFile.readdir(data);
 
   _list.forEach(ele => {
-    !ele.isDir && _pool.push(ele.name);
-  })
-  _responseObj['dbList'] = _pool;
+    !ele.isDir && ele.name.indexOf('.db') != -1 && (_pool[ele.name] = ele);
+  });
+  _responseObj['breackPointList'] = _pool;
+
 
   return data;
 }
 
+exports.checkBackUp = async data => {
+  const _resObj = data['responseObj'];
+  if (!_resObj['breakpoint'] || !_resObj['dbList'].length) {
+    return;
+  }
+    
+  logger.debug(data.reqId, 'Check Database Backup Folder For User: ' + data['uid']);
 
-var _backupDB = function(data, callback) {
-  data = data || {};
-  logger.debug(data.reqId, "Check Database Folder" + data.dbFileName + " exist or not...");
+  let _timeFlag = Date.now() - _resObj['breakpoint'] * 24 * 60 * 60 * 1000;
+  let _tempData = {};
+  let _uid = data['uid'];
 
-  controller.dbFile.checkFile({ checkFile: config.dbFolder + data.dbFileName })
-    .then(function(_tempData) {
-      if (_tempData.fileExists) {
-        if (controller.dbFile.createFolderSync(config.backupFolder + data.dbFileName))
-          return controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-" + data.dbFileName);
+  _tempData['reqId'] = data.reqId;
+  _tempData['meta'] = {};
+  _tempData['meta']['uid'] = data.uid;
+  _tempData['responseObj'] = {};
+
+  for (let _dbName of _resObj['dbList']) {
+    _tempData['meta']['database'] = _dbName;
+    await this.breackPointDbList(_tempData);
+
+    let _breackPointList = _tempData['responseObj']['breackPointList'];
+    let _breackPointNameList = Object.keys(_breackPointList).sort().reverse();
+    let _needBackup = true;
+
+    let _loopIndex = 0;
+    let _lastBreakPointFileName;
+
+    while (_loopIndex < _breackPointNameList.length) {
+      let _breackPointName = _breackPointNameList[_loopIndex];
+      let _bTime = new Date(_breackPointName.split('.')[0]);
+
+      if (_bTime != 'Invalid Date') {
+        if (_bTime > _timeFlag) {
+          _needBackup = false;
+        } else {
+          _lastBreakPointFileName = _breackPointName;
+        }
+        _loopIndex = _breackPointNameList.length;
+      } else {
+        _loopIndex += 1;
       }
-      callback();
-    })
-    .then(function(data) { callback(); })
-    .catch(console.error);
+    };
+
+
+    if (_needBackup) {
+      let _dbFolderPath = config.dbFolder + 'users/' + _uid + '/' + _dbName;
+      let _breackPointFolderPath = _dbFolderPath + '/breakpoint';
+      let _dbFilePath = _dbFolderPath + '/database.db';
+
+      if (_lastBreakPointFileName) {
+        // if db not update skip backup
+        let _info = fs.statSync(_dbFilePath);
+        if (_info['mtime'] == _breackPointList[_lastBreakPointFileName]['stats']['mtime'])
+          continue;
+      }
+
+      let _fileName = dateFormat(Date.now(), 'yyyy-mm-dd') + '.db';
+
+      // copy to breakpoint folder
+      controller.dbFile.createFolderSync(_breackPointFolderPath);
+      controller.dbFile.copyFile(_dbFilePath, _breackPointFolderPath + "/" + _fileName);
+
+      // make a copy to backup folder
+      await makeBreakPointInBackupFolder(_uid, _dbName, _fileName);
+    }
+  }
+}
+
+var renameBackupFolder = (uid, dbName, newDbName) => {
+  let _backupFolderPath = config.backupFolder + 'users/' + uid + '/';
+  const _data = {
+    meta: {
+      source: _backupFolderPath + dbName,
+      target: _backupFolderPath + newDbName
+    }
+  }
+
+  var _resault = controller.dbFile.renameFile(_data);
+  if (!_resault)
+    logger.warn('[RenameBackupFolder] Fail... Check the log, but please ignore "no such file or directory"');
+
 
 }
-exports.backupDB = Promise.denodeify(_backupDB);
+
+var deletRenameBackupFolder = (uid, dbName) => {
+  let _backupFolderPath = config.backupFolder + 'users/' + uid + '/';
+  const _data = {
+    meta: {
+      source: _backupFolderPath + dbName,
+      target: _backupFolderPath + Date.now() + '.delete.' + dbName
+    }
+  }
+  controller.dbFile.renameFile(_data);
+}
+
+var makeBreakPointInBackupFolder = async(uid, dbName, fileName) => {
+  let _dbFolderPath = config.dbFolder + 'users/' + uid + '/' + dbName;
+  let _dbFilePath = _dbFolderPath + '/database.db';
+  let _backupFolderPath = config.backupFolder + 'users/' + uid + '/' + dbName + '/breakpoint';
+  let _fileName = fileName || dateFormat(Date.now(), 'yyyy-mm-dd-HH-MM-ss') + '.db';
+
+
+  controller.dbFile.createFolderSync(_backupFolderPath);
+  await controller.dbFile.copyFile(_dbFilePath, _backupFolderPath + "/" + _fileName);
+}
 
 
 exports.renameDb = async data => {
-  let _path = data['meta']['path'];
-  let _targetPath = data['meta']['targetPath'];
+  let _userPath = data['userPath'];
+  let _uid = data['uid'];
+  let _dbName = data['meta']['dbName'];
+  let _newDbName = data['meta']['newDbName'];
+
+  let _path = _userPath + '/' + _dbName;
+  let _targetPath = _userPath + '/' + _newDbName;
+
 
   logger.debug(data.reqId, "Check Database Folder" + _path + " exist or not...");
 
@@ -96,9 +192,10 @@ exports.renameDb = async data => {
     'target': _targetPath
   };
 
-  await controller.dbFile.renameFile(data)
+  await controller.dbFile.renameFile(data);
 
   if (data['resault']) {
+    renameBackupFolder(_uid, _dbName, _newDbName);
     return data;
   } else {
     data['error'] = {
@@ -119,25 +216,14 @@ exports.delDB = async data => {
     return data;
   }
 
+  await makeBreakPointInBackupFolder(data['uid'], data['dbName']);
+  deletRenameBackupFolder(data['uid'], data['dbName']);
+
   data['meta'] = {
     'delPath': data['dbPath']
   };
 
   await controller.dbFile.removeFolder(data);
-
-  return data;
-
-  /*
-      if (controller.dbFile.createFolderSync(config.backupFolder + data.dbFileName))
-      controller.dbFile.copyFile(config.dbFolder + data.dbFileName, config.backupFolder + data.dbFileName + "/" + dateFormat(Date.now(), "yyyymmdd") + "-bk-delete-" + data.dbFileName)
-      .then(function() {
-        setTimeout(function() {
-          controller.dbFile.renameFile(config.backupFolder + data.dbFileName, config.backupFolder + "[legecy-" + Date.now() + "]" + data.dbFileName);
-          fs.unlinkSync(config.dbFolder + data.dbFileName);
-          callback();
-        })
-      });
-  */
 }
 
 exports.delBreakponitDb = async data => {
@@ -199,6 +285,8 @@ var _syncDB = function(data) {
 }
 exports.syncDB = Promise.denodeify(_syncDB);
 
+
+/*
 process.on('uncaughtException', function(err) { process.exit(); });
 process.on('SIGINT', function(err) { process.exit(); });
 process.on('SIGHUP', function(err) { process.exit(); });
@@ -210,3 +298,4 @@ process.on('exit', function(err) {
         fs.writeFileSync(config.backupFolder + dbName + "/sync-" + dbName, fs.readFileSync(config.dbFolder + dbName));
   })
 });
+*/

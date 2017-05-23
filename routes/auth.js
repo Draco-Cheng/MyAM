@@ -41,7 +41,11 @@ routes.login = async(req, res, next) => {
   data['meta'] = _getDbListMeta;
   await dbServ.dbList(data);
 
-  return responseHandler(200, data['responseObj'], req, res);
+  responseHandler(200, data['responseObj'], req, res);
+  
+  // checkBackUp is async function
+  // but not block the login so just pass by and no await
+  return dbServ.checkBackUp(data);
 }
 router.all('/login', routes.login);
 
