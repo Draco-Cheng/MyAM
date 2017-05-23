@@ -132,8 +132,12 @@ export class ProfileViewComponent {
   }
 
   async renameDb() {
-    this.profileService.renameDb(this.selectedDb, this.dbName);
-    this.changeDbName = false;
+    const _resault = await this.profileService.renameDb(this.selectedDb, this.dbName);
+    if(_resault['success']){
+      await this.setSelectDb(this.dbName);
+      this.changeDbName = false;
+    }
+    
   }
 
   async save() {
