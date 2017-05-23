@@ -42661,6 +42661,20 @@ function formatDate(date) {
         day = '0' + day;
     return [year, month, day].join('-');
 }
+// For performase issue move scroll binding out of component
+let __componentThis;
+function onScroll(evt) {
+    if (!__componentThis)
+        return;
+    if (__componentThis.records_pool.length <= __componentThis.records_index || __componentThis.records_index >= 500)
+        return;
+    const _target = evt['target']['scrollingElement'];
+    if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 1) {
+        __componentThis.showMoreBtn.nativeElement.click();
+    }
+}
+;
+window.onscroll = onScroll;
 let RecordsViewComponent = class RecordsViewComponent {
     constructor(recordsService, typeService) {
         this.recordsService = recordsService;
@@ -42705,7 +42719,7 @@ let RecordsViewComponent = class RecordsViewComponent {
     ngOnInit() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getRecord();
-            window.onscroll = (evt) => { this.onRecordScroll(evt); };
+            __componentThis = this;
             this.__isInit = true;
         });
     }
@@ -42753,15 +42767,6 @@ let RecordsViewComponent = class RecordsViewComponent {
     removeQureyConditionTids(tid) {
         delete this.qureyConditionTidsObj[tid];
         this.conditionChange();
-    }
-    onRecordScroll(event) {
-        if (this.records_pool.length <= this.records_index || this.records_index >= 500)
-            return;
-        const _target = event.target.scrollingElement;
-        if (_target.scrollHeight - (_target.scrollTop + window.innerHeight) <= 1) {
-            //this.lazyPushRecords();
-            this.showMoreBtn.nativeElement.click();
-        }
     }
     showMoreRecord() {
         this.lazyPushRecords();
@@ -81287,7 +81292,7 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = {
-	"server_domain": "",
+	"server_domain": "http://127.0.0.1:8000",
 	"language": "en-us"
 };
 
