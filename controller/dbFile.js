@@ -287,9 +287,9 @@ syncDB.fire = () => {
         logger.error(e);
       }
 
-      delete syncDbList[uid][dbName];
+      delete syncDbList[_uid][_dbName];
     }
-    delete syncDbList[uid];
+    delete syncDbList[_uid];
   }
 }
 
