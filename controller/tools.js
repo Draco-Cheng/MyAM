@@ -1,4 +1,4 @@
-var config = require("../config.js");
+var config = require('../config.js');
 
 var _createData = function(req, uid) {
   var _data = {};
