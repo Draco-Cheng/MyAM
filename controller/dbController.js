@@ -429,7 +429,7 @@ exports.delCurrencies = function(data) {
         $del_cid: data.del_cid
       };
 
-      var _sql = 'DELETE FROM currencies WHERE  cid = $del_cid AND to_cid NOT NULL AND to_cid != ''';
+      var _sql = 'DELETE FROM currencies WHERE  cid = $del_cid AND to_cid NOT NULL AND to_cid != \'\'';
       await allSQL(data, _sql, _conditions);
       resolve(data);
     } catch (e) {

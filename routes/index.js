@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var express = require('express');
 var router = express.Router();
 var routes = {};
@@ -14,23 +14,23 @@ routes.index = function(req, res, next) {
   if (req.method === 'OPTIONS') {
     var headers = {};
     // IE8 does not allow domains to be specified, just the *
-    // headers["Access-Control-Allow-Origin"] = req.headers.origin;
-    headers["Access-Control-Allow-Origin"] = "*";
-    headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
-    headers["Access-Control-Allow-Credentials"] = false;
-    headers["Access-Control-Max-Age"] = '86400'; // 24 hours
-    headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Auth-UID, Auth-Salt, Auth-Token";
+    // headers['Access-Control-Allow-Origin'] = req.headers.origin;
+    headers['Access-Control-Allow-Origin'] = '*';
+    headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
+    headers['Access-Control-Allow-Credentials'] = false;
+    headers['Access-Control-Max-Age'] = '86400'; // 24 hours
+    headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Auth-UID, Auth-Salt, Auth-Token';
     res.writeHead(200, headers);
     res.end();
   } else if (req.url.indexOf('/auth/login') == 0) {
     // Cross domain header
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     next();
   } else {
     // Cross domain header
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
 
     // do auth check 
     if (authService.check(req.headers)) {

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -12,26 +12,25 @@ services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
-routes.del = function(req, res, next) {
+routes.del = async function(req, res, next) {
   var data = tools.createData(req);
   data.del_rid = req.body.rid;
 
   if (!data.dbFile || !data.del_rid)
     return responseHandler(406, req, res);
 
-  services.record.delRecord(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.record.delRecord(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/del', routes.del);
 
-routes.set = function(req, res, next) {
+routes.set = async function(req, res, next) {
   var data = tools.createData(req);
   data.rid = req.body.rid;
   data.cashType = req.body.cashType;
@@ -43,19 +42,17 @@ routes.set = function(req, res, next) {
   if (!data.dbFile || (!data.rid && (!data.cid || !data.value || !data.date)))
     return responseHandler(406, req, res);
 
-  services.record.setRecord(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.record.setRecord(data);
+  if (data['error']) {
+    responseHandler(err.code, req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/set', routes.set);
 
-routes.setTypes = function(req, res, next) {
+routes.setTypes = async function(req, res, next) {
   var data = tools.createData(req);
   data.rid = req.body.rid;
   data.tids_json = req.body.tids_json;
@@ -63,19 +60,17 @@ routes.setTypes = function(req, res, next) {
   if (!data.dbFile || !data.rid || !data.tids_json)
     return responseHandler(406, req, res);
 
-  services.record.setRecordTypes(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.record.setRecordTypes(data);
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/setTypes', routes.setTypes);
 
-routes.get = function(req, res, next) {
+routes.get = async function(req, res, next) {
   var data = tools.createData(req);
   data.rid = req.body.rid;
   data.rids_json = req.body.rids_json;
@@ -92,18 +87,17 @@ routes.get = function(req, res, next) {
 
   data.orderBy = req.body.orderBy instanceof Array ? req.body.orderBy : null;
 
-  services.record.getRecord(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-      }
-    });
+  await services.record.getRecord(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+  }
 }
 router.all('/get', routes.get);
 
-routes.getTypes = function(req, res, next) {
+routes.getTypes = async function(req, res, next) {
   var data = tools.createData(req);
   data.rids = req.body.rids_json ? JSON.parse(req.body.rids_json) : [];
   data.tids = req.body.tids_json ? JSON.parse(req.body.tids_json) : [];
@@ -111,14 +105,12 @@ routes.getTypes = function(req, res, next) {
   if (!data.dbFile)
     return responseHandler(406, req, res);
 
-  services.record.getRecordTypes(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-      }
-    });
+  await services.record.getRecordTypes(data);
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+  }
 }
 router.all('/getTypes', routes.getTypes);
 

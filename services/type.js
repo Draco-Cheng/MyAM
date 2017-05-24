@@ -1,67 +1,44 @@
-var Promise = require("promise");
-
 var controller = {
   dbController: require('../controller/dbController.js'),
   dbFile: require('../controller/dbFile.js')
 };
 
-// logger is special function so its not in the controller object
-var logger = require("../controller/logger.js");
+var logger = require('../controller/logger.js');
 
-var _getTypes = function(data, callback) {
-  var _checkDB = controller.dbFile.checkDB(data);
-
-  _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data);
-    })
-    .then(function(data) {
-      return controller.dbController.getTypes(data);
-    })
-    .then(function(data) {
-      return controller.dbController.closeDB(data);
-    })
-    .then(function(data) {
-      callback(null, data);
-    });
-
-  _checkDB.catch(function(data) {
-    callback(data)
-  });
+exports.getTypes = async function(data) {
+  try {
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+    await controller.dbController.getTypes(data);
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
-exports.getTypes = Promise.denodeify(_getTypes);
 
-var _setTypes = function(data, callback) {
-  var _checkDB = controller.dbFile.checkDB(data);
+exports.setTypes = async function(data) {
+  try {
+    await controller.dbFile.checkDB(data);
 
-  _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data);
-    })
-    .then(function(data) {
-      if (data.tid)
-        return controller.dbController.getTypes(data);
-      else
-        return new Promise(function(resolve, reject) { resolve(data) });
-    })
-    .then(function(data) {
-      if (data.tid && data.resault.push().length === 0)
-        return new Promise(function(resolve, reject) { resolve(data) });
-      else
-        return controller.dbController.setTypes(data);
-    })
-    .then(function(data) {
-      return controller.dbController.closeDB(data);
-    })
-    .then(function(data) {
-      callback(null, data);
-    });
+    await controller.dbController.connectDB(data);
 
-  _checkDB.catch(function(data) {
-    callback(data)
-  });
+    if (data.tid)
+      await controller.dbController.getTypes(data);
+
+    if (!data.tid || data.resault.length !== 0)
+      await controller.dbController.setTypes(data);
+
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
-exports.setTypes = Promise.denodeify(_setTypes);
 
-exports.delTypes = async data => {
+exports.delTypes = async function(data) {
   try {
 
     let _delTid = data['meta']['del_tid'];
@@ -96,13 +73,14 @@ exports.delTypes = async data => {
     await controller.dbController.delTypes(data);
     await controller.dbController.closeDB(data);
 
-    return data;
-
-
-  } catch (e) { logger.error(data.reqId, e.stack) }
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
 
-exports.delTypeMaps = async function(data, callback) {
+exports.delTypeMaps = async function(data) {
   try {
     await controller.dbFile.checkDB(data);
     await controller.dbController.connectDB(data);
@@ -115,52 +93,32 @@ exports.delTypeMaps = async function(data, callback) {
   return data;
 }
 
-var _getTypeMaps = function(data, callback) {
-  var _checkDB = controller.dbFile.checkDB(data);
-
-  _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data);
-    })
-    .then(function(data) {
-      return controller.dbController.getTypeMaps(data);
-    })
-    .then(function(data) {
-      return controller.dbController.closeDB(data);
-    })
-    .then(function(data) {
-      callback(null, data);
-    });
-
-  _checkDB.catch(function(data) {
-    callback(data)
-  });
+exports.getTypeMaps = async function(data) {
+  try {
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+    await controller.dbController.getTypeMaps(data);
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
-exports.getTypeMaps = Promise.denodeify(_getTypeMaps);
 
-var _setTypeMaps = function(data, callback) {
-  var _checkDB = controller.dbFile.checkDB(data);
+exports.setTypeMaps = async function(data) {
+  try {
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+    await controller.dbController.getTypeMaps(data);
 
-  _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data);
-    })
-    .then(function(data) {
-      return controller.dbController.getTypeMaps(data);
-    })
-    .then(function(data) {
-      if (data['resault'].length === 0 && data.tid !== data.sub_tid)
-        return controller.dbController.setTypeMaps(data);
-      else
-        return new Promise(function(resolve, reject) { resolve(data) });
-    })
-    .then(function(data) {
-      return controller.dbController.closeDB(data);
-    })
-    .then(function(data) {
-      callback(null, data);
-    });
+    if (data['resault'].length === 0 && data.tid !== data.sub_tid)
+      await controller.dbController.setTypeMaps(data);
 
-  _checkDB.catch(function(data) {
-    callback(data)
-  });
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
-exports.setTypeMaps = Promise.denodeify(_setTypeMaps);

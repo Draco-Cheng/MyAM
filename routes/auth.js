@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -11,7 +11,7 @@ var dbServ = require('../services/dbService.js');
 
 var routes = {};
 
-routes.login = async(req, res, next) => {
+routes.login = async function(req, res, next) {
   var data = tools.createData(req);
 
   data['responseObj'] = {};
@@ -25,13 +25,13 @@ routes.login = async(req, res, next) => {
 
   data['meta'] = _loginMeta;
 
-  if(data['meta']['uid'])
+  if (data['meta']['uid'])
     await authServ.loginByToken(data);
   else
     await authServ.login(data);
 
   if (data['error']) {
-    return responseHandler(403, req, res);
+    return responseHandler(data['error']['code'] || 403, req, res);
   }
 
   const _getDbListMeta = {
@@ -42,7 +42,7 @@ routes.login = async(req, res, next) => {
   await dbServ.dbList(data);
 
   responseHandler(200, data['responseObj'], req, res);
-  
+
   // checkBackUp is async function
   // but not block the login so just pass by and no await
   return dbServ.checkBackUp(data);
@@ -50,7 +50,7 @@ routes.login = async(req, res, next) => {
 router.all('/login', routes.login);
 
 
-routes.logout = async(req, res, next) => {
+routes.logout = async function(req, res, next) {
   var data = tools.createData(req);
 
   data['error'] = null;
@@ -58,7 +58,7 @@ routes.logout = async(req, res, next) => {
   await authServ.logout(data);
 
   if (data['error']) {
-    return responseHandler(403, req, res);
+    return responseHandler(data['error']['code'] || 403, req, res);
   }
 
   return responseHandler(200, req, res);

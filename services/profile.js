@@ -6,10 +6,9 @@ var controller = {
 
 var config = require('../config.js');
 
-// logger is special function so its not in the controller object
-var logger = require("../controller/logger.js");
+var logger = require('../controller/logger.js');
 
-exports.set = async data => {
+exports.set = async function(data) {
   try {
     const _uid = data['meta']['uid'];
     const _meta = data['meta'];
@@ -58,49 +57,49 @@ exports.set = async data => {
     data['meta'] = _newUserParameter;
 
     await controller.dbController.setUser(data);
+    await controller.dbController.closeDB(data);
+
   } catch (e) {
-    logger.error(e.stack);
-    data['error'] = {
-      code: '500',
-      message: 'INTERNAL_SERVER_ERROR'
-    };
+    logger.error(e);
+    data['error'] = { code: 500 };
   }
-
-  await controller.dbController.closeDB(data);
-
   return data;
 }
 
 
-exports.get = async data => {
-  data['dbFile'] = config['dbFolder'] + 'sys.db';
+exports.get = async function(data) {
+  try {
+    data['dbFile'] = config['dbFolder'] + 'sys.db';
 
-  let _responseUser = data['responseObj']['user'] = [];
+    let _responseUser = data['responseObj']['user'] = [];
 
-  // connect databse
-  await controller.dbFile.checkDB(data);
-  await controller.dbController.connectDB(data);
+    // connect databse
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
 
-  data['meta'] = { uid: data['meta']['uid'] };
-  await controller.dbController.getUser(data);
+    data['meta'] = { uid: data['meta']['uid'] };
+    await controller.dbController.getUser(data);
 
-  let _resault = data['resault'];
+    let _resault = data['resault'];
 
-  _resault.forEach(row => {
-    let _uobj = {};
-    // set login res
-    _uobj['uid'] = row['uid'];
-    _uobj['name'] = row['name'];
-    _uobj['permission'] = row['permission'];
-    _uobj['status'] = row['status'];
-    _uobj['mail'] = row['mail'];
-    _uobj['date'] = row['date'];
-    _uobj['breakpoint'] = row['breakpoint'];
+    _resault.forEach(row => {
+      let _uobj = {};
+      // set login res
+      _uobj['uid'] = row['uid'];
+      _uobj['name'] = row['name'];
+      _uobj['permission'] = row['permission'];
+      _uobj['status'] = row['status'];
+      _uobj['mail'] = row['mail'];
+      _uobj['date'] = row['date'];
+      _uobj['breakpoint'] = row['breakpoint'];
 
-    _responseUser.push(_uobj);
-  })
+      _responseUser.push(_uobj);
+    })
 
-  await controller.dbController.closeDB(data);
-
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
   return data;
 }

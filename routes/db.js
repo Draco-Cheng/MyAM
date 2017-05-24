@@ -1,9 +1,11 @@
-"use strict";
+'use strict';
 var express = require('express');
 var dateFormat = require('dateformat');
 var fs = require('fs');
-var dateFormat = require('dateformat');
 var router = express.Router();
+
+var config = require('../config.js');
+var logger = require('../controller/logger.js');
 
 var responseHandler = require('../controller/responseHandler.js');
 var tools = require('../controller/tools.js');
@@ -14,93 +16,75 @@ services.dbService = require('../services/dbService.js');
 services.currency = require('../services/currency.js');
 services.type = require('../services/type.js');
 
-
-var config = require("../config.js");
-
 var routes = {};
 
-// logger is special function so its not in the controller object
-var logger = require("../controller/logger.js");
-
-routes.check = function(req, res, next) {
+routes.check = async function(req, res, next) {
   var data = tools.createData(req);
   if (!data.dbFile) return responseHandler(406, req, res);
 
-  services.initial.checkDB(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        var _res = { dbExists: data.fileExists };
-        responseHandler(200, _res, req, res);
-      }
-    });
+  await services.initial.checkDB(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    var _res = { dbExists: data.fileExists };
+    responseHandler(200, _res, req, res);
+  }
 }
 router.all('/check', routes.check);
 
-routes.dbList = async(req, res, next) => {
-  try {
+routes.dbList = async function(req, res, next) {
+  var data = tools.createData(req);
 
-    var data = tools.createData(req);
+  data['responseObj'] = {};
+  data['error'] = null;
 
-    data['responseObj'] = {};
-    data['error'] = null;
+  data['meta'] = { uid: data['uid'] };
+  await services.dbService.dbList(data);
 
-    data['meta'] = { uid: data['uid'] };
-    await services.dbService.dbList(data);
-
-    if (data['error'])
-      return responseHandler(data['error'], req, res);
-    else
-      return responseHandler(200, data['responseObj'], req, res);
-  } catch (e) {
-    console.error(e.stack);
-    return responseHandler(500, req, res);
-  }
+  if (data['error'])
+    return responseHandler(data['error'], req, res);
+  else
+    return responseHandler(200, data['responseObj'], req, res);
 }
 
 router.all('/dbList', routes.dbList);
 
-routes.creat = function(req, res, next) {
+routes.creat = async function(req, res, next) {
   var data = tools.createData(req);
   if (!data.dbFile || !req.body.mainCurrenciesType)
     return responseHandler(406, req, res);
 
-  services.initial.checkAndCreate(data)
-    .then(function(data) {
-      if (data['error']) {
-        throw responseHandler(data['error'], req, res);
-      } else {
-        logger.info(data.reqId, "set currencies...");
-        data.type = req.body.mainCurrenciesType.toUpperCase();
-        data.main = true;
-        data.memo = "Initialize";
-        data.rate = 1;
-        data.date = dateFormat(new Date(), "yyyy-mm-dd");
-        data.quickSelect = true;
-        return services.currency.setCurrencies(data);
-      }
-    })
-    .then(function(data) {
-      if (data.code) {
-        throw responseHandler(data.code, req, res);
-      } else {
-        logger.info(data.reqId, "set types...");
-        data.type_label = "Unclassified";
-        data.cashType = 0;
-        data.master = false;
-        data.showInMap = true;
-        data.quickSelect = true;
-        return services.type.setTypes(data);
-      }
-    })
-    .then(function(data) {
-      responseHandler(200, req, res);
-    });
+  await services.initial.checkAndCreate(data)
+
+  if (data['error'])
+    return responseHandler(data['error'], req, res);
+
+  logger.info(data.reqId, 'set currencies...');
+  data.type = req.body.mainCurrenciesType.toUpperCase();
+  data.main = true;
+  data.memo = 'Initialize';
+  data.rate = 1;
+  data.date = dateFormat(new Date(), 'yyyy-mm-dd');
+  data.quickSelect = true;
+  await services.currency.setCurrencies(data);
+
+  if (data['error'])
+    return responseHandler(data['error'], req, res);
+
+  logger.info(data.reqId, 'set types...');
+  data.type_label = 'Unclassified';
+  data.cashType = 0;
+  data.master = false;
+  data.showInMap = true;
+  data.quickSelect = true;
+  await services.type.setTypes(data);
+
+  responseHandler(data['error'] || 200, req, res);
 }
 router.all('/create', routes.creat);
 
-routes.upload = async(req, res, next) => {
+routes.upload = async function(req, res, next) {
   // This api is special case (multipart-form)
   // There is some router task write in 'controller/dbFile.js > function:upload'
 
@@ -112,7 +96,7 @@ routes.upload = async(req, res, next) => {
 }
 router.all('/upload', routes.upload);
 
-routes.rename = async(req, res, next) => {
+routes.rename = async function(req, res, next) {
   var data = tools.createData(req);
   let _newDbName = req.body.newDbName;
 
@@ -128,11 +112,7 @@ routes.rename = async(req, res, next) => {
 
     await services.dbService.renameDb(data);
 
-    if (data['error']) {
-      data['error']['message'] ? responseHandler(data['error']['code'], data['error']['message'], req, res) : responseHandler(data['error']['code'], req, res);
-    } else {
-      responseHandler(200, req, res);
-    }
+    responseHandler(data['error'] || 200, req, res);
   } else {
     responseHandler(406, req, res);
   }
@@ -144,19 +124,14 @@ routes.del = async function(req, res, next) {
 
   await services.dbService.delDB(data);
 
-  if (data['error'])
-    responseHandler(data['error']['code'], data['error']['message'], req, res);
-  else
-    responseHandler(200, req, res);
+  responseHandler(data['error'] || 200, req, res);
 }
 router.all('/del', routes.del);
 
-routes.backup = function(req, res, next) {
+routes.backup = async function(req, res, next) {
   var data = tools.createData(req);
-  services.dbService.backupDB(data)
-    .then(function(data) {
-      responseHandler(200, req, res);
-    });
+  await services.dbService.backupDB(data)
+  responseHandler(data['error'] || 200, req, res);
 }
 router.all('/backup', routes.backup);
 
@@ -165,8 +140,7 @@ routes.download = async function(req, res, next) {
 
   let _dbFilePath = data['dbFile'];
   let _dbName = data['dbPath'].split('/').pop();
-  let _fileName = (req.body.breakpoint && req.body.breakpoint.replace(/\.db/, '') || dateFormat(Date.now(), "yyyymmdd-HHMM")) + '-' + _dbName + '.db';
-
+  let _fileName = (req.body.breakpoint && req.body.breakpoint.replace(/\.db/, '') || dateFormat(Date.now(), 'yyyymmdd-HHMM')) + '-' + _dbName + '.db';
 
   data['meta'] = { 'path': _dbFilePath };
 
@@ -186,29 +160,28 @@ routes.download = async function(req, res, next) {
 }
 router.all('/download', routes.download);
 
-routes.breakpointList = function(req, res, next) {
+routes.breakpointList = async function(req, res, next) {
   var data = tools.createData(req);
   let _meta = data['meta'] = {};
   data['responseObj'] = {};
 
-  if (req.body.uid != data.uid) {
-    // permission check
-  }
-
   _meta['uid'] = data['uid'];
   _meta['database'] = req.body.db;
 
-  services.dbService.breackPointDbList(data)
-    .then(function(data) {
-      var _list = Object.keys(data['responseObj']['breackPointList']).filter(function(ele) {
-        if (!ele.isDir)
-          return true;
-      }).map(function(ele) {
-        return ele;
-      });
+  await services.dbService.breackPointDbList(data);
 
-      responseHandler(200, _list, req, res);
-    })
+  if (data['error']) {
+    responseHandler(data['error'], _list, req, res);
+  } else {
+    var _list = Object.keys(data['responseObj']['breackPointList']).filter(ele => {
+      if (!ele.isDir)
+        return true;
+    }).map(function(ele) {
+      return ele;
+    });
+
+    responseHandler(200, _list, req, res);
+  }
 }
 router.all('/breakpoint/list', routes.breakpointList);
 
@@ -220,10 +193,7 @@ routes.delBreakpoint = async function(req, res, next) {
   else
     return responseHandler(406, req, res);
 
-  if (data['error'])
-    responseHandler(data['error']['code'], data['error']['message'], req, res);
-  else
-    responseHandler(200, req, res);
+  responseHandler(data['error'] || 200, req, res);
 }
 router.all('/breakpoint/del', routes.delBreakpoint);
 

@@ -104,7 +104,7 @@ exports.status = {
   //The client has asked for a portion of the file (byte serving), but the server cannot supply that portion. For example, if the client asked for a part of the file that lies beyond the end of the file.
   417: 'Expectation Failed',
   //The server cannot meet the requirements of the Expect request-header field.
-  418: 'I'm a teapot (RFC 2324)',
+  418: 'I\'m a teapot (RFC 2324)',
   //This code was defined in 1998 as one of the traditional IETF April Fools' jokes, in RFC 2324, Hyper Text Coffee Pot Control Protocol, and is not expected to be implemented by actual HTTP servers.
   419: 'Authentication Timeout (not in RFC 2616)',
   //Not a part of the HTTP standard, 419 Authentication Timeout denotes that previously valid authentication has expired. It is used as an alternative to 401 Unauthorized in order to differentiate from otherwise authenticated clients being denied access to specific server resources.

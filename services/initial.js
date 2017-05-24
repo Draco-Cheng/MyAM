@@ -1,23 +1,19 @@
-var Promise = require("promise");
-
 var controller = {
   dbFile: require('../controller/dbFile.js'),
   dbController: require('../controller/dbController.js')
 };
 
-// logger is special function so its not in the controller object
-var logger = require("../controller/logger.js");
+var logger = require('../controller/logger.js');
 
-var config = require("../config.js");
+var config = require('../config.js');
 
 var _checkDB = function(data) {
   return controller.dbFile.checkDB(data);
 }
 exports.checkDB = _checkDB;
 
-exports.checkAndCreate = async data => {
+exports.checkAndCreate = async function(data) {
   try {
-
     await controller.dbFile.checkDB(data);
 
     if (data['resault']['isExist']) {
@@ -32,16 +28,16 @@ exports.checkAndCreate = async data => {
       await controller.dbController.initialDatabase(data);
       await controller.dbController.closeDB(data);
 
-      logger.debug(data.reqId, "finish initial Database!!");
+      logger.debug(data.reqId, 'finish initial Database!!');
     }
-
-    return data;
   } catch (e) {
-    console.log(e.stack)
+    logger.error(e);
+    data['error'] = { code: 500 };
   }
+  return data;
 }
 
-exports.uploadDB = async data => {
+exports.uploadDB = async function(data) {
   try {
     await controller.dbFile.upload(data);
 
@@ -90,9 +86,10 @@ exports.uploadDB = async data => {
       await controller.dbFile.unlink(data);
     }
 
-    return data;
   } catch (e) {
-    console.error(e);
+    logger.error(e);
+    data['error'] = { code: 500 };
   }
+  return data;
 
 }

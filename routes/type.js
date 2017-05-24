@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -12,22 +12,21 @@ services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
-routes.get = function(req, res, next) {
+routes.get = async function(req, res, next) {
   var data = tools.createData(req);
   if (!data.dbFile) return responseHandler(406, req, res);
 
-  services.type.getTypes(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-      }
-    });
+  await services.type.getTypes(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+  }
 }
 router.all('/get', routes.get);
 
-routes.set = function(req, res, next) {
+routes.set = async function(req, res, next) {
   var data = tools.createData(req);
   data.tid = req.body.tid;
   data.type_label = req.body.type_label;
@@ -39,19 +38,17 @@ routes.set = function(req, res, next) {
   if (!data.dbFile || !data.tid && (!data.type_label || data.cashType === undefined))
     return responseHandler(406, req, res);
 
-  services.type.setTypes(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.type.setTypes(data);
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/set', routes.set);
 
-routes.del = async(req, res, next) => {
+routes.del = async function(req, res, next) {
   var data = tools.createData(req);
 
   if (!data.dbFile || !req.body.del_tid)
@@ -62,28 +59,27 @@ routes.del = async(req, res, next) => {
   await services.type.delTypes(data);
 
   responseHandler(data['error'] || 200, req, res);
-  services.dbService.syncDB(data);
+  !data['error'] && services.dbService.syncDB(data);
 }
 router.all('/del', routes.del);
 
 
-routes.getMaps = function(req, res, next) {
+routes.getMaps = async function(req, res, next) {
   var data = tools.createData(req);
   if (!data.dbFile) return responseHandler(406, req, res);
   data.tid = req.body.tid;
 
-  services.type.getTypeMaps(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-      }
-    });
+  await services.type.getTypeMaps(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+  }
 }
 router.all('/getMaps', routes.getMaps);
 
-routes.setMaps = function(req, res, next) {
+routes.setMaps = async function(req, res, next) {
   var data = tools.createData(req);
   data.tid = req.body.tid;
   data.sub_tid = req.body.sub_tid;
@@ -91,28 +87,27 @@ routes.setMaps = function(req, res, next) {
   if (!data.dbFile || !data.tid || !data.sub_tid)
     return responseHandler(406, req, res);
 
-  services.type.setTypeMaps(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.type.setTypeMaps(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/setMaps', routes.setMaps);
 
 
-routes.delTypeMaps = function(req, res, next) {
+routes.delTypeMaps = async function(req, res, next) {
   var data = tools.createData(req);
 
   var _prmCheck = true;
-  ['del_tid', 'del_sub_tid'].forEach( key => {
-    if(!req.body[key]) _prmCheck = false
+  ['del_tid', 'del_sub_tid'].forEach(key => {
+    if (!req.body[key]) _prmCheck = false
   });
 
-  if(!_prmCheck || !data.dbFile)
+  if (!_prmCheck || !data.dbFile)
     return responseHandler(406, req, res);
 
   data['meta'] = {};
@@ -120,19 +115,17 @@ routes.delTypeMaps = function(req, res, next) {
   data['meta']['del_sub_tid'] = req.body.del_sub_tid;
 
 
-  services.type.delTypeMaps(data)
-    .then(function(data, err) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.type.delTypeMaps(data);
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/delMaps', routes.delTypeMaps);
 
-routes.setMapSequence = function(req, res, next) {
+routes.setMapSequence = async function(req, res, next) {
   var data = tools.createData(req);
   data.tid = req.body.tid;
   data.sub_tid = req.body.sub_tid;
@@ -141,15 +134,13 @@ routes.setMapSequence = function(req, res, next) {
   if (!data.dbFile || !data.tid || !data.sub_tid || !data.sequence)
     return responseHandler(406, req, res);
 
-  services.type.setTypeMaps(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.type.setTypeMaps(data)
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/setMapSequence', routes.setMapSequence);
 

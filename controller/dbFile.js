@@ -225,7 +225,7 @@ exports.createFolderSync = function(path) {
   try {
     mkdirp.sync(path);
   } catch (e) {
-    logger.error('Can't create ' + path + '\tERROR : ' + e);
+    logger.error('Can\'t create ' + path + '\tERROR : ' + e);
   }
 }
 

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -12,18 +12,17 @@ services.dbService = require('../services/dbService.js');
 
 var routes = {};
 
-routes.get = function(req, res, next) {
+routes.get = async function(req, res, next) {
   var data = tools.createData(req);
   if (!data.dbFile) return responseHandler(406, req, res);
 
-  services.currency.getCurrencies(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, data.resault, req, res);
-      }
-    });
+  await services.currency.getCurrencies(data);
+
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, data.resault, req, res);
+  }
 }
 router.all('/get', routes.get);
 
@@ -46,33 +45,30 @@ routes.set = async function(req, res, next) {
 
   await services.currency.setCurrencies(data);
 
-  if (data['error'])
-    return responseHandler(data['error'], req, res);
-  
-  responseHandler(200, { cid: data.cid }, req, res);
-  services.dbService.syncDB(data);
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, { cid: data.cid }, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/set', routes.set);
 
-routes.del = function(req, res, next) {
+routes.del = async function(req, res, next) {
   var data = tools.createData(req);
   data.del_cid = req.body.del_cid;
 
   if (!data.dbFile || !data.del_cid)
     return responseHandler(406, req, res);
 
-  services.currency.delCurrencies(data)
-    .then(function(data, err) {
-      if (err) {
-        if (err.message)
-          responseHandler(err.code, err.message, req, res);
-        else
-          responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.currency.delCurrencies(data);
+  
+  if (data['error']) {
+    responseHandler(data['error'], req, res);
+  } else {
+    responseHandler(200, req, res);
+    services.dbService.syncDB(data);
+  }
 }
 router.all('/del', routes.del);
 
