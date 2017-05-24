@@ -12,11 +12,14 @@ var _getCurrencies = function(data, callback) {
   var _checkDB = controller.dbFile.checkDB(data);
 
   _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
+      return controller.dbController.connectDB(data);
+    })
     .then(function(data) {
-      return controller.dbController.getCurrencies(data); })
+      return controller.dbController.getCurrencies(data);
+    })
     .then(function(data) {
-      return controller.dbController.closeDB(data); })
+      return controller.dbController.closeDB(data);
+    })
     .then(function(data) {
       callback(null, data);
     });

@@ -1,7 +1,7 @@
-var express    = require('express');
+var express = require('express');
 var bodyParser = require('body-parser');
-var config     = require('./config.js');
-var app        = express();
+var config = require('./config.js');
+var app = express();
 if (config.uploadTempDir &&
   config.uploadTempDir.indexOf(" ") !== 0 &&
   config.uploadTempDir.indexOf("..") == -1 &&

@@ -1,10 +1,10 @@
 "use strict";
-var express  = require('express');
-var router   = express.Router();
-var routes   = {};
-var logger   = require("../controller/logger.js");
-var i18n     = require('../i18n/i18n.js');
-var colors   = require('colors');
+var express = require('express');
+var router = express.Router();
+var routes = {};
+var logger = require("../controller/logger.js");
+var i18n = require('../i18n/i18n.js');
+var colors = require('colors');
 
 
 routes.index = function(req, res, next) {

@@ -41,9 +41,9 @@ exports.warn = function() {
 exports.error = function() {
   if (arguments.length === 1)
     logger("[ERROR]\t".red + arguments[0]);
-  else if( typeof arguments[1] == "string")
+  else if (typeof arguments[1] == "string")
     logger("[ERROR]\t".red + ("[" + arguments[0] + "] ").grey + arguments[1]);
-  else if(typeof arguments[1]["stack"])
+  else if (typeof arguments[1]["stack"])
     logger("[ERROR]\t".red + ("[" + arguments[0] + "] ").grey + arguments[1]["stack"]);
   else {
     logger("[ERROR]\t".red + ("[" + arguments[0] + "] ").grey);

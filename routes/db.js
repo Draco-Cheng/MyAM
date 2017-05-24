@@ -38,7 +38,7 @@ routes.check = function(req, res, next) {
 }
 router.all('/check', routes.check);
 
-routes.dbList = async (req, res, next) => {
+routes.dbList = async(req, res, next) => {
   try {
 
     var data = tools.createData(req);
@@ -100,7 +100,7 @@ routes.creat = function(req, res, next) {
 }
 router.all('/create', routes.creat);
 
-routes.upload = async (req, res, next) => {
+routes.upload = async(req, res, next) => {
   // This api is special case (multipart-form)
   // There is some router task write in 'controller/dbFile.js > function:upload'
 
@@ -112,7 +112,7 @@ routes.upload = async (req, res, next) => {
 }
 router.all('/upload', routes.upload);
 
-routes.rename = async (req, res, next) => {
+routes.rename = async(req, res, next) => {
   var data = tools.createData(req);
   let _newDbName = req.body.newDbName;
 

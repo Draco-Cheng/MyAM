@@ -31,7 +31,7 @@ routes.index = function(req, res, next) {
     // Cross domain header
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-        
+
     // do auth check 
     if (authService.check(req.headers)) {
       next();

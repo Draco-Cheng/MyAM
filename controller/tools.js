@@ -13,9 +13,7 @@ var _createData = function(req, uid) {
   if (_uid && req.body.db) {
     _data.dbName = req.body.db;
     _data.userPath = config.dbFolder + 'users/' + _uid;
-    _data.dbPath =  _data.userPath + '/' + req.body.db;
-
-
+    _data.dbPath = _data.userPath + '/' + req.body.db;
 
     if (req.body.breakpoint) {
       _data.dbFileName = req.body.breakpoint;
