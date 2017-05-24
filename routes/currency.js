@@ -21,7 +21,7 @@ routes.get = function(req, res, next) {
 			if(err){
 				responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200, data.resault[0] , req, res);
+				responseHandler(200, data.resault , req, res);
 			}
 		});
 }

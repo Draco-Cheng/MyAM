@@ -52,7 +52,7 @@ exports.login = async(data) => {
   // get user profile 
   await controller.dbController.getUser(data);
 
-  let _resault = data['resault'][0] ? data['resault'][0][0] : null;
+  let _resault = data['resault'] ? data['resault'][0] : null;
 
   if (_resault && controller.encrypt(_resault['token'] + _salt) == _token) {
     // login success ------------------------------------------------
@@ -114,7 +114,7 @@ exports.loginByToken = async(data) => {
 
   // get user profile 
   await controller.dbController.getUser(data);
-  let _resault = data['resault'][0] ? data['resault'][0][0] : null;
+  let _resault = data['resault'] ? data['resault'][0] : null;
   let _clientIp = data['request']['ip'];
 
   if (_resault && _resault['keep_login_info']) {

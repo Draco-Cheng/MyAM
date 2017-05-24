@@ -37,7 +37,7 @@ var _setCurrencies = function(data, callback) {
       return controller.dbController.getCurrencies(_tempData);
     })
     .then(function(tempData) {
-      var _resault = tempData.resault.pop();
+      var _resault = tempData.resault;
       //**** check to_cid is exsist ****
       var _to_cid_isexist = false;
       var _cid_dependency = false;
@@ -121,7 +121,7 @@ var _delCurrencies = function(data, callback) {
       return controller.dbController.getRecord(data);
     })
     .then(function(data) {
-      var _resault = data.resault.pop().length;
+      var _resault = data.resault.length;
 
       data.to_cid = data.del_cid;
       delete data.cid;
@@ -134,7 +134,7 @@ var _delCurrencies = function(data, callback) {
         return controller.dbController.getCurrencies(data);
     })
     .then(function(data) {
-      var _resault = data.resault.pop().length;
+      var _resault = data.resault.length;
       data.to_cid = data.del_cid;
       delete data.to_cid;
 

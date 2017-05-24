@@ -67,7 +67,7 @@ exports.delTypes = async data => {
 
     await controller.dbController.getRecordTypeMap(_tempData);
 
-    if (_tempData.resault[0].length) {
+    if (_tempData.resault.length) {
       data['error'] = {
         code: 424,
         message: 'RECORD_DEPENDENCIES'
@@ -123,7 +123,7 @@ var _setTypeMaps = function(data, callback){
 	_checkDB.then(function(data){ return controller.dbController.connectDB(data);})
 			.then(function(data){ return controller.dbController.getTypeMaps(data); })
 			.then(function(data){ 
-				if(data.resault[0].length === 0 && data.tid !== data.sub_tid)
+				if(data['resault'].length === 0 && data.tid !== data.sub_tid)
 					return controller.dbController.setTypeMaps(data);
 				else
 					return new Promise(function(resolve, reject){resolve(data)});

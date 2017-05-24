@@ -69,7 +69,7 @@ var _setRecordTypes = function(data, callback){
 				//parse what we need to add and what have to delete
 				data.tids_add = data.tids_json.map(function(i){return parseInt(i)})
 				data.tids_del = [];
-				data.resault.pop().forEach(function(_obj){
+				data.resault.forEach(function(_obj){
 					if( parseInt(_obj.rid) ==  data.rid ){
 						var _index = data.tids_add.indexOf(_obj.tid);
 						if( _index === -1 )

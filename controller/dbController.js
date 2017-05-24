@@ -1,24 +1,24 @@
-var logger  = require("./logger.js");
+var logger = require("./logger.js");
 var Promise = require("promise");
-var colors  = require('colors');
+var colors = require('colors');
 var sqlite3 = require('sqlite3').verbose();
-var dbFile  = require('./dbFile.js');
+var dbFile = require('./dbFile.js');
 
 /*
-	if(!exists) {
-		db.run("CREATE TABLE Stuff (thing TEXT)");
-	}
+  if(!exists) {
+    db.run("CREATE TABLE Stuff (thing TEXT)");
+  }
   
-	var stmt = db.prepare("INSERT INTO Stuff VALUES (?)");
-	  
-	//Insert random data
-	  var rnd;
-	  for (var i = 0; i < 10; i++) {
-	    rnd = Math.floor(Math.random() * 10000000);
-	    stmt.run("Thing #" + rnd);
-	  }
-	  
-	stmt.finalize();
+  var stmt = db.prepare("INSERT INTO Stuff VALUES (?)");
+    
+  //Insert random data
+    var rnd;
+    for (var i = 0; i < 10; i++) {
+      rnd = Math.floor(Math.random() * 10000000);
+      stmt.run("Thing #" + rnd);
+    }
+    
+  stmt.finalize();
 */
 var _valHandler = function(val) {
   if (val === "true") return true;
@@ -28,14 +28,14 @@ var _valHandler = function(val) {
 }
 
 var _dbLogger = function(data, str) {
-  if(data.db)
+  if (data.db)
     logger.dbLog(data.reqId, ("[" + data.db.filename + " ," + data.db.mode + "] ").grey + str);
   else
     logger.dbLog(data.reqId, ("[" + data.dbFile + "] ").grey + str);
 }
 
 var _connectDB = function(data, callback) {
-  const _dbFile = ( data['meta'] && data['meta']['dbFile'] ) || data['dbFile']
+  const _dbFile = (data['meta'] && data['meta']['dbFile']) || data['dbFile']
   logger.debug(data.reqId, "connect Database file : " + _dbFile);
   data.db = new sqlite3.Database(_dbFile);
   data.db.serialize(function() {
@@ -59,7 +59,8 @@ var _runSQL = function(data, sql, value) {
   return new Promise(function(resolve, reject) {
     var _pool = [];
     var _stamp = Date.now();
-    data.resault = [];
+    data['resault'] = [];
+
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][run] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -70,10 +71,9 @@ var _runSQL = function(data, sql, value) {
         };
         if (_pool.length) {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + JSON.stringify(_pool));
-          data.resault.push(_pool);
+          data['resault'] = _pool;
         } else {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + " successful...");
-          data.resault.push([]);
         }
 
         resolve(data)
@@ -93,6 +93,7 @@ var _allSQL = function(data, sql, value) {
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
     data['resault'] = [];
+
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][all] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -104,10 +105,9 @@ var _allSQL = function(data, sql, value) {
         };
         if (row.length) {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + JSON.stringify(row));
-          data.resault.push(row);
+          data['resault'] = row;
         } else {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + " successful...");
-          data.resault.push([]);
         }
 
         resolve(data)
@@ -126,7 +126,8 @@ var _getSQL = function(data, sql, value) {
 
   return new Promise(function(resolve, reject) {
     var _stamp = Date.now();
-    data.resault = [];
+    data['resault'] = [];
+
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][get] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -138,10 +139,9 @@ var _getSQL = function(data, sql, value) {
 
         if (row) {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + JSON.stringify([row]));
-          data.resault.push([row]);
+          data['resault'] = row;
         } else {
           _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + " successful...");
-          data.resault.push([]);
         }
 
         resolve(data)
@@ -194,7 +194,7 @@ var _eachSQL = function(data, sql, value) {
   return new Promise(function(resolve, reject) {
     var _pool = [];
     var _stamp = Date.now();
-    data.resault = data.resault || [];
+    data['resault'] = [];
     _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "][each] ").green + sql + " " + "[val]".bgMagenta + " " + JSON.stringify(value));
 
     try {
@@ -209,10 +209,9 @@ var _eachSQL = function(data, sql, value) {
         function() {
           if (_pool.length) {
             _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + JSON.stringify(_pool));
-            data.resault.push(_pool);
+            data['resault'] = _pool;
           } else {
             _dbLogger(data, "[SQL]".bgMagenta + ("[" + _stamp + "]").green + " successful...");
-            data.resault.push([]);
           }
 
           resolve(data);
@@ -233,58 +232,62 @@ var _initialDatabase = function(data, callback) {
   _dbLogger(data, "initial Database table");
   /***********************************************************
   Construction :
-  	user.db(SQLite)
-  			type	
-  					tid			//(timestamp) parent key
-  					type_label
-  					cashType	// cost val(-1), both cost and income val(0), income val(1)
-  					master		// bool
-  					showInMap	// bool
-  					quickSelect	// bool
+    user.db(SQLite)
+        type  
+            tid     //(timestamp) parent key
+            type_label
+            cashType  // cost val(-1), both cost and income val(0), income val(1)
+            master    // bool
+            showInMap // bool
+            quickSelect // bool
 
-  			typeMap	
-  					tid			//(timestamp) parent key
-  					sub_tid		//(timestamp) sub key
-  					sequence	//int
+        typeMap 
+            tid     //(timestamp) parent key
+            sub_tid   //(timestamp) sub key
+            sequence  //int
 
-  			record
-  					rid			//(timestamp) parent key
-  					cashType	// cost val(-1), income val(1)
-  					cid			//currencies 
-  					value
-  					memo		
-  					date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
+        record
+            rid     //(timestamp) parent key
+            cashType  // cost val(-1), income val(1)
+            cid     //currencies 
+            value
+            memo    
+            date    //"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
 
-  			recordTypeMap
-  					rid			//(timestamp) record id
-  					tid			//(timestamp)
+        recordTypeMap
+            rid     //(timestamp) record id
+            tid     //(timestamp)
 
-  			currencies
-  					cid 		//(timestamp) parent key
-  					to_cid 		//(timestamp) parent key (empty will be current main currencies)
-  					main		// bool 
-  					type		// TWD, USD, etc...
-  					memo
-  					rate
-  					date		//"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
-  					quickSelect		
-  					--------------------------
-  					+ the mian currencies
-  					+	rate = 1;
-  					+	
-  					+	(Standard) 		for view can tempraly change rate
-  					--------------------------
+        currencies
+            cid     //(timestamp) parent key
+            to_cid    //(timestamp) parent key (empty will be current main currencies)
+            main    // bool 
+            type    // TWD, USD, etc...
+            memo
+            rate
+            date    //"yyyy-mm-dd" sort by date (ORDER BY "date" DESC [ASC | DESC])
+            quickSelect   
+            --------------------------
+            + the mian currencies
+            + rate = 1;
+            + 
+            + (Standard)    for view can tempraly change rate
+            --------------------------
   ***********************************************************/
 
   _runSQL(data, "CREATE TABLE IF NOT EXISTS type (tid BIGINT PRIMARY KEY NOT NULL, type_label TEXT, cashType INT, master bool, showInMap bool, quickSelect bool);")
     .then(function(data) {
-      return _runSQL(data, "CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)"); })
+      return _runSQL(data, "CREATE TABLE IF NOT EXISTS typeMap (tid BIGINT NOT NULL, sub_tid BIGINT NOT NULL, sequence INT)");
+    })
     .then(function(data) {
-      return _runSQL(data, "CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL,cashType INT, cid BIGINT, value FLOAT, memo TEXT, date TEXT)"); })
+      return _runSQL(data, "CREATE TABLE IF NOT EXISTS record (rid BIGINT PRIMARY KEY NOT NULL,cashType INT, cid BIGINT, value FLOAT, memo TEXT, date TEXT)");
+    })
     .then(function(data) {
-      return _runSQL(data, "CREATE TABLE IF NOT EXISTS recordTypeMap (rid BIGINT NOT NULL, tid BIGINT NOT NULL)"); })
+      return _runSQL(data, "CREATE TABLE IF NOT EXISTS recordTypeMap (rid BIGINT NOT NULL, tid BIGINT NOT NULL)");
+    })
     .then(function(data) {
-      return _runSQL(data, "CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, quickSelect bool)"); })
+      return _runSQL(data, "CREATE TABLE IF NOT EXISTS currencies (cid BIGINT PRIMARY KEY NOT NULL, to_cid BIGINT,main BOOL, type TEXT, memo TEXT, rate FLOAT, date TEXT, quickSelect bool)");
+    })
     .then(function(data) {
       callback(null, data);
     });
@@ -297,7 +300,7 @@ exports.checkDBisCorrect = data => {
   var _sql = "SELECT * FROM type, typeMap, record, recordTypeMap, currencies LIMIT 1";
 
   var _dbFile = data['meta']['dbFile'];
-  
+
   logger.debug(data.reqId, "Check Database " + _dbFile + " is correct or not...");
 
   _connectDB(data)
@@ -307,7 +310,7 @@ exports.checkDBisCorrect = data => {
     .nodeify(function(err) {
 
       data['resault'] = {};
-      
+
       if (err) {
         data['resault']['isCorrect'] = false;
         data['resault']['message'] = err;
@@ -372,13 +375,15 @@ var _setCurrencies = function(data, callback) {
   if (data.cid) {
     _val.push(data.cid);
     var _sql = "UPDATE currencies SET " + _param.map(function(e, n) {
-      return e + " = ? " }) + "WHERE cid = ?;";
+      return e + " = ? "
+    }) + "WHERE cid = ?;";
   } else {
     data.cid = Date.now();
     _param.unshift("cid");
     _val.unshift(data.cid);
     var _sql = "INSERT INTO currencies (" + _param.join(",") + ") VALUES(" + _param.map(function() {
-      return "?" }).join(",") + ");";
+      return "?"
+    }).join(",") + ");";
   }
 
   _prepareSQL(data, _sql, [_val]).then(function(data) { callback(null, data); });
@@ -418,7 +423,7 @@ exports.getTypes = Promise.denodeify(_getTypes);
 var _setTypes = function(data, callback) {
   var _param = [];
   var _val = [];
-  data.resault = [];
+  data['resault'] = [];
 
   ["type_label", "cashType", "master", "showInMap", "quickSelect"].forEach(function(each) {
     if (data[each] !== undefined) {
@@ -430,17 +435,19 @@ var _setTypes = function(data, callback) {
   if (data.tid) {
     _val.push(data.tid);
     var _sql = "UPDATE type SET " + _param.map(function(e, n) {
-      return e + " = ? " }) + "WHERE tid = ?;";
+      return e + " = ? "
+    }) + "WHERE tid = ?;";
   } else {
     data.tid = Date.now();
     _param.unshift("tid");
     _val.unshift(data.tid);
     var _sql = "INSERT INTO type (" + _param.join(",") + ") VALUES(" + _param.map(function() {
-      return "?" }).join(",") + ");";
+      return "?"
+    }).join(",") + ");";
   }
 
   _prepareSQL(data, _sql, [_val]).then(function(data) {
-    data.resault.push([{ tid: data.tid }]);
+    data['resault'] = [{ tid: data.tid }];
     callback(null, data);
   });
 
@@ -482,7 +489,8 @@ var _setTypeMaps = function(data, callback) {
   });
 
   var _sql = "INSERT INTO typeMap (" + _param.join(",") + ") VALUES(" + _param.map(function() {
-    return "?" }).join(",") + ");";
+    return "?"
+  }).join(",") + ");";
 
   _prepareSQL(data, _sql, [_val]).then(function(data) {
     callback(null, data);
@@ -631,7 +639,7 @@ var _getRecord = function(data, callback) {
 
   _allSQL(data, _sql, _val)
     .then(function(data) { callback(null, data); })
-    .catch(function(err){ callback(err, data);  });
+    .catch(function(err) { callback(err, data); });
 
 
 };
@@ -651,18 +659,19 @@ var _setRecord = function(data, callback) {
   if (data.rid) {
     _val.push(data.rid);
     var _sql = "UPDATE record SET " + _param.map(function(e, n) {
-      return e + " = ? " }) + "WHERE rid = ?;";
+      return e + " = ? "
+    }) + "WHERE rid = ?;";
   } else {
     data.rid = Date.now();
     _param.unshift("rid");
     _val.unshift(data.rid);
     var _sql = "INSERT INTO record (" + _param.join(",") + ") VALUES(" + _param.map(function() {
-      return "?" }).join(",") + ");";
+      return "?"
+    }).join(",") + ");";
   }
 
   _prepareSQL(data, _sql, [_val]).then(function(data) {
-    data.resault = [];
-    data.resault.push([{ rid: data.rid }]);
+    data['resault'] = [{ rid: data.rid }];
     callback(null, data);
   }).catch(function(e) {});
 };
@@ -767,8 +776,8 @@ exports.getUser = async data => {
   let _conditions = [];
   _meta.uid !== undefined && _conditions.push('uid=$uid');
   _meta.acc !== undefined && _conditions.push('account=$acc');
-  
-  if(_conditions.length) {
+
+  if (_conditions.length) {
     _sql += ' WHERE ' + _conditions.join(' OR ');
   }
   const _data = await _allSQL(data, _sql, { $uid: _meta.uid, $acc: _meta.acc });
@@ -790,17 +799,18 @@ exports.setUser = async data => {
   if (_meta.uid) {
     _val.push(_meta.uid);
     var _sql = "UPDATE user SET " + _param.map(function(e, n) {
-      return e + " = ? " }) + "WHERE uid = ?;";
+      return e + " = ? "
+    }) + "WHERE uid = ?;";
   } else {
     _meta.uid = Date.now();
     _param.unshift("uid");
     _val.unshift(_meta.uid);
     var _sql = "INSERT INTO user (" + _param.join(",") + ") VALUES(" + _param.map(function() {
-      return "?" }).join(",") + ");";
+      return "?"
+    }).join(",") + ");";
   }
 
   await _prepareSQL(data, _sql, [_val]);
-  data.resault = [];
-  data.resault.push([{ uid: _meta.uid }]);
+  data['resault'] = [{ uid: _meta.uid }];
   return data;
 };

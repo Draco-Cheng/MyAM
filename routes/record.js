@@ -48,7 +48,7 @@ routes.set = function(req, res, next) {
 			if(err){
 				responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200,data.resault[0] , req, res);
+				responseHandler(200,data.resault , req, res);
 				services.dbService.syncDB(data);
 			}
 		});
@@ -97,7 +97,7 @@ routes.get = function(req, res, next) {
 			if(err){
 				responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200,data.resault[0] , req, res);
+				responseHandler(200,data.resault , req, res);
 			}
 		});
 }
@@ -116,7 +116,7 @@ routes.getTypes = function(req, res, next) {
 			if(err){
 				responseHandler(err.code, req, res);
 			}else{
-				responseHandler(200,data.resault[0], req, res);
+				responseHandler(200,data.resault, req, res);
 			}
 		});
 }

@@ -30,7 +30,7 @@ exports.set = async data => {
 
       await controller.dbController.getUser(data);
 
-      let _userToken = data['resault'][0] ? data['resault'][0][0]['token'] : null;
+      let _userToken = data['resault'] ? data['resault'][0]['token'] : null;
 
       if (_userToken && controller.encrypt(_userToken) == _meta['token']) {
         _newUserParameter['token'] = _meta['token2'];
@@ -84,7 +84,7 @@ exports.get = async data => {
   data['meta'] = { uid: data['meta']['uid'] };
   await controller.dbController.getUser(data);
 
-  let _resault = data['resault'][0];
+  let _resault = data['resault'];
 
   _resault.forEach(row => {
     let _uobj = {};
