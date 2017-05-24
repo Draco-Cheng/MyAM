@@ -106,14 +106,22 @@ router.all('/setMaps', routes.setMaps);
 
 routes.delTypeMaps = function(req, res, next) {
   var data = tools.createData(req);
-  data.del_tid = req.body.del_tid;
-  data.del_sub_tid = req.body.del_sub_tid;
 
-  if (!data.dbFile || !data.del_tid || !data.del_sub_tid)
+  var _prmCheck = true;
+  ['del_tid', 'del_sub_tid'].forEach( key => {
+    if(!req.body[key]) _prmCheck = false
+  });
+
+  if(!_prmCheck || !data.dbFile)
     return responseHandler(406, req, res);
 
+  data['meta'] = {};
+  data['meta']['del_tid'] = req.body.del_tid;
+  data['meta']['del_sub_tid'] = req.body.del_sub_tid;
+
+
   services.type.delTypeMaps(data)
-    .nodeify(function(err, data) {
+    .then(function(data, err) {
       if (err) {
         responseHandler(err.code, req, res);
       } else {

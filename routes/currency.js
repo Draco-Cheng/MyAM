@@ -27,7 +27,7 @@ routes.get = function(req, res, next) {
 }
 router.all('/get', routes.get);
 
-routes.set = function(req, res, next) {
+routes.set = async function(req, res, next) {
   var data = tools.createData(req);
   data.cid = req.body.cid;
   data.to_cid = req.body.to_cid;
@@ -44,18 +44,13 @@ routes.set = function(req, res, next) {
   if ((!data.main && !data.to_cid) || (!data.cid && data.main && data.to_cid))
     return responseHandler(424, req, res);
 
-  services.currency.setCurrencies(data)
-    .nodeify(function(err, data) {
-      if (err) {
-        if (err.message)
-          responseHandler(err.code, err.message, req, res);
-        else
-          responseHandler(err.code, req, res);
-      } else {
-        responseHandler(200, { cid: data.cid }, req, res);
-        services.dbService.syncDB(data);
-      }
-    });
+  await services.currency.setCurrencies(data);
+
+  if (data['error'])
+    return responseHandler(data['error'], req, res);
+  
+  responseHandler(200, { cid: data.cid }, req, res);
+  services.dbService.syncDB(data);
 }
 router.all('/set', routes.set);
 
@@ -67,7 +62,7 @@ routes.del = function(req, res, next) {
     return responseHandler(406, req, res);
 
   services.currency.delCurrencies(data)
-    .nodeify(function(err, data) {
+    .then(function(data, err) {
       if (err) {
         if (err.message)
           responseHandler(err.code, err.message, req, res);

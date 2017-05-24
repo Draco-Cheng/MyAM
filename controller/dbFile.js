@@ -6,18 +6,19 @@ var dateFormat = require('dateformat');
 var mkdirp = require('mkdirp');
 var config = require("../config.js");
 
-var _checkFile = function(data, callback) {
+var _checkFile = function(data) {
+  let _resolve;
   try {
     fs.exists(data.checkFile, function(exists) {
       // handle result
       data.fileExists = exists;
-      callback(data);
+      _resolve(data);
     });
   } catch (e) {
     logger.error(data.reqId, e.stack);
   }
 
-  return new Promise(resolve => callback = resolve);
+  return new Promise(resolve => _resolve = resolve);
 };
 exports.checkFile = _checkFile;
 //exports.check = _check;

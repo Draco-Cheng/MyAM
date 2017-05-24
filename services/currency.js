@@ -30,130 +30,152 @@ var _getCurrencies = function(data, callback) {
 }
 exports.getCurrencies = Promise.denodeify(_getCurrencies);
 
-var _setCurrencies = function(data, callback) {
-  controller.dbController.connectDB(data)
-    .then(function(data) {
-      var _tempData = {
-        db: data.db,
-        reqId: data.reqId
+var createCurrency = async function(data) {
+  const _meta = data['meta'];
+
+  var _resault = _meta['currencies'];
+  var _to_cid_isexist = false;
+  var _cid_dependency = false;
+  var _original_tocid = null;
+  var _main_cid = false;
+
+  _resault.forEach(currency => {
+    if (data.to_cid == currency.cid)
+      _to_cid_isexist = true;
+    if (data.cid == currency.to_cid)
+      _cid_dependency = true;
+    if (data.cid == currency.cid)
+      _original_tocid = currency.to_cid;
+    if (!currency.to_cid && currency.main)
+      _main_cid = currency.cid;
+  });
+
+  if (data.main) {
+    if (!data.cid && !data.to_cid) {
+      data.to_cid_rate = data.rate;
+      data.main_cid = _main_cid;
+      data.rate = 1;
+      return await controller.dbController.setCurrencies(data);
+    }
+
+    if (!data.cid && data.to_cid) {
+      data['error'] = { code: 424 };
+      return data;
+    }
+  }
+
+  if (!data.cid && !data.main) {
+    return await controller.dbController.setCurrencies(data);
+  }
+
+
+  if (data.cid && data.main && data.to_cid != _original_tocid) {
+    data['error'] = { code: 424, message: 'main_cid_cant_change_to_cid' };
+    return data;
+  }
+
+  if (!_to_cid_isexist && _main_cid != data.cid) {
+    data['error'] = { code: 424, message: 'to_cid_not_exist' };
+    data.message = "to_cid_not_exist";
+    return data;
+  }
+
+  if (_cid_dependency && data.to_cid != _original_tocid) {
+    data['error'] = { code: 424, message: 'to_cid_dependency' };
+    return data;
+  }
+
+  delete data.main;
+
+  return await controller.dbController.setCurrencies(data);
+};
+
+exports.setCurrencies = async function(data) {
+  try {
+    const _isNewData = !data.cid;
+
+    await controller.dbController.connectDB(data);
+
+    //*****************************
+    // get currency list
+    var _tempData = {
+      db: data.db,
+      reqId: data.reqId
+    }
+    await controller.dbController.getCurrencies(_tempData);
+
+    //*****************************
+    // check to_cid is exsist
+    data['meta'] = { currencies: _tempData.resault }
+    await createCurrency(data);
+    if (data['error']) return data;
+
+    //*****************************
+    // update main currency if need
+    if (data.main && !data.to_cid && data.to_cid_rate && data.main_cid) {
+      await controller.dbController.updateMainCurrency(data);
+
+      // if fail revert add main currency
+      if(_isNewData && data['error']) {
+        data.del_cid = data.cid;
+        await delCurrencies(data);
       }
-      return controller.dbController.getCurrencies(_tempData);
-    })
-    .then(function(tempData) {
-      var _resault = tempData.resault;
-      //**** check to_cid is exsist ****
-      var _to_cid_isexist = false;
-      var _cid_dependency = false;
-      var _original_tocid = null;
-      var _main_cid = false;
+    }
+    await controller.dbController.closeDB(data);
 
-      _resault.forEach(function(currency) {
-        if (data.to_cid == currency.cid)
-          _to_cid_isexist = true;
-        if (data.cid == currency.to_cid)
-          _cid_dependency = true;
-        if (data.cid == currency.cid)
-          _original_tocid = currency.to_cid;
-        if (!currency.to_cid && currency.main)
-          _main_cid = currency.cid;
-      })
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
 
-      if (data.main) {
-        if (!data.cid && !data.to_cid) {
-          data.to_cid_rate = data.rate;
-          data.main_cid = _main_cid;
-          data.rate = 1;
-
-          return controller.dbController.setCurrencies(data);
-        }
-
-        if (!data.cid && data.to_cid) {
-          data.code = 424;
-          throw data;
-        }
-      }
-
-      if (!data.cid && !data.main)
-        return controller.dbController.setCurrencies(data);
-
-
-      if (data.cid && data.main && data.to_cid != _original_tocid) {
-        data.code = 424;
-        data.message = "main_cid_cant_change_to_cid";
-        throw data;
-      }
-
-      if (!_to_cid_isexist && _main_cid != data.cid) {
-        data.code = 424;
-        data.message = "to_cid_not_exist";
-        throw data;
-      }
-
-      if (_cid_dependency && data.to_cid != _original_tocid) {
-        data.code = 424;
-        data.message = "to_cid_dependency";
-        throw data;
-      }
-
-      delete data.main;
-
-      return controller.dbController.setCurrencies(data);
-    })
-    .then(function(data) {
-      if (data.main && !data.to_cid && data.to_cid_rate && data.main_cid) {
-        return controller.dbController.updateMainCurrency(data);
-      } else
-        return new Promise(function(resolve, reject) { resolve(data) });
-    })
-    .nodeify(function(err) {
-      controller.dbController.closeDB(data).then(function() {
-        err && logger.error(data.reqId, err);
-        callback(err, data);
-      });
-    });
-
+  return data;
 }
-exports.setCurrencies = Promise.denodeify(_setCurrencies);
 
-var _delCurrencies = function(data, callback) {
-  data.limit = 1;
+var delCurrencies = exports.delCurrencies = async function(data) {
+  try {
+    data.limit = 1;
 
-  controller.dbController.connectDB(data)
-    .then(function(data) {
-      data.cid = data.del_cid;
-      return controller.dbController.getRecord(data);
-    })
-    .then(function(data) {
-      var _resault = data.resault.length;
+    await controller.dbController.connectDB(data);
 
-      data.to_cid = data.del_cid;
-      delete data.cid;
+    //*****************************
+    // get rocords for check dependency
+    data.cid = data.del_cid;
+    await controller.dbController.getRecord(data);
 
-      if (_resault) {
-        data.code = 424;
-        data.message = "record_dependencies";
-        throw data;
-      } else
-        return controller.dbController.getCurrencies(data);
-    })
-    .then(function(data) {
-      var _resault = data.resault.length;
-      data.to_cid = data.del_cid;
-      delete data.to_cid;
+    //*****************************
+    // check rocords dependency
+    var _resault = data.resault.length;
 
-      if (_resault) {
-        data.code = 424;
-        data.message = "currency_dependencies";
-        throw data;
-      } else
-        return controller.dbController.delCurrencies(data);
-    })
-    .nodeify(function(err) {
-      controller.dbController.closeDB(data).then(function() {
-        err && logger.error(data.reqId, err);
-        callback(err, data);
-      });
-    });
+    data.to_cid = data.del_cid;
+    delete data.cid;
 
+    if (_resault) {
+      data['error'] = { code: 424, message: 'record_dependencies' };
+      return data;
+    }
+
+
+    //*****************************
+    // check currencies dependency (no cilds)
+    await controller.dbController.getCurrencies(data);
+    var _resault = data.resault.length;
+    data.to_cid = data.del_cid;
+    delete data.to_cid;
+
+    if (_resault) {
+      data['error'] = { code: 424, message: 'currency_dependencies' };
+      return data;
+    }
+
+    //*****************************
+    // delete currency 
+    await controller.dbController.delCurrencies(data);
+
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+
+  return data;
 }
-exports.delCurrencies = Promise.denodeify(_delCurrencies);

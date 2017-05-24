@@ -12,11 +12,14 @@ var _getTypes = function(data, callback) {
   var _checkDB = controller.dbFile.checkDB(data);
 
   _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
+      return controller.dbController.connectDB(data);
+    })
     .then(function(data) {
-      return controller.dbController.getTypes(data); })
+      return controller.dbController.getTypes(data);
+    })
     .then(function(data) {
-      return controller.dbController.closeDB(data); })
+      return controller.dbController.closeDB(data);
+    })
     .then(function(data) {
       callback(null, data);
     });
@@ -31,7 +34,8 @@ var _setTypes = function(data, callback) {
   var _checkDB = controller.dbFile.checkDB(data);
 
   _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
+      return controller.dbController.connectDB(data);
+    })
     .then(function(data) {
       if (data.tid)
         return controller.dbController.getTypes(data);
@@ -45,7 +49,8 @@ var _setTypes = function(data, callback) {
         return controller.dbController.setTypes(data);
     })
     .then(function(data) {
-      return controller.dbController.closeDB(data); })
+      return controller.dbController.closeDB(data);
+    })
     .then(function(data) {
       callback(null, data);
     });
@@ -59,31 +64,37 @@ exports.setTypes = Promise.denodeify(_setTypes);
 exports.delTypes = async data => {
   try {
 
-    data['error'] || await controller.dbFile.checkDB(data);
-    data['error'] || await controller.dbController.connectDB(data);
-    if (data['error']) return data;
+    let _delTid = data['meta']['del_tid'];
 
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+
+    //*****************************
+    // check record dependency
     const _tempData = {
       db: data.db,
       reqId: data.reqId,
-      tid: data['meta']['del_tid'],
+      tid: _delTid,
       limit: 1
     }
 
     await controller.dbController.getRecordTypeMap(_tempData);
-
     if (_tempData.resault.length) {
       data['error'] = {
         code: 424,
         message: 'RECORD_DEPENDENCIES'
       };
       return data;
-    } else {
-      await controller.dbController.delTypeMaps(data)
     }
 
-    data['error'] || await controller.dbController.delTypes(data);
-    data['error'] || await controller.dbController.closeDB(data);
+    //*****************************
+    // unlink tid in TypeMaps
+    data['meta'] = { del_tid: _delTid };
+    await controller.dbController.delTypeMaps(data)
+
+
+    await controller.dbController.delTypes(data);
+    await controller.dbController.closeDB(data);
 
     return data;
 
@@ -91,33 +102,31 @@ exports.delTypes = async data => {
   } catch (e) { logger.error(data.reqId, e.stack) }
 }
 
-var _delTypeMaps = function(data, callback) {
-  var _checkDB = controller.dbFile.checkDB(data);
-  _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
-    .then(function(data) {
-      return controller.dbController.delTypeMaps(data); })
-    .then(function(data) {
-      return controller.dbController.closeDB(data); })
-    .then(function(data) {
-      callback(null, data);
-    });
-
-  _checkDB.catch(function(data) {
-    callback(data)
-  });
+exports.delTypeMaps = async function(data, callback) {
+  try {
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+    await controller.dbController.delTypeMaps(data);
+    await controller.dbController.closeDB(data);
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
 }
-exports.delTypeMaps = Promise.denodeify(_delTypeMaps);
 
 var _getTypeMaps = function(data, callback) {
   var _checkDB = controller.dbFile.checkDB(data);
 
   _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
+      return controller.dbController.connectDB(data);
+    })
     .then(function(data) {
-      return controller.dbController.getTypeMaps(data); })
+      return controller.dbController.getTypeMaps(data);
+    })
     .then(function(data) {
-      return controller.dbController.closeDB(data); })
+      return controller.dbController.closeDB(data);
+    })
     .then(function(data) {
       callback(null, data);
     });
@@ -132,9 +141,11 @@ var _setTypeMaps = function(data, callback) {
   var _checkDB = controller.dbFile.checkDB(data);
 
   _checkDB.then(function(data) {
-      return controller.dbController.connectDB(data); })
+      return controller.dbController.connectDB(data);
+    })
     .then(function(data) {
-      return controller.dbController.getTypeMaps(data); })
+      return controller.dbController.getTypeMaps(data);
+    })
     .then(function(data) {
       if (data['resault'].length === 0 && data.tid !== data.sub_tid)
         return controller.dbController.setTypeMaps(data);
@@ -142,7 +153,8 @@ var _setTypeMaps = function(data, callback) {
         return new Promise(function(resolve, reject) { resolve(data) });
     })
     .then(function(data) {
-      return controller.dbController.closeDB(data); })
+      return controller.dbController.closeDB(data);
+    })
     .then(function(data) {
       callback(null, data);
     });
