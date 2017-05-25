@@ -197,7 +197,56 @@ exports.logout = async function(data) {
 
     await controller.dbController.setUser(data);
 
+    await controller.dbController.closeDB(data);
+
     delete authCache[_uid];
+  } catch (e) {
+    logger.error(e);
+    data['error'] = { code: 500 };
+  }
+  return data;
+}
+
+
+exports.register = async function(data) {
+  try {
+
+    data['dbFile'] = config['dbFolder'] + 'sys.db';
+
+    let _newUserMeta = data['meta'];
+    _newUserMeta['date'] = Date.now();
+    _newUserMeta['permission'] = 20;
+    _newUserMeta['status'] = 0;
+
+    //************************************
+    // connect databse
+    await controller.dbFile.checkDB(data);
+    await controller.dbController.connectDB(data);
+
+    //************************************
+    // get account name and mail check conflict or not
+    let _checkUserMeta = {};
+    data['meta']['account'] = _newUserMeta['account'];
+    data['meta']['mail'] = _newUserMeta['mail'];
+    await controller.dbController.getUser(data);
+    const _checkUserResault = data['resault'][0];
+    if(_checkUserResault){
+      data['error'] = { code: 409 };
+      if(_newUserMeta['account'] == _checkUserResault['account']){
+        data['error']['message'] = 'ACCOUNT_CONFLICT';
+      } else {
+        data['error']['message'] = 'MAIL_CONFLICT';
+      }
+      return data;
+    }
+
+    //************************************
+    // add user 
+    data['meta'] = _newUserMeta;
+    await controller.dbController.setUser(data);
+
+    await controller.dbController.closeDB(data);
+
   } catch (e) {
     logger.error(e);
     data['error'] = { code: 500 };

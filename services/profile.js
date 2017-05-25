@@ -11,7 +11,7 @@ var logger = require('../controller/logger.js');
 exports.set = async function(data) {
   try {
 
-    data['dbFile'] = config['`dbFolder'] + 'sys.db';
+    data['dbFile'] = config['dbFolder'] + 'sys.db';
 
     const _meta = data['meta'];
     const _uid = _meta['uid'];

@@ -124,21 +124,6 @@ exports.readdir = function(data) {
   });
 }
 
-exports.createdir = function(data) {
-  return new Promise((resolve, reject) => {
-    try {
-      logger.debug(data.reqId, 'readdir : ' + data['meta']['path']);
-      let _dir = fs.mkdir(data['meta']['path'], (err, dir) => {
-        resolve(data['resault'] = 200);
-      });
-    } catch (e) {
-      logger.error(data.reqId, e.stack);
-      reject(e);
-    }
-  });
-}
-
-
 exports.upload = function(data) {
   return new Promise((resolve, reject) => {
     try {

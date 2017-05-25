@@ -53,7 +53,7 @@ router.all('/userList', routes.userList);
 routes.setUser = async function(req, res, next) {
   var data = tools.createData(req);
 
-  if (!(await checkPermissionWithTarget(data, req, res, next)))
+  if (!isAdmin(data) || !(await checkPermissionWithTarget(data, req, res, next)))
     return responseHandler(405, req, res);
 
   data['responseObj'] = {};
@@ -68,7 +68,8 @@ routes.setUser = async function(req, res, next) {
       _profileMeta[key] = req['body'][key];
   });
 
-  if (!_profileMeta['uid'] || Object.keys(_profileMeta).length < 2)
+
+  if (!_profileMeta['uid'] || Object.keys(_profileMeta).length < 2 || _profileMeta['permission'] >= data['permission'])
     return responseHandler(406, req, res);
 
   data['meta'] = _profileMeta;

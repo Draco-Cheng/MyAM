@@ -41,7 +41,11 @@ var connectDB = function(data) {
       const _dbFile = (data['meta'] && data['meta']['dbFile']) || data['dbFile']
 
       logger.debug(data.reqId, 'connect Database file : ' + _dbFile);
+
       data.db = new sqlite3.Database(_dbFile);
+      data.db.on('error', err => {
+        logger.error(err);
+      })
       data.db.serialize(() => {
         dbLogger(data, 'open database...');
         resolve(data);
@@ -174,25 +178,36 @@ var prepareSQL = function(data, sql, value) {
     try {
       const _stamp = Date.now();
 
+      let _err;
+
       dbLogger(data, '[SQL]'.bgMagenta + ('[' + _stamp + '][prepare] ').green + sql + ' ' + '[val]'.bgMagenta + ' ' + JSON.stringify(value));
 
 
       var stmt = data.db.prepare(sql, err => {
         if (err) {
           dbLogger(data, '[SQL]'.bgRed + ('[' + _stamp + '] ').red + err);
-          return reject(err)
+          _err = err;
         };
-
-        dbLogger(data, '[SQL]'.bgMagenta + ('[' + _stamp + ']').green + ' successful...');
-        resolve(data);
       });
 
       value.forEach(val => {
-        stmt.run(val);
+        stmt.run(val, err => {
+          if (err) {
+            dbLogger(data, '[SQL]'.bgRed + ('[' + _stamp + '] ').red + err);
+            _err = err;
+          }
+        });
       });
 
-      stmt.finalize();
-
+      stmt.finalize(function() {
+        if (_err) {
+          dbLogger(data, '[SQL]'.bgMagenta + ('[' + _stamp + ']').red + ' Finished with error...');
+          reject(_err);
+        } else {
+          dbLogger(data, '[SQL]'.bgMagenta + ('[' + _stamp + ']').green + ' Finished with no error...');
+          resolve(data);
+        }
+      });
     } catch (e) {
       dbLogger(data, '[SQL]'.bgRed + ('[' + _stamp + ']').red + e.stack || e);
       reject(e);
@@ -294,7 +309,6 @@ exports.initialDatabase = function(data) {
       resolve(data);
 
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -327,7 +341,6 @@ exports.checkDBisCorrect = function(data) {
       resolve(data);
 
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -367,7 +380,6 @@ exports.getCurrencies = function(data) {
       await allSQL(data, _sql, _val);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -403,7 +415,6 @@ exports.setCurrencies = function(data) {
       await prepareSQL(data, _sql, [_val]);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -417,7 +428,6 @@ exports.updateMainCurrency = function(data) {
       resolve(data);
     } catch (e) {
       logger.error(e);
-      reject(e);
     }
   });
 };
@@ -433,7 +443,6 @@ exports.delCurrencies = function(data) {
       await allSQL(data, _sql, _conditions);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -453,7 +462,6 @@ exports.getTypes = function(data) {
       await allSQL(data, _sql, { $tid: data.tid });
       resolve(data);
     } catch (e) {
-      logger.error(e);
       setTimeout(() => reject(e));
     }
   });
@@ -491,7 +499,6 @@ exports.setTypes = function(data) {
       data['resault'] = [{ tid: data.tid }];
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -504,7 +511,6 @@ exports.delTypes = function(data) {
       await allSQL(data, _sql, { $del_tid: data['meta']['del_tid'] });
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -526,7 +532,6 @@ exports.getTypeMaps = function(data) {
       await allSQL(data, _sql, { $tid: data.tid, $sub_tid: data.sub_tid });
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -552,7 +557,6 @@ exports.setTypeMaps = function(data) {
       await prepareSQL(data, _sql, [_val]);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -575,7 +579,6 @@ exports.delTypeMaps = function(data) {
       await allSQL(data, _sql, _conditions);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -673,7 +676,7 @@ exports.getRecord = function(data) {
               if (tid === '_EMPTY_')
                 return 'tids IS NULL';
               else
-                return 'tids LIKE '%' + tid + '%'';
+                return 'tids LIKE ' % ' + tid + ' % '';
             });
             _conditions.push(' ( ' + _map.join(' OR ') + ' ) ');
           });
@@ -708,7 +711,6 @@ exports.getRecord = function(data) {
       resolve(data);
 
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
 
@@ -746,7 +748,6 @@ exports.setRecord = function(data) {
       data['resault'] = [{ rid: data.rid }];
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -764,7 +765,6 @@ exports.delRecord = function(data) {
       }
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -798,7 +798,6 @@ exports.getRecordTypeMap = function(data) {
       await allSQL(data, _sql);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -825,7 +824,6 @@ var addRecordTypeMap = function(data) {
 
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -849,7 +847,6 @@ var delRecordTypeMap = function(data) {
       resolve(data);
 
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -863,7 +860,6 @@ exports.setRecordTypeMap = function(data) {
       await delRecordTypeMap(data);
       resolve(data);
     } catch (e) {
-      logger.error(e);
       reject(e);
     }
   });
@@ -880,14 +876,15 @@ exports.getUser = async function(data) {
     let _conditions = [];
     _meta.uid !== undefined && _conditions.push('uid=$uid');
     _meta.acc !== undefined && _conditions.push('account=$acc');
+    _meta.mail !== undefined && _conditions.push('mail=$mail');
 
     if (_conditions.length) {
       _sql += ' WHERE ' + _conditions.join(' OR ');
     }
-    const _data = await allSQL(data, _sql, { $uid: _meta.uid, $acc: _meta.acc });
+    const _data = await allSQL(data, _sql, { $uid: _meta.uid, $acc: _meta.acc, $mail: _meta.mail });
     return data;
   } catch (e) {
-    logger.error(e);
+    throw e;
   }
 };
 
@@ -897,7 +894,7 @@ exports.setUser = async function(data) {
     var _val = [];
     let _meta = data.meta;
 
-    ['token', 'name', 'permission', 'status', 'mail', 'last_login_info', 'keep_login_info', 'breakpoint'].forEach(function(each) {
+    ['token', 'account', 'name', 'permission', 'status', 'mail', 'last_login_info', 'keep_login_info', 'breakpoint', 'date'].forEach(function(each) {
       if (_meta[each] !== undefined) {
         _param.push(each);
         _val.push(valHandler(_meta[each]));
@@ -922,6 +919,6 @@ exports.setUser = async function(data) {
     data['resault'] = [{ uid: _meta.uid }];
     return data;
   } catch (e) {
-    logger.error(e);
+    throw e;
   }
 };

@@ -65,4 +65,26 @@ routes.logout = async function(req, res, next) {
 }
 router.all('/logout', routes.logout);
 
+routes.register = async function(req, res, next) {
+  var data = tools.createData(req);
+
+  data['responseObj'] = {};
+  data['error'] = null;
+
+  const _loginMeta = {};
+  ['name', 'account', 'token', 'mail'].forEach(key => {
+    if (req['body'][key])
+      _loginMeta[key] = req['body'][key];
+  });
+
+  if (Object.keys(_loginMeta).length != 4)
+    return responseHandler(406, req, res);
+
+  data['meta'] = _loginMeta;
+
+  await authServ.register(data);
+
+  return responseHandler(data['error'] || 200, req, res);
+}
+router.all('/register', routes.register);
 module.exports = router;

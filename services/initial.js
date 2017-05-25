@@ -22,8 +22,7 @@ exports.checkAndCreate = async function(data) {
         'message': 'DB_NAME_CONFLICT'
       };
     } else {
-      data['meta'] = { path: data['dbPath'] };
-      await controller.dbFile.createdir(data);
+      controller.dbFile.createFolderSync(data['dbPath']);
       await controller.dbController.connectDB(data);
       await controller.dbController.initialDatabase(data);
       await controller.dbController.closeDB(data);
