@@ -5,8 +5,6 @@ import { ProfileService } from '../../../service/profile.service';
 
 import './profile.view.style.less';
 
-const profileMap = require('../profile.map.json');
-
 function cloneObj(obj) {
   return JSON.parse(JSON.stringify(obj));
 };
@@ -27,7 +25,7 @@ export class ProfileViewComponent {
   private activedDb;
   private selectedDb;
   private breakpointDbList;
-  private profileMap = profileMap;
+  private profileMap;
   private popOutAddDb;
   private dbName;
   private changeDbName;
@@ -39,22 +37,27 @@ export class ProfileViewComponent {
 
   constructor(
     private profileService: ProfileService
-  ) {};
+  ) {
+    this.profileMap = this.profileService.getProfileMap();
+  };
 
 
   async ngOnInit() {
     this.getConfig();
-    await this.setSelectDb(this.activedDb);    
 
-    if (!this.user['dbList'].length){
-      this.openAddDbPopOut();
+    if (this.user['status'] >= 20) {
+      await this.setSelectDb(this.activedDb);
+
+      if (!this.user['dbList'].length) {
+        this.openAddDbPopOut();
+      }
     }
 
     this.__isInit = true;
   };
 
   async __checkDataUpToDate() {
-    if (this.__meta['config']['legacy']){
+    if (this.__meta['config']['legacy']) {
       this.getConfig();
     }
   }
@@ -70,7 +73,7 @@ export class ProfileViewComponent {
     return new Date(date * 1).toDateString();
   }
 
-  async setSelectDb(db?){    
+  async setSelectDb(db ? ) {
     this.getConfig();
     this.selectedDb = db || this.user['dbList'][0];
     this.dbName = this.selectedDb;
@@ -82,7 +85,7 @@ export class ProfileViewComponent {
   async getBreakpointDbList() {
     if (this.selectedDb) {
       var _res = await this.profileService.getBreakpointDbList(this.selectedDb);
-      let _list = <any[]> _res['data'];
+      let _list = < any[] > _res['data'];
       this.breakpointDbList = [];
 
       _list.forEach(name => this.breakpointDbList.push({ 'dbName': name }));
@@ -133,11 +136,11 @@ export class ProfileViewComponent {
 
   async renameDb() {
     const _resault = await this.profileService.renameDb(this.selectedDb, this.dbName);
-    if(_resault['success']){
+    if (_resault['success']) {
       await this.setSelectDb(this.dbName);
       this.changeDbName = false;
     }
-    
+
   }
 
   async save() {

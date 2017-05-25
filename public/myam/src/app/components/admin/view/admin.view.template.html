@@ -1,0 +1,49 @@
+<div *ngIf="__isInit && __checkDataUpToDate()" class="col-md-12 admin-view-panel">
+  <h1>Admin</h1>
+  <div class="table col-md-12">
+    <div class="table-head">
+      <div class="table-row row">
+        <div class="table-col col-md-1">UID</div>
+        <div class="table-col col-md-1">Acc</div>
+        <div class="table-col col-md-1">Name</div>
+        <div class="table-col col-md-2">Password</div>
+        <div class="table-col col-md-2">Mail</div>
+        <div class="table-col col-md-1">Status</div>
+        <div class="table-col col-md-1">Permit</div>
+        <div class="table-col col-md-1">Date</div>
+        <div class="table-col col-md-2">Login Info</div>
+      </div>
+    </div>
+    <div class="table-body">
+      <div class="table-row animate-repeat row" *ngFor="let user of userList">
+        <div class="table-col col-md-1">{{user.uid}}</div>
+        <div class="table-col col-md-1">{{user.account}}</div>
+        <div class="table-col col-md-1">{{user.name}}</div>
+        <div class="table-col col-md-2">
+          <div class="admin-view-new-pwd">
+            <input [(ngModel)]="user.newPwd" placeholder="new password" type="password" name="">
+            <span *ngIf="user.newPwd" class="glyphicon glyphicon-ok" (click)="resetPwd(user)"></span>
+          </div>
+        </div>
+        <div class="table-col col-md-2">{{user.mail}}</div>
+        <div class="table-col col-md-1">
+          <select [(ngModel)]="user.status" (change)="updateUser(user)">
+            <option *ngFor="let status of objKeys(profileMap['status'])" value="{{status}}">{{profileMap['status'][status]}}</option>
+          </select>
+        </div>
+        <div class="table-col col-md-1">
+          <select [(ngModel)]="user.permission" (change)="updateUser(user)">
+            <option *ngFor="let permission of objKeys(profileMap['permission'])" value="{{permission}}">{{profileMap['permission'][permission]}}</option>
+          </select>
+        </div>
+        <div class="table-col col-md-1">{{dateString(user.date)}}</div>
+        <div class="table-col col-md-2" *ngIf="loginInfoToStr(user.last_login_info) as info">
+          {{info[1]}}
+          <span class="admin-view-info-addr">
+            ({{info[0]}})
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

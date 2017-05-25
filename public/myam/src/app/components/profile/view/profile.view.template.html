@@ -79,7 +79,7 @@
     <div class="profile-view-submit-btn" (click)="save()">Submit</div>
   </div>
   <hr>
-  <div id="profile-view-database">
+  <div id="profile-view-database" *ngIf="user['status'] >= 20">
     <h1>Databse</h1>
     <div *ngIf="user.dbList.length" class="profile-view-select-db">
       Database:

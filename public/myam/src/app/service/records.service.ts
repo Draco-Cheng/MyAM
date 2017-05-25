@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { NotificationHandler } from '../handler/notification.handler';
 
@@ -8,7 +7,6 @@ import { NotificationHandler } from '../handler/notification.handler';
 
   constructor(
     private request: RequestHandler,
-    private config: ConfigHandler,
     private notificationHandler: NotificationHandler
   ) {};
 

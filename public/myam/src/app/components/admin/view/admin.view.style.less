@@ -1,0 +1,45 @@
+.admin-view-panel {
+  .table {
+    display: inline-block;
+    .table-head {
+      .table-col {
+        background: #989898;
+        color: white;
+        font-size: 1.5em;
+        font-weight: 600;
+        line-height: 2;
+      }
+    }
+    .table-body {
+      .table-row:nth-child(2n) {
+        background: #e4e4e4;
+      }
+      .admin-view-info-addr {
+        color: grey;
+        margin-left: 10px;
+        font-size: small;
+      }
+      .table-col {
+        line-height: 32px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+      .admin-view-new-pwd {
+        border: 1px solid grey;
+        height: 28px;
+        line-height: 24px;
+        display: inline-block;
+        padding: 0px 10px;
+        border-radius: 5px;
+        width: 215px;
+        input {
+          max-width: 100%;
+          border: 0;
+        }
+        .glyphicon-ok{
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

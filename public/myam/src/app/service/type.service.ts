@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { ConfigHandler } from '../handler/config.handler';
 import { RequestHandler } from '../handler/request.handler';
 import { CacheHandler } from '../handler/cache.handler';
 import { NotificationHandler } from '../handler/notification.handler';
@@ -17,7 +16,6 @@ let tidRelatedCache = {
   constructor(
     private request: RequestHandler,
     private cacheHandler: CacheHandler,
-    private config: ConfigHandler,
     private notificationHandler: NotificationHandler
   ) {};
 

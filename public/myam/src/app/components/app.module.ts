@@ -29,6 +29,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { TypesModule } from './types/types.module';
 import { ProfileModule } from './profile/profile.module';
 import { AboutModule } from './about/about.module';
+import { AdminModule } from './admin/admin.module';
 import { NotificationBubbleModule } from './notification-bubble/notification-bubble.module';
 
 @NgModule({
@@ -49,7 +50,8 @@ import { NotificationBubbleModule } from './notification-bubble/notification-bub
     TypesModule,
     RecordsModule,
     ProfileModule,
-    NotificationBubbleModule
+    NotificationBubbleModule,
+    AdminModule
   ],
   declarations: [
     AppComponent
