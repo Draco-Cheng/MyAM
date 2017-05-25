@@ -10,12 +10,13 @@ var logger = require('../controller/logger.js');
 
 exports.set = async function(data) {
   try {
-    const _uid = data['meta']['uid'];
+
+    data['dbFile'] = config['`dbFolder'] + 'sys.db';
+
     const _meta = data['meta'];
+    const _uid = _meta['uid'];
 
     let _newUserParameter = {};
-
-    data['dbFile'] = config['dbFolder'] + 'sys.db';
 
     // connect databse
     await controller.dbFile.checkDB(data);
@@ -43,7 +44,7 @@ exports.set = async function(data) {
       }
     }
 
-    ['mail', 'name', 'permission', 'status', 'breakpoint'].forEach(key => {
+    ['mail', 'name', 'breakpoint'].forEach(key => {
       if (_meta[key] !== undefined)
         _newUserParameter[key] = _meta[key];
     })
@@ -92,6 +93,8 @@ exports.get = async function(data) {
       _uobj['mail'] = row['mail'];
       _uobj['date'] = row['date'];
       _uobj['breakpoint'] = row['breakpoint'];
+      _uobj['last_login_info'] = row['last_login_info'];
+      _uobj['account'] = row['account'];
 
       _responseUser.push(_uobj);
     })

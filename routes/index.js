@@ -22,7 +22,7 @@ routes.index = function(req, res, next) {
     headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Auth-UID, Auth-Salt, Auth-Token';
     res.writeHead(200, headers);
     res.end();
-  } else if (req.url.indexOf('/auth/login') == 0) {
+  } else if (req.url.indexOf('/auth') == 0) {
     // Cross domain header
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With');
@@ -32,8 +32,16 @@ routes.index = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With');
 
-    // do auth check 
-    if (authService.check(req.headers)) {
+    // auth check
+    let _check = authService.check(req.headers);
+    
+    if (_check['permission']) {
+      if ((_check['permission'] < 20 || _check['status'] < 20) && req.url.indexOf('/profile') != 0) {
+        return responseHandler(405, req, res);
+      }
+
+      req['permission'] = _check['permission'];
+
       next();
     } else {
       responseHandler(401, req, res);
@@ -53,6 +61,7 @@ router.all('*', routes.index)
   .use('/db', require('./db'))
   .use('/currency', require('./currency'))
   .use('/type', require('./type'))
-  .use('/record', require('./record'));
+  .use('/record', require('./record'))
+  .use('/admin', require('./admin'));
 
 module.exports = router;

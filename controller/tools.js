@@ -9,6 +9,7 @@ var _createData = function(req, uid) {
 
   _data.uid = _uid;
   _data.authUid = req['headers']['auth-uid'];
+  _data.permission = req['permission'] || 0;
 
   if (_uid && req.body.db) {
     _data.dbName = req.body.db;

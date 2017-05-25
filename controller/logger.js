@@ -8,8 +8,8 @@ function TextAbstract(text, length) {
     return text;
   }
   text = text.substring(0, length);
-  last = text.lastIndexOf(' ');
-  text = text.substring(0, last);
+  // last = text.lastIndexOf(' ');
+  // text = text.substring(0, last);
   return text + '...';
 }
 
@@ -41,7 +41,7 @@ exports.warn = function() {
 exports.error = function() {
   if (arguments.length === 1){
     if(typeof arguments[0] == 'object' && arguments[0]['stack'])
-      logger('[ERROR]\t'.red + ' Crtical error! \r\n' + arguments[0]['stack']);
+      logger('[ERROR]\t'.red + ' ' +('[CRITICAL]').bgRed + '\r\n' + arguments[0]['stack']);
     else
       logger('[ERROR]\t'.red + arguments[0]);
   } else if (typeof arguments[1] == 'string')

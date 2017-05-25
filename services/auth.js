@@ -15,13 +15,19 @@ exports.check = (header) => {
   let _salt = header['auth-salt'];
   let _token = header['auth-token'];
 
+  let _reObj = {
+    permission: 0,
+    status: 0
+  };
+
   if (authCache[_uid]) {
     if (authCache[_uid]['timestamp'] < _salt && controller.encrypt(authCache[_uid]['token'] + _salt) == _token) {
       authCache[_uid]['timestamp'] = _salt;
-      return true;
+      _reObj['status'] = authCache[_uid]['status'];
+      _reObj['permission'] = authCache[_uid]['permission'];
     }
   }
-  return false;
+  return _reObj;
 }
 
 exports.login = async function(data) {
