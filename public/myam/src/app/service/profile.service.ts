@@ -30,18 +30,22 @@ const profileMap = require('./profile.map.json');
   async updateConfigProfile() {
     const _urlProfile = this.endpoint_profile + '/get';
     const _resaultProfile = await this.request.post(_urlProfile);
+    let _userProfile;
 
     if (!_resaultProfile['success'])
       return this.notificationHandler.broadcast('error', _resaultProfile['message']);
 
-    const _urlDbList = this.endpoint_db + '/dbList';
-    const _resaultDbList = await this.request.post(_urlDbList);
+    _userProfile = _resaultProfile['data']['user'][0];
 
-    if (!_resaultDbList['success'])
-      return this.notificationHandler.broadcast('error', _resaultDbList['message']);
+    if(_userProfile['status'] >= 20){
+      const _urlDbList = this.endpoint_db + '/dbList';
+      const _resaultDbList = await this.request.post(_urlDbList);
 
-    let _userProfile = _resaultProfile['data']['user'][0];
-    _userProfile['dbList'] = _resaultDbList['data']['dbList'];
+      if (!_resaultDbList['success'])
+        return this.notificationHandler.broadcast('error', _resaultDbList['message']);
+
+      _userProfile['dbList'] = _resaultDbList['data']['dbList'];
+    }    
 
     this.config.setUserProfile(_userProfile);
   }

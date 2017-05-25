@@ -1,8 +1,9 @@
 {
-	"ajax": {
+  "ajax": {
+    "ACCOUNT_CONFLICT": "This ID has been used",
+    "MAIL_CONFLICT": "This e-mail has been used"
+  },
+  "component.dashboard": {
 
-	},
-	"component.dashboard": {
-
-	}
+  }
 }

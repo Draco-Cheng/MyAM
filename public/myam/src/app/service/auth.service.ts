@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { RequestHandler } from '../handler/request.handler';
 import { ConfigHandler } from '../handler/config.handler';
 import { NotificationHandler } from '../handler/notification.handler';
+import { CryptHandler } from '../handler/crypt.handler';
 
 import {
   CanActivate,
@@ -16,12 +17,17 @@ import {
 
   private endpoint = '/auth';
 
+  private encrypt;
+
   constructor(
     private router: Router,
     private config: ConfigHandler,
     private request: RequestHandler,
+    private cryptHandler: CryptHandler,
     private notificationHandler: NotificationHandler
-  ) {};
+  ) {
+    this.encrypt = cryptHandler.encrypt;
+  };
 
 
   async login(formObj: any) {
@@ -61,6 +67,31 @@ import {
       localStorage.removeItem('token');
     }
   }
+
+  async register(formObject) {
+    const _url = this.endpoint + '/register';
+
+    const _data = {};
+
+    _data['name'] = formObject['name'];
+    _data['account'] = formObject['account'];
+    _data['token'] = this.encrypt(formObject['pwd']);
+    _data['mail'] = formObject['mail'];
+
+    console.log("[AuthService] register");
+
+    let _resault = await this.request.post(_url, _data);
+
+    if (!_resault['success']) {
+      this.notificationHandler.broadcast('error', _resault['message']);
+    } else {
+      this.notificationHandler.broadcast('success', 'Register account success!');
+      this.router.navigate(['/login']);
+    }
+
+    return _resault;
+  }
+
 }
 
 @Injectable() export class AuthGuard implements CanActivate {

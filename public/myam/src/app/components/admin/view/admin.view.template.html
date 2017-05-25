@@ -39,7 +39,7 @@
         <div class="table-col col-md-1">{{dateString(user.date)}}</div>
         <div class="table-col col-md-2" *ngIf="loginInfoToStr(user.last_login_info) as info">
           {{info[1]}}
-          <span class="admin-view-info-addr">
+          <span *ngIf="info[0]" class="admin-view-info-addr">
             ({{info[0]}})
           </span>
         </div>

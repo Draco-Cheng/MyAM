@@ -17,12 +17,9 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  form = new LoginForm('', '', false);
+  private form = new LoginForm('', '', false);
 
-  onSubmit() {
-    this.authService.login(this.form)
-      .then(() => {
-        this.router.navigate(['/dashboard']);
-      });
+  async onSubmit() {
+    await this.authService.login(this.form);
   }
 }

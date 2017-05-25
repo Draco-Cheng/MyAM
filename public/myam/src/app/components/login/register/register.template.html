@@ -1,0 +1,29 @@
+<div class="container col-xs-12 col-md-6 col-lg-4 col-md-offset-3 col-lg-offset-4 register-panel">
+  <h1>Register</h1>
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">User Name</label>
+      <input type="text" placeholder="enter your name" [(ngModel)]="form.name" class="form-control" name="name" required>
+    </div>  
+    <div class="form-group">
+      <label for="account">ID</label>
+      <input type="text" placeholder="enter your ID" [(ngModel)]="form.account" class="form-control" name="account" required>
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password</label>
+      <input type="password" placeholder="enter password" [(ngModel)]="form.pwd" class="form-control" name="pwd" required>
+      <input type="password" placeholder="enter password again" [(ngModel)]="form.pwd2" class="form-control {{form.pwd == form.pwd2? '' : 'not-match'}}" name="pwd2" required>      
+    </div>
+    <div class="form-group">
+      <label for="mail">E-mail</label>
+      <input type="text" placeholder="enter E-mail" [(ngModel)]="form.mail" class="form-control" name="mail" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <div class="pull-right">
+      <a href="#/login">
+        <span class="glyphicon glyphicon-chevron-right"></span> Login page
+      </a>
+    </div>
+  </form>
+</div>

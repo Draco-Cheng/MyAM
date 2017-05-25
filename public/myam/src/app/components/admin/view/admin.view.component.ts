@@ -46,6 +46,9 @@ export class AdminViewComponent {
   async __checkDataUpToDate() {}
 
   loginInfoToStr(str) {
+    if (!str)
+      return [];
+
     let _info = str.split('|');
     return [_info[0], this.dateString(_info[1])];
   }
@@ -73,23 +76,28 @@ export class AdminViewComponent {
   async updateUser(user) {
     let _data = {
       target_uid: user['uid'],
-      status: user['status'],
-      permission: user['permission']
+      status: user['status'] * 1,
+      permission: user['permission'] * 1
     }
 
     let _resault = await this.adminServer.setUser(_data);
 
-    if (!_resault['success']) {
+    if (_resault['success']) {
       for (let _metaUser of this.__meta['userList']['data']) {
-        if (_metaUser['uid'] = user['uid']) {
+        if (_metaUser['uid'] == user['uid']) {
+          _metaUser['status'] = user['status'];
+          _metaUser['permission'] = user['permission'];
+          return;
+        }
+      }
+    } else {
+      for (let _metaUser of this.__meta['userList']['data']) {
+        if (_metaUser['uid'] == user['uid']) {
           user['status'] = _metaUser['status'];
           user['permission'] = _metaUser['permission'];
           return;
         }
-
       }
-
-
     }
   }
 }

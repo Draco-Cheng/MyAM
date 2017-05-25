@@ -81,7 +81,7 @@
   <hr>
   <div id="profile-view-database" *ngIf="user['status'] >= 20">
     <h1>Databse</h1>
-    <div *ngIf="user.dbList.length" class="profile-view-select-db">
+    <div *ngIf="user.dbList && user.dbList.length" class="profile-view-select-db">
       Database:
       <select [(ngModel)]="selectedDb" (change)="setSelectDb(selectedDb)">
         <option *ngFor="let dbName of user.dbList" value="{{dbName}}">{{dbName}}</option>
@@ -113,7 +113,7 @@
         <span class="glyphicon glyphicon-trash"></span> Delete
       </div>
     </div>
-    <div class="profile-view-bdb-panel" *ngIf="selectedDb">
+    <div class="profile-view-bdb-panel" *ngIf="selectedDb && breakpointDbList">
       <h4>Backup List</h4>
       <div class="profile-view-bdb-block">
         <div *ngIf="!breakpointDbList.length">
