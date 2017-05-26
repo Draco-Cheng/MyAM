@@ -333,7 +333,7 @@ exports.checkDBisCorrect = function(data) {
         data['resault']['message'] = 'OK';
       } catch (e) {
         data['resault']['isCorrect'] = false;
-        data['resault']['message'] = err;
+        data['resault']['message'] = e;
       }
 
       await closeDB(data);
