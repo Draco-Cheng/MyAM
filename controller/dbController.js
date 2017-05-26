@@ -671,13 +671,15 @@ exports.getRecord = function(data) {
 
           var _conditions = [];
 
+
           _tidsArray.forEach(tids => {
             var _map = tids.map(tid => {
               if (tid === '_EMPTY_')
                 return 'tids IS NULL';
               else
-                return 'tids LIKE ' % ' + tid + ' % '';
+                return 'tids LIKE \'%' + tid + '%\'';
             });
+
             _conditions.push(' ( ' + _map.join(' OR ') + ' ) ');
           });
 
