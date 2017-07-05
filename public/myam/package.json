@@ -5,13 +5,13 @@
   "description": "MyAM Frontend Page",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server --hot --inline"
+    "start": "set dev=true && webpack-dev-server --hot --inline"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "^4.1.2",
+    "@angular/animations": "~4.0.0",
     "@angular/common": "~4.0.0",
     "@angular/compiler": "~4.0.0",
     "@angular/compiler-cli": "~4.0.0",
@@ -28,13 +28,14 @@
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
     "css-loader": "^0.28.0",
-    "file-loader": "^0.11.1",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "file-loader": "^0.11.2",
     "rxjs": "5.0.1",
     "style-loader": "^0.16.1",
     "systemjs": "0.19.39",
     "ts-md5": "^1.2.0",
     "url-loader": "^0.5.8",
-    "webpack": "^2.3.3",
+    "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.2",
     "zone.js": "^0.8.4"
   },
