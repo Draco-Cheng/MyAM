@@ -5,9 +5,10 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es6"
+    "target": "es5", // webpack UglifyJsPlugin not support es6
+    "lib": ["es2015", "dom"] // for compile es6 lib, if {"target": "es6"} remove it
   },
-  "exclude" : [
+  "exclude": [
     "node_modules"
   ]
 }
