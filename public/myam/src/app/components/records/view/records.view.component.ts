@@ -127,6 +127,9 @@ export class RecordsViewComponent {
 
     for (let i = 0; i < _tidsList.length; i++) {
       let _list = await this.typeService.getNodeAllChilds(_tidsList[i]);
+
+      _list.length || _list.push(_tidsList[i]);
+
       _arr.push(_list);
     }
 
