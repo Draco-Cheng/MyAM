@@ -5,6 +5,8 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 // i18n
 import { i18n } from '../i18n/i18n';
 
@@ -34,15 +36,21 @@ import { NotificationBubbleModule } from './notification-bubble/notification-bub
 
 @NgModule({
   imports: [
+    // Angular modules
     BrowserModule,
     CommonModule,
-    NavModule,
-    AppRoutingModule,
     HttpModule,
     JsonpModule,
     FormsModule,
 
-    // Module
+    // 3rd party modules
+    NgxChartsModule, // NgxCharts need import in root module first then import in child modules
+
+    // app core modules
+    NavModule,
+    AppRoutingModule,
+
+    // app child component modules
     LoginModule,
     DashboardModule,
     AboutModule,
