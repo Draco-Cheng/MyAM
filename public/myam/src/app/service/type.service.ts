@@ -5,8 +5,12 @@ import { CacheHandler } from '../handler/cache.handler';
 import { NotificationHandler } from '../handler/notification.handler';
 
 let tidRelatedCache = {
-  'nodeAllParents': {},
-  'nodeAllChilds': {}
+  'nodeAllParentsInTree': {},
+  'nodeAllChildsInTree': {},
+  'rootChildsInNextLayer': {
+    'enableShowInMap': null,
+    'disableShowInMap': null
+  }
 };
 
 @Injectable() export class TypeService {
@@ -24,11 +28,13 @@ let tidRelatedCache = {
       this.cacheHandler.wipe(id);
     } else {
       this.cacheHandler.wipe('type');
+      this.cacheHandler.wipe('type.flat');
       this.cacheHandler.wipe('type.flatmap');
     }
 
-    tidRelatedCache['nodeAllParents'] = {};
-    tidRelatedCache['nodeAllChilds'] = {};
+    tidRelatedCache['nodeAllParentsInTree'] = {};
+    tidRelatedCache['nodeAllChildsInTree'] = {};
+    tidRelatedCache['rootChildsInNextLayer'] = null;
   }
 
   async get(formObj ? : any) {
@@ -48,6 +54,28 @@ let tidRelatedCache = {
         this.notificationHandler.broadcast('error', _resault['message']);
 
     }
+  }
+
+  async getTypeFlat() {
+    const _cacheName = 'type.flat';
+    const _cache = await this.cacheHandler.get(_cacheName, true);
+
+    if (_cache.status == 1) {
+      return _cache;
+    } else {
+      const _resolveCache = this.cacheHandler.regAsyncReq(_cacheName);
+      const _typeData = (await this.get())['data'];
+
+      let _typeFlat = {};
+
+      _typeData.forEach(element => {
+        _typeFlat[element.tid] = element;
+      });
+
+      return _resolveCache(_typeFlat);
+
+    }
+
   }
 
   async getFlatMap(formObj ? : any) {
@@ -192,43 +220,90 @@ let tidRelatedCache = {
     return _resault;
   }
 
-  async getNodeAllParents(tid) {
-    if (!tidRelatedCache['nodeAllParents'][tid]) {
+  async getAllParentsInTree(tid) {
+    if (!tidRelatedCache['nodeAllParentsInTree'][tid]) {
       let _map = (await this.getFlatMap())['data'];
       let _arr = [];
-      this.getNodeAllParentsRecursive(_map, _arr, tid);
-      tidRelatedCache['nodeAllParents'][tid] = _arr;
+      this.getAllParentsInTreeRecursive(_map, _arr, tid);
+      tidRelatedCache['nodeAllParentsInTree'][tid] = _arr;
     }
-    return tidRelatedCache['nodeAllParents'][tid];
+    return tidRelatedCache['nodeAllParentsInTree'][tid];
   }
-  getNodeAllParentsRecursive(map, arr, tid) {
+  getAllParentsInTreeRecursive(map, arr, tid) {
     if (!map[tid] || !map[tid]['parents'] || arr.indexOf(tid) != -1) return;
     let _keys = Object.keys(map[tid]['parents']);
     arr.push(tid);
     _keys.forEach(k => {
       if (arr.indexOf(k) == -1) {
-        this.getNodeAllParentsRecursive(map, arr, k);
+        this.getAllParentsInTreeRecursive(map, arr, k);
       }
     });
   }
 
-  async getNodeAllChilds(tid) {
-    if (!tidRelatedCache['nodeAllChilds'][tid]) {
+  async getAllChildsInTree(tid) {
+    if (!tidRelatedCache['nodeAllChildsInTree'][tid]) {
       let _map = (await this.getFlatMap())['data'];
       let _arr = [];
-      this.getNodeAllChildsRecursive(_map, _arr, tid);
-      tidRelatedCache['nodeAllChilds'][tid] = _arr;
+      this.getAllChildsInTreeRecursive(_map, _arr, tid);
+      tidRelatedCache['nodeAllChildsInTree'][tid] = _arr;
     }
-    return tidRelatedCache['nodeAllChilds'][tid];
+    return tidRelatedCache['nodeAllChildsInTree'][tid];
   }
-  getNodeAllChildsRecursive(map, arr, tid) {
+  getAllChildsInTreeRecursive(map, arr, tid) {
     if (!map[tid] || !map[tid]['childs'] || arr.indexOf(tid) != -1) return;
     arr.push(tid);
     let _keys = Object.keys(map[tid]['childs']);
     _keys.forEach(k => {
       if (arr.indexOf(k) == -1) {
-        this.getNodeAllChildsRecursive(map, arr, k);
+        this.getAllChildsInTreeRecursive(map, arr, k);
       }
     });
+  }
+
+  async getChildsInNextLayer(tid ? : number, disableShowInMap ? : boolean) {
+    if (!tid) {
+      const _cacheType = disableShowInMap ? 'disableShowInMap' : 'enableShowInMap';
+      if (tidRelatedCache['rootChildsInNextLayer'][_cacheType]) {
+        return tidRelatedCache['rootChildsInNextLayer'][_cacheType];
+      } else {
+        let _flatMap = (await this.getFlatMap())['data'];
+        let _types = (await this.get())['data'];
+
+        let _returnObj = {
+          childs: [],
+          unclassified: []
+        };
+
+        _types.forEach(_type => {
+          let _tidInLoop = _type['tid'];
+
+          if (!disableShowInMap && !_type['showInMap']) return;
+
+          if (_type['master']) {
+            _returnObj.childs.push(_tidInLoop);
+          } else if (!_flatMap[_tidInLoop] || Object.keys(_flatMap[_tidInLoop].parents).length === 0) {
+            _returnObj.unclassified.push(_tidInLoop);
+          }
+        });
+
+        return tidRelatedCache['rootChildsInNextLayer'][_cacheType] = _returnObj;
+      }
+    } else {
+      const _flatMap = (await this.getFlatMap())['data'];
+      const _types = (await this.get())['data'];
+
+      if (!_flatMap[tid]) return [];
+
+      if (disableShowInMap) {
+        return { 'childs': Object.keys(_flatMap[tid].childs) };
+      } else {
+        return { 'childs': Object.keys(_flatMap[tid].childs).filter(_tid => _types[_tid]['showInMap']) };
+      }
+    }
+  }
+
+  async tidToLable(tid) {
+    let _typeItem = (await this.getTypeFlat())['data'];
+    return _typeItem[tid]['type_label'];
   }
 }

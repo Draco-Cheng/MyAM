@@ -77,7 +77,7 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
     for (let _record of _records) {
       let _parents = {};
       for (let _tid of _record.tids) {
-        let _allRelateNode = await this.typeService.getNodeAllParents(_tid);
+        let _allRelateNode = await this.typeService.getAllParentsInTree(_tid);
         for (let _ptid of _allRelateNode) {
           _parents[_ptid] = true;
         }

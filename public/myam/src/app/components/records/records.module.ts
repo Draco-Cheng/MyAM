@@ -17,6 +17,7 @@ import { CurrencySelectionDirectiveModule } from '../_directive/currency-selecti
 import { TypeMapPanelDirectiveModule } from '../_directive/type-map-panel/module';
 import { TypeQuickListDirectiveModule } from '../_directive/type-quick-list/module';
 import { RecordSummarizeTypeFlatDirectiveModule } from '../_directive/record-summarize-type-flat/module';
+import { RecordSummarizeTypePieChartDirectiveModule } from '../_directive/record-summarize-type-pie-chart/module';
 
 
 // style
@@ -30,7 +31,8 @@ import './records.style.less';
     CurrencySelectionDirectiveModule,
     TypeMapPanelDirectiveModule,
     TypeQuickListDirectiveModule,
-    RecordSummarizeTypeFlatDirectiveModule
+    RecordSummarizeTypeFlatDirectiveModule,
+    RecordSummarizeTypePieChartDirectiveModule
   ],
   declarations: [
     RecordsViewComponent,

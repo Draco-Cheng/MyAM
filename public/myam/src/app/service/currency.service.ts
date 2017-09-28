@@ -192,8 +192,9 @@ function cloneObj(obj) {
   }
 
   exchange(sCid, tCid, value) {
-    const _sCid = sCid.toString();
-    const _tCid = tCid.toString();
+
+    const _sCid = (sCid || this.getDefaultCid()).toString();
+    const _tCid = (tCid || this.getDefaultCid()).toString();
 
     let _currencyExchangeCache = currencyExchangeCache;
     let _currencyMapForExchangeCache = currencyMapForExchangeCache;

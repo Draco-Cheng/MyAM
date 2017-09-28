@@ -1,0 +1,12 @@
+<div *ngIf="__isInit && summarizeReady" class="record-sum-type-pie-chart-panel">
+  <ngx-charts-pie-chart
+    [view]="typeSummerizeForPieChart.view"
+    [results]="typeSummerizeForPieChart.single"
+    [legend]="typeSummerizeForPieChart.showLegend"
+    [explodeSlices]="typeSummerizeForPieChart.explodeSlices"
+    [labels]="typeSummerizeForPieChart.showLabels"
+    [doughnut]="typeSummerizeForPieChart.doughnut"
+    [gradient]="typeSummerizeForPieChart.gradient"
+    (select)="typeSummerizeForPieChart.onSelect($event)">
+  </ngx-charts-pie-chart>
+</div>
