@@ -900,6 +900,9 @@ records-content .records-recent-table {
 .record-sum-type-map-fragment-count {
   font-size: small;
 }
+.record-sum-type-pie-chart-panel {
+  display: inline-block;
+}
 records-content .record-type-map-panel {
   text-align: center;
 }
