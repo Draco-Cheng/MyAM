@@ -1,6 +1,6 @@
 {
   "name": "myam",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "This is MyAM server, you will need node.js 7+ server to run server!",
   "scripts": {
     "build": "npm install && node index.js",
