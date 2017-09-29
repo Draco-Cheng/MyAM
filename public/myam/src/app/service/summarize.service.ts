@@ -111,7 +111,7 @@ import { CurrencyService } from './currency.service';
     let _ngxChartData = [];
 
     for (let i = 0; i < typelist.length; i++) {
-      
+
       let _tid = typelist[i];
       let _costSum = 0;
       let _earnSum = 0;
@@ -128,6 +128,46 @@ import { CurrencyService } from './currency.service';
         _costSum && _ngxChartData.push({ 'name': `[C] ${_tidLabel}`, 'value': _costSum });
         _earnSum && _ngxChartData.push({ 'name': `[E] ${_tidLabel}`, 'value': _earnSum });
       }
+    }
+
+    if (unclassifiedTypeList) {
+      for (let i = 0; i < unclassifiedTypeList.length; i++) {
+
+        let _tid = unclassifiedTypeList[i];
+        let _costSum = 0;
+        let _earnSum = 0;
+
+        for (let _cid in typeSummerize['types'][_tid]) {
+          let _typeSumRecord = typeSummerize['types'][_tid][_cid];
+          _costSum += this.currencyService.exchange(_cid, null, _typeSumRecord['priceCost'])['value'];
+          _earnSum += this.currencyService.exchange(_cid, null, _typeSumRecord['priceEarn'])['value'];
+        }
+
+        if (_costSum || _earnSum) {
+          const _tidLabel = 'Unclassified Types';
+          _costSum && _ngxChartData.push({ 'name': `[C] ${_tidLabel}`, 'value': _costSum });
+          _earnSum && _ngxChartData.push({ 'name': `[E] ${_tidLabel}`, 'value': _earnSum });
+        }
+      }
+    }
+
+    if (typeSummerize['typeNone']) {
+      let _typeNoneSum = typeSummerize['typeNone'];
+      let _typeNoneCostSum = 0;
+      let _typeNoneEarnSum = 0;
+
+      for (let _cid in _typeNoneSum) {
+        let _typeNoneSumRecord = _typeNoneSum[_cid];
+        _typeNoneCostSum += this.currencyService.exchange(_cid, null, _typeNoneSumRecord['priceCost'])['value'];
+        _typeNoneEarnSum += this.currencyService.exchange(_cid, null, _typeNoneSumRecord['priceEarn'])['value'];
+      }
+
+      if (_typeNoneCostSum || _typeNoneEarnSum) {
+        const _tidLabel = 'No Type Records';
+        _typeNoneCostSum && _ngxChartData.push({ 'name': `[C] ${_tidLabel}`, 'value': _typeNoneCostSum });
+        _typeNoneEarnSum && _ngxChartData.push({ 'name': `[E] ${_tidLabel}`, 'value': _typeNoneEarnSum });
+      }
+
     }
 
     return _ngxChartData;

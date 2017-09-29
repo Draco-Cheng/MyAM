@@ -53,6 +53,7 @@ export class RecordsViewComponent {
 
   @ViewChild('showMoreBtn') showMoreBtn: ElementRef;
   @ViewChild('recordSummarizeTypeFlat') recordSummarizeTypeFlat;
+  @ViewChild('recordSummarizeTypePieChart') recordSummarizeTypePieChart;
 
   private records;
   private records_pool = [];
@@ -97,6 +98,7 @@ export class RecordsViewComponent {
     this.lazyPushRecords();
 
     this.recordSummarizeTypeFlat && this.recordSummarizeTypeFlat.buildSummerize();
+    this.recordSummarizeTypePieChart && this.recordSummarizeTypePieChart.buildSummerize();
   };
 
   lazyPushRecords() {

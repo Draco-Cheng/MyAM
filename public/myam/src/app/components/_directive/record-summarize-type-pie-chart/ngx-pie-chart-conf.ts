@@ -2,7 +2,7 @@ export class NgxPieChartConf {
   single: any[];
   multi: any[];
 
-  view: any[] = [700, 400];
+  view: any[] = [900, 400];
 
   // options
   showLegend = true;
@@ -15,9 +15,11 @@ export class NgxPieChartConf {
   constructor(single) {
     Object.assign(this, { single });
 
+
+    // padding left, right 15px;
+    this.view[0] = window.innerWidth - 30;
+
     if (window.innerWidth < 730) {
-      // padding left, right 15px;
-      this.view[0] = window.innerWidth - 30;
       this.showLegend = false;
     }
   }
