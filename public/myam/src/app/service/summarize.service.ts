@@ -107,7 +107,7 @@ import { CurrencyService } from './currency.service';
   }
 
 
-  async typeSummerizeToPieChart(typeSummerize, typelist, unclassifiedTypeList ? ) {
+  async typeSummerizeToPieChart(typeSummerize, typelist, unclassifiedTypeList, showTypeNone ?) {
     let _ngxChartData = [];
 
     for (let i = 0; i < typelist.length; i++) {
@@ -151,7 +151,7 @@ import { CurrencyService } from './currency.service';
       }
     }
 
-    if (typeSummerize['typeNone']) {
+    if (showTypeNone && typeSummerize['typeNone']) {
       let _typeNoneSum = typeSummerize['typeNone'];
       let _typeNoneCostSum = 0;
       let _typeNoneEarnSum = 0;

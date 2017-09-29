@@ -7,6 +7,7 @@ import { NotificationHandler } from '../handler/notification.handler';
 let tidRelatedCache = {
   'nodeAllParentsInTree': {},
   'nodeAllChildsInTree': {},
+  'tidToLabelMap': null,
   'rootChildsInNextLayer': {
     'enableShowInMap': null,
     'disableShowInMap': null
@@ -48,11 +49,12 @@ let tidRelatedCache = {
       const _url = this.endpoint + '/get'
       const _resault = await this.request.post(_url);
 
-      if (_resault['success'])
+      if (_resault['success']) {
+        this.buildTidToLabelMap(_resault['data']);
         return _resolveCache(_resault['data']);
-      else
+      } else {
         this.notificationHandler.broadcast('error', _resault['message']);
-
+      }
     }
   }
 
@@ -73,9 +75,12 @@ let tidRelatedCache = {
       });
 
       return _resolveCache(_typeFlat);
-
     }
+  }
 
+  buildTidToLabelMap(typeData) {
+    tidRelatedCache['tidToLabelMap'] = tidRelatedCache['tidToLabelMap'] || {};
+    typeData.forEach(type => tidRelatedCache['tidToLabelMap'][type.tid] = type.type_label);
   }
 
   async getFlatMap(formObj ? : any) {
@@ -302,8 +307,12 @@ let tidRelatedCache = {
     }
   }
 
-  async tidToLable(tid) {
-    let _typeItem = (await this.getTypeFlat())['data'];
-    return _typeItem[tid]['type_label'];
+  tidToLable(tid) {
+    if (!tidRelatedCache['tidToLabelMap']) {
+      console.error('[type.server] tidToLabelMap not ready yet, please at least trigger type.get once time.');
+      return '';
+    } else {
+      return tidRelatedCache['tidToLabelMap'][tid];
+    }
   }
 }

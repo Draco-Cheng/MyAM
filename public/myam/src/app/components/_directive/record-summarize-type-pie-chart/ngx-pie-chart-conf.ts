@@ -12,12 +12,14 @@ export class NgxPieChartConf {
   explodeSlices = false;
   doughnut = true;
 
+  legendTitle = 'Legend';
+
   constructor(single) {
     Object.assign(this, { single });
 
 
     // padding left, right 15px;
-    this.view[0] = window.innerWidth - 30;
+    this.view[0] = window.innerWidth - 50;
 
     if (window.innerWidth < 730) {
       this.showLegend = false;
@@ -27,5 +29,4 @@ export class NgxPieChartConf {
   onSelect(event) {
     console.log(event);
   }
-
 }
