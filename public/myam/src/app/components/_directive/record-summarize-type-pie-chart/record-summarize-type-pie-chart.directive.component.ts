@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 
 import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
-import { CurrencyService } from '../../../service/currency.service';
 import { SummarizeService } from '../../../service/summarize.service';
 
 import { NgxPieChartConf } from './ngx-pie-chart-conf';
@@ -17,13 +16,12 @@ import './record-summarize-type-pie-chart.style.less';
   providers: [
     RecordsService,
     TypeService,
-    CurrencyService,
     SummarizeService
   ]
 })
 
 export class RecordSummarizeTypePieChartDirectiveComponent {
-  @Input() getRecord: Function;
+  @Input() getTypeSummerize: Function;
 
   private __isInit = false;
   private __meta = {};
@@ -40,13 +38,11 @@ export class RecordSummarizeTypePieChartDirectiveComponent {
 
   constructor(
     private typeService: TypeService,
-    private currencyService: CurrencyService,
     private summarizeService: SummarizeService,
   ) {};
 
   async ngOnInit() {
     await this.getTypes();
-    await this.getCurrency();
     await this.buildSummerize();
     this.__isInit = true;
   }
@@ -55,17 +51,12 @@ export class RecordSummarizeTypePieChartDirectiveComponent {
     this.typesMapFlat = (await this.typeService.getFlatMap())['data'];
   };
 
-  async getCurrency(){
-    await this.currencyService.get();
-  }
-
   async buildSummerize() {
     this.isReady = false;
 
-    let _records = this.getRecord();
     let _typeIdsForChart = [];
 
-    this.typeSummerize = await this.summarizeService.buildSummerize(_records);
+    this.typeSummerize = this.getTypeSummerize();
 
     await this.buildPieChartData(this.typeSummerize);
 

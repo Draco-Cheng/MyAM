@@ -23,7 +23,10 @@ function cloneObj(obj) {
     private config: ConfigHandler,
     private cacheHandler: CacheHandler,
     private notificationHandler: NotificationHandler
-  ) {};
+  ) {
+    this.get();
+    this.getMap();
+  };
 
   wipe() {
     this.cacheHandler.wipe('currency');

@@ -2,6 +2,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 
 import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
+import { CurrencyService } from '../../../service/currency.service';
+import { SummarizeService } from '../../../service/summarize.service';
 
 import './records.view.style.less';
 
@@ -37,7 +39,9 @@ window.onscroll = onScroll;
   template: require('./records.view.template.html'),
   providers: [
     RecordsService,
-    TypeService
+    TypeService,
+    CurrencyService,
+    SummarizeService    
   ],
 
   /*
@@ -60,6 +64,8 @@ export class RecordsViewComponent {
   private records_push_number = 25;
   private records_index;
 
+  private typeSummerize;
+
   private showTypeMap;
   private qureyCondition = {
     cashType: 0,
@@ -79,7 +85,8 @@ export class RecordsViewComponent {
 
   constructor(
     private recordsService: RecordsService,
-    private typeService: TypeService
+    private typeService: TypeService,
+    private summarizeService: SummarizeService
   ) {};
 
   async ngOnInit() {
@@ -97,9 +104,14 @@ export class RecordsViewComponent {
     this.records_index = 0;
     this.lazyPushRecords();
 
+    await this.buildSummarize();
+  };
+
+  async buildSummarize() {
+    this.typeSummerize = await this.summarizeService.buildSummerize(this.records_pool);
     this.recordSummarizeTypeFlat && this.recordSummarizeTypeFlat.buildSummerize();
     this.recordSummarizeTypePieChart && this.recordSummarizeTypePieChart.buildSummerize();
-  };
+  }
 
   lazyPushRecords() {
     this.records.push(...(this.records_pool.slice(this.records_index, this.records_index + this.records_push_number)));
@@ -164,7 +176,7 @@ export class RecordsViewComponent {
     document.scrollingElement.scrollTop = 0;
   }
 
-  putRecordsToDirective = () => {
-    return this.records_pool;
+  putTypeSummerizeToDirective = () => {
+    return this.typeSummerize;
   }
 }

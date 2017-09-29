@@ -22,7 +22,9 @@ let tidRelatedCache = {
     private request: RequestHandler,
     private cacheHandler: CacheHandler,
     private notificationHandler: NotificationHandler
-  ) {};
+  ) {
+    this.get();
+  };
 
   wipe(id ? : String) {
     if (id) {
@@ -308,11 +310,6 @@ let tidRelatedCache = {
   }
 
   tidToLable(tid) {
-    if (!tidRelatedCache['tidToLabelMap']) {
-      console.error('[type.server] tidToLabelMap not ready yet, please at least trigger type.get once time.');
-      return '';
-    } else {
-      return tidRelatedCache['tidToLabelMap'][tid];
-    }
+    return tidRelatedCache['tidToLabelMap'][tid];
   }
 }
