@@ -33,9 +33,6 @@ export class RecordSummarizeTypePieChartDirectiveComponent {
   private typeSummerizeForPieChart;
   private sumTidsHasChilds;
 
-
-  private isReady;
-
   constructor(
     private typeService: TypeService,
     private summarizeService: SummarizeService,
@@ -52,8 +49,6 @@ export class RecordSummarizeTypePieChartDirectiveComponent {
   };
 
   async buildSummerize() {
-    this.isReady = false;
-
     let _typeIdsForChart = [];
 
     this.typeSummerize = this.getTypeSummerize();
@@ -62,8 +57,6 @@ export class RecordSummarizeTypePieChartDirectiveComponent {
 
     this.typeIdSelected = "OVERVIEW";
     this.sumTidsHasChilds = await this.getSumTidsHasChilds(this.typeSummerize);
-
-    setTimeout(() => this.isReady = true);
   }
 
   async getSumTidsHasChilds(summerize) {

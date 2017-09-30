@@ -58,6 +58,7 @@ export class RecordsViewComponent {
   @ViewChild('showMoreBtn') showMoreBtn: ElementRef;
   @ViewChild('recordSummarizeTypeFlat') recordSummarizeTypeFlat;
   @ViewChild('recordSummarizeTypePieChart') recordSummarizeTypePieChart;
+  @ViewChild('recordSummarizeLineChart') recordSummarizeLineChart;
 
   private records;
   private records_pool = [];
@@ -65,6 +66,7 @@ export class RecordsViewComponent {
   private records_index;
 
   private typeSummerize;
+  private daySummerize;
 
   private showTypeMap;
   private qureyCondition = {
@@ -108,9 +110,12 @@ export class RecordsViewComponent {
   };
 
   async buildSummarize() {
-    this.typeSummerize = await this.summarizeService.buildSummerize(this.records_pool);
+    this.typeSummerize = await this.summarizeService.buildTypeSummerize(this.records_pool);
+    this.daySummerize = await this.summarizeService.buildDaySummerize(this.records_pool);
     this.recordSummarizeTypeFlat && this.recordSummarizeTypeFlat.buildSummerize();
     this.recordSummarizeTypePieChart && this.recordSummarizeTypePieChart.buildSummerize();
+    this.recordSummarizeLineChart && this.recordSummarizeLineChart.buildSummerize();
+
   }
 
   lazyPushRecords() {
@@ -178,5 +183,9 @@ export class RecordsViewComponent {
 
   putTypeSummerizeToDirective = () => {
     return this.typeSummerize;
+  }
+
+  putDaySummerizeToDirective = () => {
+    return this.daySummerize;
   }
 }

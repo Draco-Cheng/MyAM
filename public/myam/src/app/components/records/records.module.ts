@@ -18,6 +18,7 @@ import { TypeMapPanelDirectiveModule } from '../_directive/type-map-panel/module
 import { TypeQuickListDirectiveModule } from '../_directive/type-quick-list/module';
 import { RecordSummarizeTypeFlatDirectiveModule } from '../_directive/record-summarize-type-flat/module';
 import { RecordSummarizeTypePieChartDirectiveModule } from '../_directive/record-summarize-type-pie-chart/module';
+import { RecordSummarizeLineChartDirectiveModule } from '../_directive/record-summarize-line-chart/module';
 
 
 // style
@@ -32,7 +33,8 @@ import './records.style.less';
     TypeMapPanelDirectiveModule,
     TypeQuickListDirectiveModule,
     RecordSummarizeTypeFlatDirectiveModule,
-    RecordSummarizeTypePieChartDirectiveModule
+    RecordSummarizeTypePieChartDirectiveModule,
+    RecordSummarizeLineChartDirectiveModule
   ],
   declarations: [
     RecordsViewComponent,

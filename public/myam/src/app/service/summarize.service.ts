@@ -15,7 +15,29 @@ import { CurrencyService } from './currency.service';
     private currencyService: CurrencyService
   ) {};
 
-  async buildSummerize(records) {
+  async buildDaySummerize(records) {
+    let _records = records;
+    let _currencyService = this.currencyService;
+    let _defaultCid = _currencyService.getDefaultCid();
+    let _summerizeTemp = {};
+    let _daySummerize = [];
+
+    _records.forEach(record => {
+      let _date = record['date'];
+
+      let _dayRecord = _summerizeTemp[_date] = _summerizeTemp[_date] || { 'cost': 0, 'earn': 0, 'date': _date };
+      let _price = _currencyService.exchange(record['cid'], _defaultCid, record['value'])['value'];
+      _dayRecord[record['cashType'] == -1 ? 'cost' : 'earn'] += _price;
+    });
+
+    Object.keys(_summerizeTemp)
+      .sort()
+      .forEach(date => _daySummerize.push(_summerizeTemp[date]));
+
+    return _daySummerize;
+  }
+
+  async buildTypeSummerize(records) {
     let _records = records;
     let _typeService = this.typeService;
     let _currencyService = this.currencyService;
@@ -107,7 +129,7 @@ import { CurrencyService } from './currency.service';
   }
 
 
-  async typeSummerizeToPieChart(typeSummerize, typelist, unclassifiedTypeList, showTypeNone ?) {
+  async typeSummerizeToPieChart(typeSummerize, typelist, unclassifiedTypeList, showTypeNone ? ) {
     let _ngxChartData = [];
 
     for (let i = 0; i < typelist.length; i++) {
@@ -169,6 +191,31 @@ import { CurrencyService } from './currency.service';
       }
 
     }
+
+    return _ngxChartData;
+  }
+
+  async daySummerizeToLineChart(daySummerize) {
+    let _ngxChartData = {};
+
+    ['Cost', 'Earn', 'Sum'].forEach(valeType => {
+      _ngxChartData[valeType] = {
+        'name': valeType,
+        'series': []
+      };
+    });
+
+    let _valueCost = 0;
+    let _valueEarn = 0;
+
+    daySummerize.forEach(dayRecord => {
+      _valueCost += dayRecord['cost'] || 0;
+      _valueEarn += dayRecord['earn'] || 0;
+
+      _ngxChartData['Cost']['series'].push({ name: dayRecord['date'], value: _valueCost });
+      _ngxChartData['Earn']['series'].push({ name: dayRecord['date'], value: _valueEarn });
+      _ngxChartData['Sum']['series'].push({ name: dayRecord['date'], value: _valueEarn - _valueCost });
+    });
 
     return _ngxChartData;
   }

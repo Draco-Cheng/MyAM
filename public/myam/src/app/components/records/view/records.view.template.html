@@ -73,6 +73,7 @@
     <div class="records-number-top-hints">Query {{records_pool?.length}} records.</div>
   </div>
   <div *ngIf="records_pool?.length" #recordSummarizeTypePieChart record-summarize-type-pie-chart [getTypeSummerize]="putTypeSummerizeToDirective"></div>
+  <div *ngIf="records_pool?.length" #recordSummarizeLineChart record-summarize-line-chart [getDaySummerize]="putDaySummerizeToDirective"></div>
   <div *ngIf="records_pool?.length" #recordSummarizeTypeFlat  class="records-view-summarize-block" record-summarize-type-flat [getTypeSummerize]="putTypeSummerizeToDirective"></div>
   <hr>
   <h3>Record Table</h3>
