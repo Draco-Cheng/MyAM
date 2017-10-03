@@ -1,7 +1,5 @@
 import { Component, Input, Output } from '@angular/core';
-import { Observable } from 'rxjs';
 
-import { RecordsService } from '../../../service/records.service';
 import { TypeService } from '../../../service/type.service';
 import { SummarizeService } from '../../../service/summarize.service';
 
@@ -14,7 +12,6 @@ import './record-summarize-type-pie-chart.style.less';
   selector: '[record-summarize-type-pie-chart]',
   template: require('./record-summarize-type-pie-chart.template.html'),
   providers: [
-    RecordsService,
     TypeService,
     SummarizeService
   ]

@@ -1,0 +1,26 @@
+<div *ngIf="__isInit" class="record-sum-line-chart-panel">
+  <select [(ngModel)]="lineChartSelected" (change)="onSelect()">
+    <option value="">
+      Cost & Earn
+    </option>
+    <option value="SUM">
+      Sum
+    </option>
+  </select>
+
+  <ngx-charts-line-chart
+    [view]="summerizeForLineChart.view"
+    [results]="summerizeForLineChart.multi"
+    [gradient]="summerizeForLineChart.gradient"
+    [xAxis]="summerizeForLineChart.showXAxis"
+    [yAxis]="summerizeForLineChart.showYAxis"
+    [legend]="summerizeForLineChart.showLegend"
+    [showXAxisLabel]="summerizeForLineChart.showXAxisLabel"
+    [showYAxisLabel]="summerizeForLineChart.showYAxisLabel"
+    [xAxisLabel]="summerizeForLineChart.xAxisLabel"
+    [yAxisLabel]="summerizeForLineChart.yAxisLabel"
+    [autoScale]="summerizeForLineChart.autoScale"
+    [timeline]="summerizeForLineChart.timeline"
+    (select)="summerizeForLineChart.onSelect($event)">
+  </ngx-charts-line-chart>
+</div>
