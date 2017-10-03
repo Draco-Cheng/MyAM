@@ -340,7 +340,9 @@ function cloneObj(obj) {
       _pRateList.forEach(r => {
         _pRate = _pRate * r;
       });
-      _rateList.forEach(r => _rate = _pRate * r);
+      _rateList.forEach(r => {
+        _rate = _rate * r;
+      });
 
       // write sCid->tCid resualt the cache 
       _currencyExchangeCache[_sCid] = _currencyExchangeCache[_sCid] || {};
