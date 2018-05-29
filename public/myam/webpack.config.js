@@ -51,8 +51,7 @@ if (isDev) {
   const ExtractTextPlugin = require('extract-text-webpack-plugin');
   const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-  const extractCSS = new MiniCssExtractPlugin({filename: '[name].css'});
-  const extractLESS = new MiniCssExtractPlugin({filename:'[name]-less.css'});
+  const extractLESS = new MiniCssExtractPlugin({filename:'[name].css'});
 
   let _addLoaders = [{
     test: /\.(jpe?g|gif|png|svg|woff|woff2|eot|ttf|wav|mp3)$/,
@@ -74,7 +73,7 @@ if (isDev) {
   }];
 
   setting['module']['rules'].push(..._addLoaders);
-  setting['plugins'].push(extractCSS, extractLESS);
+  setting['plugins'].push(extractLESS);
 
 
   // minify js setting
@@ -82,7 +81,17 @@ if (isDev) {
   setting['plugins'].push(
     new UglifyJsPlugin({
       uglifyOptions: {
-        compress: true
+        ecma: 7,
+        ie8: false,
+        cache: true,
+        parallel: true,
+        compress: {
+          passes : 1
+        },
+        output: {
+          comments: false,
+          beautify: true // comment out or set to false for production
+        }
       },
       sourceMap: true
     })
