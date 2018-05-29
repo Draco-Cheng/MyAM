@@ -105,7 +105,7 @@ import {
     private notificationHandler: NotificationHandler
   ) {};
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     console.log('AuthGuard#canActivate called');
     return new Promise(async(resolve: Function, reject: Function) => {
 
