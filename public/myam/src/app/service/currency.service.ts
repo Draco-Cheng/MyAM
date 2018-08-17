@@ -52,7 +52,7 @@ function cloneObj(obj) {
     return this.currencyList;
   }
 
-  async get(formObj ? : any) {
+  async get(formObj?: any) {
     const _cacheName = 'currency';
     const _cache = await this.cacheHandler.get(_cacheName, true);
     if (_cache.status == 1) {
@@ -332,6 +332,7 @@ function cloneObj(obj) {
           _typeList.splice(_spliceStart, _spliceNumber);
           _rateList.splice(_spliceStart, _spliceNumber);
           _rateList[_typeListCkeckIndex] = 1;
+          _rateList[_typeListCkeckIndex + 1] = 1;
         }
         _typeListCkeckIndex += 1;
       } while (_typeListCkeckIndex < _typeList.length);

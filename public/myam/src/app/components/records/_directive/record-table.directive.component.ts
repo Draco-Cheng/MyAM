@@ -26,7 +26,9 @@ export class RecordTableDirectiveComponent {
   private types;
   private typesFlat = {};
 
+  private currencyFlatMap;
   private defaultCid;
+  private defaultCurrencyType;
 
   constructor(
     private recordsService: RecordsService,
@@ -48,8 +50,10 @@ export class RecordTableDirectiveComponent {
 
   async getCurrency(){
     // only check currency on initial ready
-    await this.currencyService.getMap();
+    const _currencyMap = await this.currencyService.getMap();
+    this.currencyFlatMap = _currencyMap['data']['flatMap'];
     this.defaultCid = this.currencyService.getDefaultCid();
+    this.defaultCurrencyType = this.cidToCtype(this.defaultCid);
   }
 
   async getTypes() {
@@ -71,6 +75,10 @@ export class RecordTableDirectiveComponent {
     
     console.warn('Type missing', tid);
     return tid;
+  }
+
+  cidToCtype(cid) {
+    return this.currencyFlatMap[cid]['type'];
   }
 
   removeTypeInRecord(record, tid) {
