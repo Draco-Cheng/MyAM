@@ -1,30 +1,30 @@
 <div *ngIf="__isInit && typeSummerize" class="">
   <h4>Total</h4>
-  <div class="record-sum-type-flat-total-row" *ngFor="let cid of objKey(typeSummerize['total'])">
+  <div class="record-sum-type-flat-total-row" *ngFor="let cType of objKey(currencyTotalSummerize)">
     <div class="record-sum-type-flat-total-col">
       <div class="record-sum-type-flat-total-label">
-        {{cidToLabel(cid)}}
+        {{cType}}
       </div>
-      <div *ngIf="typeSummerize['total'][cid]['priceCost']" class="record-sum-type-flat-total-cost">
-        <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(typeSummerize['total'][cid]['priceCost'])}}
+      <div *ngIf="currencyTotalSummerize[cType]['priceCost']" class="record-sum-type-flat-total-cost">
+        <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyTotalSummerize[cType]['priceCost'])}}
       </div>
-      <div *ngIf="typeSummerize['total'][cid]['priceEarn']" class="record-sum-type-flat-total-earn">
-        <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(typeSummerize['total'][cid]['priceEarn'])}}
+      <div *ngIf="currencyTotalSummerize[cType]['priceEarn']" class="record-sum-type-flat-total-earn">
+        <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(currencyTotalSummerize[cType]['priceEarn'])}}
       </div>
-      <div class="record-sum-type-flat-total-ex" *ngIf="cid != defaultCid">
+      <div class="record-sum-type-flat-total-ex" *ngIf="currencyTotalSummerize[cType]['isExchange']">
         <span class="glyphicon glyphicon-arrow-right"></span>
         <div class="record-sum-type-flat-total-ex-label">
           {{cidToLabel(defaultCid)}}
         </div>
-        <div *ngIf="typeSummerize['total'][cid]['priceCost']" class="record-sum-type-flat-total-ex-cost">
-          <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyEx(cid, typeSummerize['total'][cid]['priceCost']))}}
+        <div *ngIf="currencyTotalSummerize[cType]['priceCost']" class="record-sum-type-flat-total-ex-cost">
+          <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyTotalSummerize[cType]['priceCostExchange'])}}
         </div>
-        <div *ngIf="typeSummerize['total'][cid]['priceEarn']" class="record-sum-type-flat-total-ex-earn">
-          <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(currencyEx(cid, typeSummerize['total'][cid]['priceEarn']))}}
+        <div *ngIf="currencyTotalSummerize[cType]['priceEarn']" class="record-sum-type-flat-total-ex-earn">
+          <span class="glyphicon glyphicon-menu-up"></span> {{roundPrice(currencyTotalSummerize[cType]['priceEarnExchange'])}}
         </div>
       </div>
       <div class="record-sum-type-flat-total-count">
-        ({{typeSummerize['total'][cid]['count']}} records)
+        ({{currencyTotalSummerize[cType]['count']}} records)
       </div>
     </div>
   </div>
