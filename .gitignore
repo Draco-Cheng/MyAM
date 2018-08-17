@@ -4,3 +4,5 @@ upload_temp
 /public/webapp/node_modules
 /public/myam/node_modules
 /node_modules
+db/sys.db
+public/myam/src/app/config.json
