@@ -14,7 +14,7 @@
       <div class="record-sum-type-flat-total-ex" *ngIf="currencyTotalSummerize[cType]['isExchange']">
         <span class="glyphicon glyphicon-arrow-right"></span>
         <div class="record-sum-type-flat-total-ex-label">
-          {{cidToLabel(defaultCid)}}
+          {{cidToCtype(defaultCid)}}
         </div>
         <div *ngIf="currencyTotalSummerize[cType]['priceCost']" class="record-sum-type-flat-total-ex-cost">
           <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyTotalSummerize[cType]['priceCostExchange'])}}
@@ -31,7 +31,7 @@
   <h4>Sum</h4>
   <div class="record-sum-type-flat-total-col">
     <div class="record-sum-type-flat-total-ex-label">
-      {{cidToLabel(defaultCid)}}
+      {{cidToCtype(defaultCid)}}
     </div>
     <div *ngIf="typeSummerize['sum']['priceCost']" class="record-sum-type-flat-total-cost">
       <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(typeSummerize['sum']['priceCost'])}}
@@ -60,7 +60,7 @@
         <div class="record-sum-type-flat-total-row" *ngFor="let cid of objKey(typeSummerize['typeNone'])">
           <div class="record-sum-type-flat-total-col">
             <div class="record-sum-type-flat-total-label">
-              {{cidToLabel(cid)}}
+              {{cidToCtype(cid)}}
             </div>
             <div *ngIf="typeSummerize['typeNone'][cid]['priceCost']" class="record-sum-type-flat-total-cost">
               <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(typeSummerize['typeNone'][cid]['priceCost'])}}
@@ -71,7 +71,7 @@
             <div class="record-sum-type-flat-total-ex" *ngIf="cid != defaultCid">
               <span class="glyphicon glyphicon-arrow-right"></span>
               <div class="record-sum-type-flat-total-ex-label">
-                {{cidToLabel(defaultCid)}}
+                {{cidToCtype(defaultCid)}}
               </div>
               <div *ngIf="typeSummerize['typeNone'][cid]['priceCost']" class="record-sum-type-flat-total-ex-cost">
                 <span class="glyphicon glyphicon-menu-down"></span> {{roundPrice(currencyEx(cid, typeSummerize['typeNone'][cid]['priceCost']))}}

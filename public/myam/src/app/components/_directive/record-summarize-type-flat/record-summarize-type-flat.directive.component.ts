@@ -75,10 +75,10 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
 
   buildTotalByCurrencyType(totalObj) {
     let _mergeTotal = this.currencyTotalSummerize = {};
-    let _defaultCurrencyType = this.cidToLabel(this.defaultCid);
+    let _defaultCurrencyType = this.cidToCtype(this.defaultCid);
 
     for (let cid in totalObj) {
-      let cType = this.cidToLabel(cid);
+      let cType = this.cidToCtype(cid);
       if (!_mergeTotal[cType]) {
         _mergeTotal[cType] = {};
         _mergeTotal[cType]['count'] = 0;
@@ -107,7 +107,7 @@ export class RecordSummarizeTypeFlatDirectiveComponent {
     return Object.keys(obj);
   }
 
-  cidToLabel(cid) {
+  cidToCtype(cid) {
     return this.currencyFlatMap[cid]['type'];
   }
 
