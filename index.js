@@ -24,7 +24,7 @@ app.set('views', __dirname + '/views');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", require("./controller/resquestHandler"));
-app.use("/", express.static(__dirname + config.frontendPublicFolder));
+app.use("/", express.static(require('myam-ui').getUiDirectory()));
 app.use("/", require("./routes/index"));
 
 
