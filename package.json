@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "description": "This is MyAM server, you will need node.js 7+ server to run server!",
   "scripts": {
-    "build": "npm install && node index.js",
+    "build": "npm install && npm install myam-ui && node index.js",
     "start": "node index.js"
   },
   "dependencies": {
